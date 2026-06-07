@@ -843,30 +843,22 @@
 
 
         async function bootSystemContext() {
-
-            updateStorefrontClocks();
-
-            
-
-            // Check hash router trigger
-
-            if(window.location.hash === '#admin') {
-
-                document.getElementById('storefront-view').style.display = 'none';
-
-                document.getElementById('admin-view').style.display = 'block';
-
-            } else {
-
-                document.getElementById('admin-view').style.display = 'none';
-
-                document.getElementById('storefront-view').style.display = 'block';
-
-                await syncStorefrontProducts();
-
-            }
-
+    updateStorefrontClocks();
+    
+    // Improved routing catch that checks both hash and search terms
+    if (window.location.hash === '#admin' || window.location.search.includes('admin')) {
+        document.getElementById('storefront-view').style.display = 'none';
+        document.getElementById('admin-view').style.display = 'block';
+        // Make sure admin initializations run cleanly on startup
+        if(typeof fireAdminSuiteInitializations === 'function') {
+            fireAdminSuiteInitializations();
         }
+    } else {
+        document.getElementById('admin-view').style.display = 'none';
+        document.getElementById('storefront-view').style.display = 'block';
+        await syncStorefrontProducts();
+    }
+}
 
 
 
