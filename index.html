@@ -37,12 +37,16 @@
     #storefront-view .page-view { display: none; min-height: 60vh; }
     #storefront-view .page-view.active { display: block; }
 
-    header { text-align: center; padding-top: 20px; padding-bottom: 40px; position: relative; }
-    .brand-box { display: inline-block; background-color: var(--movi-red); padding: 4px 15px; margin-bottom: 12px; cursor: pointer; }
-    .brand-name { color: var(--movi-white); font-family: var(--font-serif); font-size: 28px; font-style: italic; font-weight: bold; letter-spacing: 1px; }
-    .header-home-btn { position: absolute; left: 20px; top: 25px; font-size: 11px; font-weight: bold; text-transform: lowercase; cursor: pointer; }
-    .header-home-btn:hover { text-decoration: underline; }
-    .header-time { font-size: 11px; letter-spacing: 1px; text-transform: lowercase; }
+    header { text-align: center; padding-top: 28px; padding-bottom: 18px; position: relative; border-bottom: none; }
+    .brand-box { display: inline-block; background-color: var(--movi-red); padding: 5px 18px; margin-bottom: 10px; cursor: pointer; }
+    .brand-name { color: var(--movi-white); font-family: var(--font-serif); font-size: 32px; font-style: italic; font-weight: bold; letter-spacing: 2px; }
+    .header-time { font-size: 11px; letter-spacing: 1px; color: #333; }
+    /* Supreme-style bottom nav bar */
+    .bottom-nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; font-size: 11px; border-top: none; margin-top: 0; }
+    .bottom-nav-left a, .bottom-nav-right a { cursor: pointer; margin-right: 20px; color: #000; }
+    .bottom-nav-left a:last-child, .bottom-nav-right a:last-child { margin-right: 0; }
+    .bottom-nav-left a:hover, .bottom-nav-right a:hover { text-decoration: underline; }
+    .bottom-nav-right { display: flex; align-items: center; gap: 20px; }
 
     /* Cart Floating Widget */
     .cart-widget { position: absolute; left: 20px; top: 120px; width: 160px; display: none; z-index: 1000; background: var(--movi-white); }
@@ -83,7 +87,11 @@
     /* Individual View Profile */
     #page-product { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
     .product-detail-layout { display: flex; justify-content: center; align-items: flex-start; gap: 40px; }
-    .product-main-image { width: 480px; height: auto; object-fit: contain; background-color: #f5f5f5; border: 1px solid #eee; }
+    .product-main-image { width: 100%; height: auto; object-fit: contain; background-color: #f5f5f5; border: 1px solid #eee; display: block; }
+    .product-image-col { width: 480px; flex-shrink: 0; }
+    .product-thumb-row { display: flex; gap: 6px; margin-top: 8px; }
+    .product-thumb { width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee; cursor: pointer; opacity: 0.6; }
+    .product-thumb.active, .product-thumb:hover { opacity: 1; border-color: #000; }
     .product-info { width: 360px; }
     .product-title { font-size: 14px; margin-bottom: 10px; font-weight: bold; text-transform: uppercase; }
     .product-desc { line-height: 1.5; margin-bottom: 20px; color: #444; }
@@ -138,14 +146,24 @@
          ========================================================= -->
     <div id="storefront-view">
         <header>
-            <div class="header-home-btn" onclick="setView('home')">home</div>
             <div class="brand-box" onclick="setView('home')">
                 <span class="brand-name">MOVI</span>
             </div>
-            <div class="header-time" id="live-clock">00:00:00 local dispatch time</div>
+            <div class="header-time" id="live-clock">00/00/0000 00:00am local</div>
         </header>
+        <div class="bottom-nav">
+            <div class="bottom-nav-left">
+                <a onclick="setView('shop')">shop</a>
+                <a onclick="setView('shop')">look all</a>
+            </div>
+            <div class="bottom-nav-right">
+                <a onclick="setView('home')">Spring/Summer 2026 Preview</a>
+                <a onclick="setView('home')">digitalbook</a>
+                <a onclick="setView('home')">news</a>
+            </div>
+        </div>
 
-        <div id="cart-widget" class="cart-widget">
+        <div id="cart-widget" class="cart-widget" style="top:160px;">
             <div class="cart-header"><span id="widget-qty-count">0</span> item(s) in bag</div>
             <div class="cart-body">
                 <div>Subtotal</div>
@@ -339,10 +357,37 @@
                             <label style="font-size:11px; color:var(--admin-muted);">Extended Blueprint Description</label>
                             <textarea class="admin-input-field" id="form-p-desc" rows="4" style="resize:vertical; font-family:inherit;"></textarea>
 
-                            <label style="font-size:11px; color:var(--admin-muted);">Image Capture File Upload (Cloudinary Auto Pipe)</label>
-                            <input type="file" class="admin-input-field" id="form-p-file" accept="image/*">
+                            <label style="font-size:11px; color:var(--admin-muted);">Image Upload — Up to 4 Images (Cloudinary Auto Pipe)</label>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;" id="img-upload-grid">
+                                <div class="img-slot" id="slot-0">
+                                    <div style="font-size:9px; color:var(--admin-muted); margin-bottom:4px;">IMAGE 1 (Primary)</div>
+                                    <input type="file" class="admin-input-field" id="form-p-file-0" accept="image/*" onchange="uploadSlotImage(0)" style="margin-bottom:4px;">
+                                    <div id="spinner-0" style="font-family:var(--admin-font-mono); font-size:9px; color:var(--movi-red); display:none;">UPLOADING...</div>
+                                    <img id="preview-0" style="width:100%; height:80px; object-fit:cover; display:none; border:1px solid #333; margin-top:4px;">
+                                </div>
+                                <div class="img-slot" id="slot-1">
+                                    <div style="font-size:9px; color:var(--admin-muted); margin-bottom:4px;">IMAGE 2</div>
+                                    <input type="file" class="admin-input-field" id="form-p-file-1" accept="image/*" onchange="uploadSlotImage(1)" style="margin-bottom:4px;">
+                                    <div id="spinner-1" style="font-family:var(--admin-font-mono); font-size:9px; color:var(--movi-red); display:none;">UPLOADING...</div>
+                                    <img id="preview-1" style="width:100%; height:80px; object-fit:cover; display:none; border:1px solid #333; margin-top:4px;">
+                                </div>
+                                <div class="img-slot" id="slot-2">
+                                    <div style="font-size:9px; color:var(--admin-muted); margin-bottom:4px;">IMAGE 3</div>
+                                    <input type="file" class="admin-input-field" id="form-p-file-2" accept="image/*" onchange="uploadSlotImage(2)" style="margin-bottom:4px;">
+                                    <div id="spinner-2" style="font-family:var(--admin-font-mono); font-size:9px; color:var(--movi-red); display:none;">UPLOADING...</div>
+                                    <img id="preview-2" style="width:100%; height:80px; object-fit:cover; display:none; border:1px solid #333; margin-top:4px;">
+                                </div>
+                                <div class="img-slot" id="slot-3">
+                                    <div style="font-size:9px; color:var(--admin-muted); margin-bottom:4px;">IMAGE 4</div>
+                                    <input type="file" class="admin-input-field" id="form-p-file-3" accept="image/*" onchange="uploadSlotImage(3)" style="margin-bottom:4px;">
+                                    <div id="spinner-3" style="font-family:var(--admin-font-mono); font-size:9px; color:var(--movi-red); display:none;">UPLOADING...</div>
+                                    <img id="preview-3" style="width:100%; height:80px; object-fit:cover; display:none; border:1px solid #333; margin-top:4px;">
+                                </div>
+                            </div>
                             <input type="hidden" id="form-p-imgurl">
-                            <div id="image-upload-spinner" style="font-family:var(--admin-font-mono); font-size:10px; color:var(--movi-red); margin-bottom:10px; display:none;">SYNCHRONIZING IMAGE FILE ARRAY TO CLOUDINARY CLOUD ENGINE...</div>
+                            <input type="hidden" id="form-p-imgurl2">
+                            <input type="hidden" id="form-p-imgurl3">
+                            <input type="hidden" id="form-p-imgurl4">
 
                             <label style="font-size:11px; color:var(--admin-muted);">Size Matrices Array (Comma-Separated Values)</label>
                             <input type="text" class="admin-input-field" id="form-p-sizes" placeholder="e.g. EU40,EU41,EU42,EU43">
@@ -383,7 +428,14 @@
             const timeSpan = document.getElementById('live-clock');
             if(timeSpan) {
                 const now = new Date();
-                timeSpan.textContent = now.toLocaleTimeString().toLowerCase() + " local dispatch time";
+                const mm = String(now.getMonth()+1).padStart(2,'0');
+                const dd = String(now.getDate()).padStart(2,'0');
+                const yyyy = now.getFullYear();
+                let hours = now.getHours();
+                const ampm = hours >= 12 ? 'pm' : 'am';
+                hours = hours % 12 || 12;
+                const mins = String(now.getMinutes()).padStart(2,'0');
+                timeSpan.textContent = `${mm}/${dd}/${yyyy} ${hours}:${mins}${ampm} local`;
             }
         }
         setInterval(updateStorefrontClocks, 1000);
@@ -538,7 +590,10 @@
             ` : `<span style="font-family:var(--font-main);">UNISIZE MATRIX</span>`;
 
             container.innerHTML = `
-                <img src="${prod.imageurl || 'https://via.placeholder.com/500'}" class="product-main-image">
+                <div class="product-image-col">
+                    <img src="${prod.imageurl || 'https://via.placeholder.com/500'}" class="product-main-image" id="main-product-img">
+                    <div class="product-thumb-row" id="thumb-row"></div>
+                </div>
                 <div class="product-info">
                     <h1 class="product-title">${prod.name}</h1>
                     <div class="product-price">৳${prod.price}</div>
@@ -559,7 +614,19 @@
                     </div>
                 </div>
             `;
+            // Build thumbnail row
+            const imgs = [prod.imageurl, prod.imageurl2, prod.imageurl3, prod.imageurl4].filter(Boolean);
+            const thumbRow = document.getElementById('thumb-row');
+            if(imgs.length > 1 && thumbRow) {
+                thumbRow.innerHTML = imgs.map((url, i) => `<img src="${url}" class="product-thumb${i===0?' active':''}" onclick="switchMainImg(this,'${url}')">`).join('');
+            }
             setView('product');
+        }
+
+        function switchMainImg(thumb, url) {
+            document.getElementById('main-product-img').src = url;
+            document.querySelectorAll('.product-thumb').forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
         }
 
         // Cart Mechanics
@@ -820,31 +887,33 @@
             }
         }
 
-        // Cloudinary Image Stream API Integration Pipeline Connector Hook
-        document.getElementById('form-p-file').addEventListener('change', async function(e) {
-            const targetFile = e.target.files[0];
-            if(!targetFile) return;
-
-            const spinner = document.getElementById('image-upload-spinner');
+        // Multi-slot Cloudinary Image Upload (max 4)
+        const imgUrlFields = ['form-p-imgurl','form-p-imgurl2','form-p-imgurl3','form-p-imgurl4'];
+        async function uploadSlotImage(slot) {
+            const fileInput = document.getElementById('form-p-file-' + slot);
+            const file = fileInput.files[0];
+            if(!file) return;
+            const spinner = document.getElementById('spinner-' + slot);
+            const preview = document.getElementById('preview-' + slot);
             spinner.style.display = 'block';
-
             const formData = new FormData();
-            formData.append('file', targetFile);
+            formData.append('file', file);
             formData.append('upload_preset', CLOUDINARY_PRESET);
-
             try {
-                const response = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
-                const parsedJsonData = await response.json();
-                if(parsedJsonData.secure_url) {
-                    document.getElementById('form-p-imgurl').value = parsedJsonData.secure_url;
-                    triggerAdminAlertNotification("ASSET STORED ON CLOUDINARY CLOUD PIPELINE");
+                const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+                const json = await res.json();
+                if(json.secure_url) {
+                    document.getElementById(imgUrlFields[slot]).value = json.secure_url;
+                    preview.src = json.secure_url;
+                    preview.style.display = 'block';
+                    triggerAdminAlertNotification(`IMAGE ${slot+1} UPLOADED TO CLOUDINARY`);
                 }
             } catch(err) {
-                alert("Cloudinary Upload sequence failed.");
+                alert('Cloudinary upload failed for image ' + (slot+1));
             } finally {
                 spinner.style.display = 'none';
             }
-        });
+        }
 
         async function commitProductToDatabase() {
             const saveBtn = document.getElementById('save-product-master-btn');
@@ -858,12 +927,16 @@
             const badge = document.getElementById('form-p-badge').value.trim();
             const description = document.getElementById('form-p-desc').value.trim();
             const imageurl = document.getElementById('form-p-imgurl').value;
+            const imageurl2 = document.getElementById('form-p-imgurl2').value;
+            const imageurl3 = document.getElementById('form-p-imgurl3').value;
+            const imageurl4 = document.getElementById('form-p-imgurl4').value;
             const sizesRawInput = document.getElementById('form-p-sizes').value.trim();
 
             const parsedSizesArray = sizesRawInput ? sizesRawInput.split(',').map(s => s.trim()) : [];
 
             const productPayload = {
                 name, category, price, stock, totalstock, badge, description, imageurl,
+                imageurl2: imageurl2 || null, imageurl3: imageurl3 || null, imageurl4: imageurl4 || null,
                 sizes: JSON.stringify(parsedSizesArray)
             };
 
@@ -894,6 +967,14 @@
                 document.getElementById('form-p-badge').value = data.badge || '';
                 document.getElementById('form-p-desc').value = data.description || '';
                 document.getElementById('form-p-imgurl').value = data.imageurl || '';
+                document.getElementById('form-p-imgurl2').value = data.imageurl2 || '';
+                document.getElementById('form-p-imgurl3').value = data.imageurl3 || '';
+                document.getElementById('form-p-imgurl4').value = data.imageurl4 || '';
+                // Restore previews for existing images
+                [data.imageurl, data.imageurl2, data.imageurl3, data.imageurl4].forEach((url, i) => {
+                    const preview = document.getElementById('preview-' + i);
+                    if(url && preview) { preview.src = url; preview.style.display = 'block'; }
+                });
                 
                 let sizeText = '';
                 try {
@@ -926,9 +1007,15 @@
             document.getElementById('form-p-totalstock').value = '';
             document.getElementById('form-p-badge').value = '';
             document.getElementById('form-p-desc').value = '';
-            document.getElementById('form-p-imgurl').value = '';
             document.getElementById('form-p-sizes').value = '';
-            document.getElementById('form-p-file').value = '';
+            const urlIds = ['form-p-imgurl','form-p-imgurl2','form-p-imgurl3','form-p-imgurl4'];
+            urlIds.forEach((id, i) => {
+                document.getElementById(id).value = '';
+                const fi = document.getElementById('form-p-file-' + i);
+                if(fi) fi.value = '';
+                const pr = document.getElementById('preview-' + i);
+                if(pr) { pr.src=''; pr.style.display='none'; }
+            });
         }
 
         // Core Platform Entry Event Handshaking Hooks
