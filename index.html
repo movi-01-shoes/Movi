@@ -476,7 +476,7 @@
                 lookbook.innerHTML = databaseCacheProducts.map(prod => `
                     <div class="strip-item-wrapper" onclick="inspectProductItem('${prod.id}')">
                         ${prod.badge ? `<div class="badge-new">${prod.badge}</div>` : ''}
-                        <img src="${prod.imageUrl || 'https://via.placeholder.com/400'}" class="strip-img">
+                        <img src="${prod.imageurl || 'https://via.placeholder.com/400'}" class="strip-img">
                     </div>
                 `).join('');
                 
@@ -506,7 +506,7 @@
 
             catGrid.innerHTML = targetData.map(prod => `
                 <div class="product-card" onclick="inspectProductItem('${prod.id}')">
-                    <img src="${prod.imageUrl || 'https://via.placeholder.com/300'}">
+                    <img src="${prod.imageurl || 'https://via.placeholder.com/300'}">
                     <div style="margin-top:8px; display:flex; justify-content:space-between;">
                         <span style="text-transform:uppercase;">${prod.name}</span>
                         <span style="color:var(--movi-red);">৳${prod.price}</span>
@@ -538,7 +538,7 @@
             ` : `<span style="font-family:var(--font-main);">UNISIZE MATRIX</span>`;
 
             container.innerHTML = `
-                <img src="${prod.imageUrl || 'https://via.placeholder.com/500'}" class="product-main-image">
+                <img src="${prod.imageurl || 'https://via.placeholder.com/500'}" class="product-main-image">
                 <div class="product-info">
                     <h1 class="product-title">${prod.name}</h1>
                     <div class="product-price">৳${prod.price}</div>
@@ -572,7 +572,7 @@
                 id: selectedProductPointer.id,
                 name: selectedProductPointer.name,
                 price: Number(selectedProductPointer.price),
-                image: selectedProductPointer.imageUrl,
+                image: selectedProductPointer.imageurl,
                 size: sizeValue
             });
 
@@ -806,7 +806,7 @@
                 const tbody = document.getElementById('admin-products-rows');
                 tbody.innerHTML = data.map(prod => `
                     <tr>
-                        <td><img src="${prod.imageUrl || 'https://via.placeholder.com/50'}" style="width:40px; height:40px; object-fit:cover;"></td>
+                        <td><img src="${prod.imageurl || 'https://via.placeholder.com/50'}" style="width:40px; height:40px; object-fit:cover;"></td>
                         <td><strong>${prod.name}</strong></td>
                         <td style="text-transform:uppercase; font-size:11px; color:#aaa;">${prod.category}</td>
                         <td>৳${prod.price}</td>
@@ -857,13 +857,13 @@
             const totalstock = Number(document.getElementById('form-p-totalstock').value) || stock;
             const badge = document.getElementById('form-p-badge').value.trim();
             const description = document.getElementById('form-p-desc').value.trim();
-            const imageUrl = document.getElementById('form-p-imgurl').value;
+            const imageurl = document.getElementById('form-p-imgurl').value;
             const sizesRawInput = document.getElementById('form-p-sizes').value.trim();
 
             const parsedSizesArray = sizesRawInput ? sizesRawInput.split(',').map(s => s.trim()) : [];
 
             const productPayload = {
-                name, category, price, stock, totalstock, badge, description, imageUrl,
+                name, category, price, stock, totalstock, badge, description, imageurl,
                 sizes: JSON.stringify(parsedSizesArray)
             };
 
@@ -893,7 +893,7 @@
                 document.getElementById('form-p-totalstock').value = data.totalstock || '';
                 document.getElementById('form-p-badge').value = data.badge || '';
                 document.getElementById('form-p-desc').value = data.description || '';
-                document.getElementById('form-p-imgurl').value = data.imageUrl || '';
+                document.getElementById('form-p-imgurl').value = data.imageurl || '';
                 
                 let sizeText = '';
                 try {
