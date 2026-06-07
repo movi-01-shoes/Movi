@@ -33,7 +33,7 @@
         --font-serif: Georgia, "Times New Roman", serif;
     }
 
-    #storefront-view { font-family: var(--font-main); background-color: var(--movi-white); color: var(--movi-black); font-size: 11px; min-height: 100vh; padding-bottom: 60px; }
+    #storefront-view { font-family: var(--font-main); background-color: var(--movi-white); color: var(--movi-black); font-size: 11px; min-height: 100vh; }
     #storefront-view .page-view { display: none; min-height: 60vh; }
     #storefront-view .page-view.active { display: block; }
 
@@ -41,12 +41,13 @@
     .brand-box { display: inline-block; background-color: var(--movi-red); padding: 5px 18px; margin-bottom: 10px; cursor: pointer; }
     .brand-name { color: var(--movi-white); font-family: var(--font-serif); font-size: 32px; font-style: italic; font-weight: bold; letter-spacing: 2px; }
     .header-time { font-size: 11px; letter-spacing: 1px; color: #333; }
-    /* Supreme-style bottom nav bar */
-    .bottom-nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; font-size: 11px; border-top: none; margin-top: 0; }
-    .bottom-nav-left a, .bottom-nav-right a { cursor: pointer; margin-right: 20px; color: #000; }
-    .bottom-nav-left a:last-child, .bottom-nav-right a:last-child { margin-right: 0; }
+    /* Supreme-style fixed bottom nav */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; font-size: 11px; background: var(--movi-white); border-top: 1px solid #e0e0e0; z-index: 999; }
+    .bottom-nav-left { display: flex; gap: 20px; }
+    .bottom-nav-left a, .bottom-nav-right a { cursor: pointer; color: #000; }
     .bottom-nav-left a:hover, .bottom-nav-right a:hover { text-decoration: underline; }
     .bottom-nav-right { display: flex; align-items: center; gap: 20px; }
+    #storefront-view { padding-bottom: 40px; }
 
     /* Cart Floating Widget */
     .cart-widget { position: absolute; left: 20px; top: 120px; width: 160px; display: none; z-index: 1000; background: var(--movi-white); }
@@ -84,23 +85,24 @@
     .product-card img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; background-color: #f5f5f5; }
     .sold-out-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255, 255, 255, 0.95); color: var(--movi-black); padding: 6px 8px; font-size: 10px; font-weight: bold; pointer-events: none; text-transform: uppercase; border: 1px solid var(--movi-black); }
 
-    /* Individual View Profile */
-    #page-product { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
-    .product-detail-layout { display: flex; justify-content: center; align-items: flex-start; gap: 40px; }
-    .product-main-image { width: 100%; height: auto; object-fit: contain; background-color: #f5f5f5; border: 1px solid #eee; display: block; }
-    .product-image-col { width: 480px; flex-shrink: 0; }
-    .product-thumb-row { display: flex; gap: 6px; margin-top: 8px; }
-    .product-thumb { width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee; cursor: pointer; opacity: 0.6; }
+    /* Individual View Profile — Supreme style */
+    .product-detail-layout { display: flex; justify-content: center; align-items: flex-start; gap: 40px; padding: 20px; max-width: 1100px; margin: 0 auto; }
+    .product-main-image { width: 100%; height: auto; object-fit: contain; display: block; }
+    .product-image-col { width: 440px; flex-shrink: 0; }
+    .product-info { width: 320px; flex-shrink: 0; }
+    /* Thumbnail grid — 3 columns like Supreme */
+    .product-thumb-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 8px; }
+    .product-thumb { width: 100%; aspect-ratio: 1/1; object-fit: cover; border: 1px solid #eee; cursor: pointer; opacity: 0.7; }
     .product-thumb.active, .product-thumb:hover { opacity: 1; border-color: #000; }
-    .product-info { width: 360px; }
-    .product-title { font-size: 14px; margin-bottom: 10px; font-weight: bold; text-transform: uppercase; }
-    .product-desc { line-height: 1.5; margin-bottom: 20px; color: #444; }
-    .product-price { font-size: 13px; margin-bottom: 15px; font-weight: bold; color: var(--movi-red); }
-    .action-row-upper { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
-    .size-select { width: 140px; padding: 4px 8px; border: 1px solid var(--movi-black); background: var(--movi-white); outline: none; font-size: 11px; }
+    .product-title { font-size: 14px; margin-bottom: 4px; font-weight: normal; }
+    .product-color { font-size: 11px; color: #666; margin-bottom: 14px; }
+    .product-desc { line-height: 1.5; margin-bottom: 20px; color: #333; font-size: 11px; font-weight: bold; }
+    .product-price { font-size: 13px; margin-bottom: 15px; font-weight: normal; }
+    .action-row-upper { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .size-select { flex: 1; padding: 6px 8px; border: 1px solid var(--movi-black); background: var(--movi-white); outline: none; font-size: 11px; }
     .action-row-buttons { display: flex; gap: 10px; }
-    .btn-action-red { background-color: var(--movi-red); color: var(--movi-white); border: none; padding: 7px 20px; text-align: center; font-size: 11px; cursor: pointer; }
-    .btn-action-black { background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 7px 20px; text-align: center; font-size: 11px; cursor: pointer; }
+    .btn-action-red { background-color: var(--movi-red); color: var(--movi-white); border: none; padding: 8px 20px; font-size: 11px; cursor: pointer; }
+    .btn-action-black { background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 8px 20px; font-size: 11px; cursor: pointer; }
 
     /* Checkout Elements */
     #page-cart { max-width: 800px; margin: 0 auto; padding: 0 20px; }
@@ -137,6 +139,12 @@
     .admin-table td { padding: 12px; border-bottom: 1px solid var(--admin-border); font-size: 12px; }
     .admin-input-field { width: 100%; background: var(--admin-surface2); border: 1px solid var(--admin-border); color: #fff; padding: 8px; outline: none; margin-bottom: 12px; }
     #admin-toast { position: fixed; bottom: 20px; right: 20px; background: #00d68f; color: #000; padding: 10px 20px; font-family: var(--admin-font-mono); font-size: 10px; display: none; z-index: 10000; }
+    /* Admin light mode overrides */
+    #admin-view.light-mode { --admin-bg:#f5f5f5; --admin-surface:#fff; --admin-surface2:#eee; --admin-border:#ddd; --admin-white:#111; --admin-muted:#888; }
+    #admin-view.light-mode { background: #f5f5f5; color: #111; }
+    #admin-view.light-mode .admin-input-field { color: #111; }
+    #admin-view.light-mode #admin-sidebar { background: #fff; }
+    .dark-toggle { margin:auto 20px 20px; padding:8px; background:var(--admin-surface2); border:1px solid var(--admin-border); color:var(--admin-white); font-family:var(--admin-font-mono); font-size:9px; letter-spacing:2px; cursor:pointer; width:calc(100% - 40px); text-align:center; }
 </style>
 </head>
 <body>
@@ -151,30 +159,19 @@
             </div>
             <div class="header-time" id="live-clock">00/00/0000 00:00am local</div>
         </header>
-        <div class="bottom-nav">
-            <div class="bottom-nav-left">
-                <a onclick="setView('shop')">shop</a>
-                <a onclick="setView('shop')">look all</a>
-            </div>
-            <div class="bottom-nav-right">
-                <a onclick="setView('home')">Spring/Summer 2026 Preview</a>
-                <a onclick="setView('home')">digitalbook</a>
-                <a onclick="setView('home')">news</a>
-            </div>
-        </div>
-
         <div id="cart-widget" class="cart-widget" style="top:160px;">
-            <div class="cart-header"><span id="widget-qty-count">0</span> item(s) in bag</div>
+            <div class="cart-header"><span id="widget-qty-count">0</span> item in cart</div>
             <div class="cart-body">
-                <div>Subtotal</div>
+                <div>Subtotal<br><span style="font-size:9px;">(including tax)</span></div>
                 <div><strong id="widget-total-price">৳0</strong></div>
             </div>
-            <button class="btn-block-black" onclick="setView('cart')">view full cart summary</button>
-            <button class="btn-block-red" onclick="setView('checkout')">checkout sequence</button>
+            <button class="btn-block-black" onclick="setView('cart')">your shopping cart con...</button>
+            <button class="btn-block-red" onclick="setView('checkout')">proceed to checkout</button>
         </div>
 
         <div id="view-home" class="page-view active">
-            <div class="live-scarcity-widget">
+            <div class="home-strip" id="lookbook-strip"></div>
+            <div class="live-scarcity-widget" style="margin-top:30px;">
                 <div class="scarcity-top-row">
                     <div><span class="scarcity-pulse"></span>LIVE STAGE DROP</div>
                     <div>CLOSING SYSTEM TIME: <span id="countdown-clock">00:00:00</span></div>
@@ -187,7 +184,26 @@
                     <div style="color: var(--movi-red); font-weight: bold;">CRITICAL RUNTIME LIMIT: <span id="scarcity-left">0</span> LEFT</div>
                 </div>
             </div>
-            <div class="home-strip" id="lookbook-strip">
+            <!-- Supreme-style footer -->
+            <div style="display:flex; justify-content:space-between; padding:40px 20px 20px; font-size:11px; font-family:var(--font-main); border-top:1px solid #eee; margin-top:40px;">
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                    <a style="cursor:pointer;" onclick="setView('home')">random</a>
+                    <a style="cursor:pointer;" onclick="setView('home')">about</a>
+                    <a style="cursor:pointer;" onclick="setView('shop')">store</a>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                    <a style="cursor:pointer;">Frequently Asked Questions</a>
+                    <a style="cursor:pointer;">Size/Product Dimensions</a>
+                    <a style="cursor:pointer;">contact</a>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                    <a style="cursor:pointer;">terms of service</a>
+                    <a style="cursor:pointer;">Display under the Specified<br>Commercial Transactions Law</a>
+                    <a style="cursor:pointer;">privacy policy</a>
+                </div>
+                <div>
+                    <a style="cursor:pointer;">Mailing list</a>
+                </div>
             </div>
         </div>
 
@@ -263,10 +279,19 @@
                 <button class="btn-action-black" onclick="setView('home')">return to central hub</button>
             </div>
         </div>
+        <!-- Supreme-style fixed bottom nav -->
+        <div class="bottom-nav">
+            <div class="bottom-nav-left">
+                <a onclick="setView('shop')"><strong>shop</strong></a>
+                <a onclick="setView('shop')">look all</a>
+            </div>
+            <div class="bottom-nav-right">
+                <a onclick="setView('home')">Spring/Summer 2026 Preview</a>
+                <a onclick="setView('home')">digitalbook</a>
+                <a onclick="setView('home')">news</a>
+            </div>
+        </div>
     </div>
-
-    <!-- =========================================================
-         ADMIN SECURITY NODE MARKUP
          ========================================================= -->
     <div id="admin-view">
         <div id="admin-login-screen">
@@ -292,6 +317,7 @@
                 <div style="margin-top:auto; padding:20px;">
                     <button class="login-btn" style="font-size:12px; padding:8px; letter-spacing:2px;" onclick="bypassToStorefront()">PUBLIC LINK</button>
                 </div>
+                <button class="dark-toggle" id="dark-toggle-btn" onclick="toggleAdminDarkMode()">🌙 DARK MODE</button>
             </div>
 
             <div id="admin-main">
@@ -531,13 +557,6 @@
                         <img src="${prod.imageurl || 'https://via.placeholder.com/400'}" class="strip-img">
                     </div>
                 `).join('');
-                
-                // Add fixed link to view all at the end of the strip
-                lookbook.innerHTML += `
-                    <div class="strip-item-wrapper" style="background:#000; vertical-align:top;" onclick="setView('shop')">
-                        <div style="color:#fff; font-family:'Bebas Neue'; font-size:24px; text-align:center; margin-top:20vh; letter-spacing:2px;">VIEW ALL<br>MATRIX →</div>
-                    </div>
-                `;
             }
             renderShopGrid('all');
         }
@@ -589,37 +608,32 @@
                 </select>
             ` : `<span style="font-family:var(--font-main);">UNISIZE MATRIX</span>`;
 
+            const imgs = [prod.imageurl, prod.imageurl2, prod.imageurl3, prod.imageurl4].filter(Boolean);
+            const thumbsHtml = imgs.length > 1 ? `<div class="product-thumb-grid">${imgs.map((url,i)=>`<img src="${url}" class="product-thumb${i===0?' active':''}" onclick="switchMainImg(this,'${url}')">`).join('')}</div>` : '';
+
             container.innerHTML = `
                 <div class="product-image-col">
                     <img src="${prod.imageurl || 'https://via.placeholder.com/500'}" class="product-main-image" id="main-product-img">
-                    <div class="product-thumb-row" id="thumb-row"></div>
+                    ${thumbsHtml}
                 </div>
                 <div class="product-info">
-                    <h1 class="product-title">${prod.name}</h1>
+                    <div class="product-title">${prod.name}</div>
+                    <div class="product-color">${prod.badge || ''}</div>
+                    <div class="product-desc">${prod.description || ''}</div>
                     <div class="product-price">৳${prod.price}</div>
-                    <p class="product-desc">${prod.description || 'No digital spec sheet attached.'}</p>
-                    
                     <div class="action-row-upper">
-                        <span style="text-transform:lowercase;">select size:</span>
                         ${sizeDropdown}
                     </div>
-
                     <div class="action-row-buttons">
                         ${prod.stock > 0 ? `
-                            <button class="btn-action-red" onclick="commitItemToCart()">ADD TO BAG</button>
-                            <button class="btn-action-black" onclick="triggerDirectCheckout()">BUY NOW</button>
+                            <button class="btn-action-red" onclick="commitItemToCart()">add to cart</button>
+                            <button class="btn-action-black" onclick="setView('shop')">continue shopping</button>
                         ` : `
-                            <button class="btn-action-black" style="background:#555; cursor:not-allowed;" disabled>CAPSULE DEPLETED</button>
+                            <button class="btn-action-black" style="background:#999;cursor:not-allowed;" disabled>sold out</button>
                         `}
                     </div>
                 </div>
             `;
-            // Build thumbnail row
-            const imgs = [prod.imageurl, prod.imageurl2, prod.imageurl3, prod.imageurl4].filter(Boolean);
-            const thumbRow = document.getElementById('thumb-row');
-            if(imgs.length > 1 && thumbRow) {
-                thumbRow.innerHTML = imgs.map((url, i) => `<img src="${url}" class="product-thumb${i===0?' active':''}" onclick="switchMainImg(this,'${url}')">`).join('');
-            }
             setView('product');
         }
 
@@ -796,6 +810,13 @@
             }
         }
 
+        function toggleAdminDarkMode() {
+            const adminView = document.getElementById('admin-view');
+            const btn = document.getElementById('dark-toggle-btn');
+            adminView.classList.toggle('light-mode');
+            btn.textContent = adminView.classList.contains('light-mode') ? '🌙 DARK MODE' : '☀️ LIGHT MODE';
+        }
+
         function bypassToStorefront() {
             window.location.hash = ''; // This will securely kick user out of admin and trigger hashchange
         }
@@ -941,15 +962,14 @@
             };
 
             if(activeEditingProductId) {
-                // Update transaction block execution query route
                 const { error } = await supabaseClient.from('products').update(productPayload).eq('id', activeEditingProductId);
-                if(!error) triggerAdminAlertNotification("ARTIFACT MATRIX DATABASE UPDATED");
+                if(error) { alert('Save failed: ' + error.message); saveBtn.disabled = false; return; }
+                triggerAdminAlertNotification("PRODUCT UPDATED");
             } else {
-                // Insert completely new schema configuration mapping model data row block
                 const { error } = await supabaseClient.from('products').insert([productPayload]);
-                if(!error) triggerAdminAlertNotification("NEW ARTIFACT SCHEMA WRITTEN SUCCESSFUL");
+                if(error) { alert('Save failed: ' + error.message); saveBtn.disabled = false; return; }
+                triggerAdminAlertNotification("PRODUCT SAVED");
             }
-
             saveBtn.disabled = false;
             resetProductConfiguratorForm();
             switchAdminTab('products');
