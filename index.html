@@ -349,7 +349,7 @@
 
     <script>
         // ==========================================
-        // CONFIGURATION PARAMETERS (REPLACE WITH REAL KEYS)
+        // CONFIGURATION PARAMETERS
         // ==========================================
         const SUPABASE_URL = 'https://mbrkeowkfexhyeycegny.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icmtlb3drZmV4aHlleWNlZ255Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4MDgxOTIsImV4cCI6MjA5NjM4NDE5Mn0.qaya2DoqVpdHD4gzaIRGzmFCJVjYOU47z1yQ1Z1OzfI';
@@ -428,6 +428,8 @@
                 document.getElementById('storefront-view').style.display = 'none';
                 document.getElementById('admin-view').style.display = 'block';
             } else {
+                document.getElementById('admin-view').style.display = 'none';
+                document.getElementById('storefront-view').style.display = 'block';
                 await syncStorefrontProducts();
             }
         }
@@ -702,10 +704,7 @@
         }
 
         function bypassToStorefront() {
-            window.location.hash = '';
-            document.getElementById('admin-view').style.display = 'none';
-            document.getElementById('storefront-view').style.display = 'block';
-            syncStorefrontProducts();
+            window.location.hash = ''; // This will trigger the hashchange event seamlessly
         }
 
         function switchAdminTab(targetTabId) {
@@ -908,6 +907,7 @@
 
         // Core Platform Entry Event Handshaking Hooks
         window.addEventListener('DOMContentLoaded', bootSystemContext);
+        window.addEventListener('hashchange', bootSystemContext);
     </script>
 </body>
 </html>
