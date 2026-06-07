@@ -33,7 +33,7 @@
         --font-serif: Georgia, "Times New Roman", serif;
     }
 
-    #storefront-view { font-family: var(--font-main); background-color: var(--movi-white); color: var(--movi-black); font-size: 11px; min-height: 100vh; }
+    #storefront-view { font-family: var(--font-main); background-color: var(--movi-white); color: var(--movi-black); font-size: 11px; min-height: 100vh; padding-bottom: 40px; position: relative; }
     #storefront-view .page-view { display: none; min-height: 60vh; }
     #storefront-view .page-view.active { display: block; }
 
@@ -42,12 +42,11 @@
     .brand-name { color: var(--movi-white); font-family: var(--font-serif); font-size: 32px; font-style: italic; font-weight: bold; letter-spacing: 2px; }
     .header-time { font-size: 11px; letter-spacing: 1px; color: #333; }
     /* Supreme-style fixed bottom nav */
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; font-size: 11px; background: var(--movi-white); border-top: 1px solid #e0e0e0; z-index: 999; }
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; font-size: 11px; background: #fff; border-top: 1px solid #e0e0e0; z-index: 9998; }
     .bottom-nav-left { display: flex; gap: 20px; }
-    .bottom-nav-left a, .bottom-nav-right a { cursor: pointer; color: #000; }
-    .bottom-nav-left a:hover, .bottom-nav-right a:hover { text-decoration: underline; }
-    .bottom-nav-right { display: flex; align-items: center; gap: 20px; }
-    #storefront-view { padding-bottom: 40px; }
+    .bottom-nav-right { display: flex; gap: 20px; }
+    .bottom-nav a { cursor: pointer; color: #000; }
+    .bottom-nav a:hover { text-decoration: underline; }
 
     /* Cart Floating Widget */
     .cart-widget { position: absolute; left: 20px; top: 120px; width: 160px; display: none; z-index: 1000; background: var(--movi-white); }
@@ -86,23 +85,24 @@
     .sold-out-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255, 255, 255, 0.95); color: var(--movi-black); padding: 6px 8px; font-size: 10px; font-weight: bold; pointer-events: none; text-transform: uppercase; border: 1px solid var(--movi-black); }
 
     /* Individual View Profile — Supreme style */
-    .product-detail-layout { display: flex; justify-content: center; align-items: flex-start; gap: 40px; padding: 20px; max-width: 1100px; margin: 0 auto; }
+    .product-detail-layout { display: flex; align-items: flex-start; gap: 0; max-width: 1100px; margin: 0 auto; padding: 20px 40px; }
+    .product-image-col { flex: 0 0 55%; padding-right: 40px; }
     .product-main-image { width: 100%; height: auto; object-fit: contain; display: block; }
-    .product-image-col { width: 440px; flex-shrink: 0; }
-    .product-info { width: 320px; flex-shrink: 0; }
-    /* Thumbnail grid — 3 columns like Supreme */
-    .product-thumb-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 8px; }
-    .product-thumb { width: 100%; aspect-ratio: 1/1; object-fit: cover; border: 1px solid #eee; cursor: pointer; opacity: 0.7; }
-    .product-thumb.active, .product-thumb:hover { opacity: 1; border-color: #000; }
-    .product-title { font-size: 14px; margin-bottom: 4px; font-weight: normal; }
-    .product-color { font-size: 11px; color: #666; margin-bottom: 14px; }
-    .product-desc { line-height: 1.5; margin-bottom: 20px; color: #333; font-size: 11px; font-weight: bold; }
-    .product-price { font-size: 13px; margin-bottom: 15px; font-weight: normal; }
-    .action-row-upper { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-    .size-select { flex: 1; padding: 6px 8px; border: 1px solid var(--movi-black); background: var(--movi-white); outline: none; font-size: 11px; }
-    .action-row-buttons { display: flex; gap: 10px; }
-    .btn-action-red { background-color: var(--movi-red); color: var(--movi-white); border: none; padding: 8px 20px; font-size: 11px; cursor: pointer; }
-    .btn-action-black { background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 8px 20px; font-size: 11px; cursor: pointer; }
+    .product-info { flex: 1; padding-top: 0; }
+    .product-thumb-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; margin: 14px 0 20px; }
+    .product-thumb { width: 100%; aspect-ratio: 1/1; object-fit: cover; border: 2px solid transparent; cursor: pointer; }
+    .product-thumb.active { border-color: #000; }
+    .product-thumb:hover { border-color: #999; }
+    .product-title { font-size: 18px; font-weight: normal; margin-bottom: 2px; font-family: var(--font-serif); }
+    .product-color { font-size: 12px; font-weight: bold; margin-bottom: 16px; }
+    .product-desc { font-size: 11px; line-height: 1.6; margin-bottom: 20px; color: #333; font-family: var(--font-main); }
+    .product-price { font-size: 16px; font-weight: normal; margin-bottom: 16px; }
+    .size-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .size-select { padding: 6px 10px; border: 1px solid #aaa; background: var(--movi-white); outline: none; font-size: 11px; min-width: 140px; }
+    .next-link { font-size: 11px; color: #555; cursor: pointer; white-space: nowrap; }
+    .next-link:hover { text-decoration: underline; }
+    .btn-action-red { display: block; width: 100%; background-color: var(--movi-red); color: var(--movi-white); border: none; padding: 10px; font-size: 12px; cursor: pointer; margin-bottom: 8px; text-align: center; }
+    .btn-action-black { display: block; width: 100%; background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 10px; font-size: 12px; cursor: pointer; text-align: center; }
 
     /* Checkout Elements */
     #page-cart { max-width: 800px; margin: 0 auto; padding: 0 20px; }
@@ -292,7 +292,8 @@
             </div>
         </div>
     </div>
-         ========================================================= -->
+
+    <!-- ADMIN SECURITY NODE MARKUP -->
     <div id="admin-view">
         <div id="admin-login-screen">
             <div class="login-box">
@@ -608,30 +609,31 @@
                 </select>
             ` : `<span style="font-family:var(--font-main);">UNISIZE MATRIX</span>`;
 
-            const imgs = [prod.imageurl, prod.imageurl2, prod.imageurl3, prod.imageurl4].filter(Boolean);
+            let imgs = [];
+            try { imgs = JSON.parse(prod.images || '[]'); } catch(e) { imgs = prod.imageurl ? [prod.imageurl] : []; }
+            if(!imgs.length && prod.imageurl) imgs = [prod.imageurl];
             const thumbsHtml = imgs.length > 1 ? `<div class="product-thumb-grid">${imgs.map((url,i)=>`<img src="${url}" class="product-thumb${i===0?' active':''}" onclick="switchMainImg(this,'${url}')">`).join('')}</div>` : '';
 
             container.innerHTML = `
                 <div class="product-image-col">
-                    <img src="${prod.imageurl || 'https://via.placeholder.com/500'}" class="product-main-image" id="main-product-img">
-                    ${thumbsHtml}
+                    <img src="${imgs[0] || 'https://via.placeholder.com/500'}" class="product-main-image" id="main-product-img">
                 </div>
                 <div class="product-info">
                     <div class="product-title">${prod.name}</div>
                     <div class="product-color">${prod.badge || ''}</div>
                     <div class="product-desc">${prod.description || ''}</div>
+                    ${thumbsHtml}
                     <div class="product-price">৳${prod.price}</div>
-                    <div class="action-row-upper">
+                    <div class="size-row">
                         ${sizeDropdown}
+                        <span class="next-link" onclick="setView('shop')">next &rsaquo;</span>
                     </div>
-                    <div class="action-row-buttons">
-                        ${prod.stock > 0 ? `
-                            <button class="btn-action-red" onclick="commitItemToCart()">add to cart</button>
-                            <button class="btn-action-black" onclick="setView('shop')">continue shopping</button>
-                        ` : `
-                            <button class="btn-action-black" style="background:#999;cursor:not-allowed;" disabled>sold out</button>
-                        `}
-                    </div>
+                    ${prod.stock > 0 ? `
+                        <button class="btn-action-red" onclick="commitItemToCart()">add to cart</button>
+                        <button class="btn-action-black" onclick="setView('shop')">continue shopping</button>
+                    ` : `
+                        <button class="btn-action-black" style="background:#999;cursor:not-allowed;" disabled>sold out</button>
+                    `}
                 </div>
             `;
             setView('product');
@@ -951,13 +953,14 @@
             const imageurl2 = document.getElementById('form-p-imgurl2').value;
             const imageurl3 = document.getElementById('form-p-imgurl3').value;
             const imageurl4 = document.getElementById('form-p-imgurl4').value;
+            const allImages = [imageurl, imageurl2, imageurl3, imageurl4].filter(Boolean);
             const sizesRawInput = document.getElementById('form-p-sizes').value.trim();
-
             const parsedSizesArray = sizesRawInput ? sizesRawInput.split(',').map(s => s.trim()) : [];
 
             const productPayload = {
-                name, category, price, stock, totalstock, badge, description, imageurl,
-                imageurl2: imageurl2 || null, imageurl3: imageurl3 || null, imageurl4: imageurl4 || null,
+                name, category, price, stock, totalstock, badge, description,
+                imageurl: allImages[0] || '',
+                images: JSON.stringify(allImages),
                 sizes: JSON.stringify(parsedSizesArray)
             };
 
@@ -987,11 +990,15 @@
                 document.getElementById('form-p-badge').value = data.badge || '';
                 document.getElementById('form-p-desc').value = data.description || '';
                 document.getElementById('form-p-imgurl').value = data.imageurl || '';
-                document.getElementById('form-p-imgurl2').value = data.imageurl2 || '';
-                document.getElementById('form-p-imgurl3').value = data.imageurl3 || '';
-                document.getElementById('form-p-imgurl4').value = data.imageurl4 || '';
-                // Restore previews for existing images
-                [data.imageurl, data.imageurl2, data.imageurl3, data.imageurl4].forEach((url, i) => {
+                document.getElementById('form-p-imgurl2').value = '';
+                document.getElementById('form-p-imgurl3').value = '';
+                document.getElementById('form-p-imgurl4').value = '';
+                // Restore images from JSON array
+                let imgArr = [];
+                try { imgArr = JSON.parse(data.images || '[]'); } catch(e) { if(data.imageurl) imgArr = [data.imageurl]; }
+                imgArr.forEach((url, i) => {
+                    const hiddenIds = ['form-p-imgurl','form-p-imgurl2','form-p-imgurl3','form-p-imgurl4'];
+                    if(hiddenIds[i]) document.getElementById(hiddenIds[i]).value = url;
                     const preview = document.getElementById('preview-' + i);
                     if(url && preview) { preview.src = url; preview.style.display = 'block'; }
                 });
