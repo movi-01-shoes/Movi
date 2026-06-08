@@ -9,6 +9,42 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<!-- 
+    ======================================================================
+    SUPABASE SCHEMA AUDIT & RELATIONAL MIGRATION SCRIPT 
+    ======================================================================
+    The current MVP uses a robust JSONB structure in the 'color_variants' 
+    column of the 'products' table for zero-config deployment. 
+    
+    If strict relational normalization is required, execute this in Supabase:
+    
+    CREATE TABLE product_variants (
+        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+        product_id UUID REFERENCES products(id) ON DELETE CASCADE,
+        color_name TEXT NOT NULL,
+        color_hex TEXT NOT NULL,
+        sku TEXT UNIQUE NOT NULL,
+        stock INT DEFAULT 0,
+        sizes TEXT[] DEFAULT '{}',
+        images TEXT[] DEFAULT '{}'
+    );
+    CREATE INDEX idx_variant_product ON product_variants(product_id);
+
+    CREATE TABLE order_items (
+        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+        order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
+        product_id UUID REFERENCES products(id),
+        variant_id UUID REFERENCES product_variants(id),
+        color TEXT,
+        size TEXT,
+        sku TEXT,
+        quantity INT DEFAULT 1,
+        unit_price DECIMAL,
+        total_price DECIMAL
+    );
+    ======================================================================
+-->
+
 <style>
     /* =========================================================
        GLOBAL RESET & ARCHITECTURE
@@ -92,11 +128,18 @@
     .product-image-col { flex: 0 0 55%; text-align: center; }
     .product-main-image { width: 100%; max-width: 500px; height: auto; object-fit: contain; display: inline-block; }
     .product-info { flex: 1; padding-top: 0; font-family: var(--font-main); }
-    .product-title { font-size: 13px; font-weight: normal; margin-bottom: 2px; }
-    .product-color { font-size: 11px; font-weight: bold; margin-bottom: 16px; }
+    .product-title { font-size: 14px; font-weight: normal; margin-bottom: 8px; text-transform: uppercase; }
     .product-desc { font-size: 10px; line-height: 1.4; margin-bottom: 20px; color: #000; text-align: justify; max-width: 90%; }
-    .product-thumb-grid { display: grid; gap: 4px; margin-bottom: 20px; } /* Columns dynamically set in JS */
-    .product-thumb { width: 100%; aspect-ratio: 1/1; object-fit: cover; border: 1px solid transparent; cursor: pointer; }
+    
+    /* Variant Color Swatches */
+    .swatches-container { display: flex; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }
+    .color-swatch { width: 22px; height: 22px; border-radius: 50%; border: 1px solid #ddd; cursor: pointer; box-shadow: inset 0 0 2px rgba(0,0,0,0.1); }
+    .color-swatch.active { border: 2px solid var(--movi-black); outline: 1px solid #fff; outline-offset: -2px; }
+    .product-color-label { font-size: 11px; font-weight: bold; margin-bottom: 16px; color: #444; }
+
+    /* Variant Gallery */
+    .product-thumb-grid { display: grid; gap: 4px; margin-bottom: 20px; grid-template-columns: repeat(3, 1fr); max-width: 150px; } 
+    .product-thumb { width: 100%; aspect-ratio: 1/1; object-fit: cover; border: 1px solid transparent; cursor: pointer; background: #f5f5f5; }
     .product-thumb.active { border: 1px solid #000; }
     .product-thumb:hover { border-color: #666; }
     .product-price { font-size: 13px; font-weight: normal; margin-bottom: 16px; }
@@ -105,6 +148,7 @@
     .action-controls { display: flex; flex-direction: column; max-width: 320px; }
     .action-row { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; width: 100%; }
     .size-select { flex: 1; padding: 6px; border: 1px solid #aaa; background: var(--movi-white); outline: none; font-size: 11px; text-align: center; cursor: pointer; }
+    .size-select:disabled { background: #eee; cursor: not-allowed; }
     .next-link { font-size: 11px; color: #000; cursor: pointer; white-space: nowrap; }
     .next-link:hover { text-decoration: underline; }
     .btn-action-red { flex: 1; background-color: var(--movi-red); color: var(--movi-white); border: none; padding: 8px; font-size: 11px; cursor: pointer; text-align: center; font-weight: bold; }
@@ -417,29 +461,15 @@
                                 </div>
                             </div>
 
-                            <div style="display:flex; gap:15px;">
-                                <div style="flex:1;">
-                                    <label style="font-size:11px; color:var(--admin-muted);">Current Active Stock</label>
-                                    <input type="number" class="admin-input-field" id="form-p-stock">
-                                </div>
-                                <div style="flex:1;">
-                                    <label style="font-size:11px; color:var(--admin-muted);">Global Drop Limit Allocation</label>
-                                    <input type="number" class="admin-input-field" id="form-p-totalstock">
-                                </div>
-                            </div>
-
                             <label style="font-size:11px; color:var(--admin-muted);">Promotional Notification Badge</label>
                             <input type="text" class="admin-input-field" id="form-p-badge" placeholder="e.g. NEW, 20% OFF">
 
                             <label style="font-size:11px; color:var(--admin-muted);">Extended Blueprint Description</label>
                             <textarea class="admin-input-field" id="form-p-desc" rows="4" style="resize:vertical; font-family:inherit;"></textarea>
                             
-                            <label style="font-size:11px; color:var(--admin-muted);">Size Matrices Array (Comma-Separated Values)</label>
-                            <input type="text" class="admin-input-field" id="form-p-sizes" placeholder="e.g. EU40,EU41,EU42,EU43">
-
-                            <!-- New Color Variant System -->
+                            <!-- Detailed Variant System -->
                             <div style="margin-top:20px; border-top:1px solid var(--admin-border); padding-top:20px;">
-                                <h4 style="font-family:var(--admin-font-mono); font-size:11px; color:var(--admin-white); margin-bottom:15px; text-transform:uppercase;">Color Variants & Media</h4>
+                                <h4 style="font-family:var(--admin-font-mono); font-size:11px; color:var(--admin-white); margin-bottom:15px; text-transform:uppercase;">Color Variants & Inventory Control</h4>
                                 
                                 <div id="variant-builder-container"></div>
                                 
@@ -499,7 +529,7 @@
         
         // Variant & Payment Management
         let adminCurrentVariants = []; 
-        window.currentViewedVariants = [];
+        let storeCurrentVariants = []; // currently viewed product variants
         let paymentSettings = { bkash: '', city: '', dbbl: '' };
 
         // System Initialization
@@ -580,7 +610,6 @@
                 storefront.style.display = 'none';
                 admin.style.display = 'block';
                 
-                // Persistent Admin Auth Check
                 if(localStorage.getItem('movi_admin_session') === 'active') {
                     adminLogin.style.display = 'none';
                     adminLayout.style.display = 'flex';
@@ -611,7 +640,7 @@
                 lookbook.innerHTML = databaseCacheProducts.map(prod => `
                     <div class="strip-item-wrapper" onclick="inspectProductItem('${prod.id}')">
                         ${prod.badge ? `<div class="badge-new">${prod.badge}</div>` : ''}
-                        <img src="${prod.imageurl || 'https://via.placeholder.com/400'}" class="strip-img">
+                        <img src="${prod.imageurl || 'https://via.placeholder.com/400'}" class="strip-img" loading="lazy">
                     </div>
                 `).join('');
             }
@@ -634,7 +663,7 @@
 
             catGrid.innerHTML = targetData.map(prod => `
                 <div class="product-card" onclick="inspectProductItem('${prod.id}')">
-                    <img src="${prod.imageurl || 'https://via.placeholder.com/300'}">
+                    <img src="${prod.imageurl || 'https://via.placeholder.com/300'}" loading="lazy">
                     <div style="margin-top:8px; display:flex; justify-content:space-between;">
                         <span style="text-transform:uppercase;">${prod.name}</span>
                         <span style="color:var(--movi-red);">৳${prod.price}</span>
@@ -655,113 +684,150 @@
             const container = document.getElementById('product-detail-container');
             if(!container) return;
 
-            // Handle Sizes
-            let parsedSizes = [];
-            try { parsedSizes = Array.isArray(prod.sizes) ? prod.sizes : JSON.parse(prod.sizes || "[]"); } 
-            catch(e) { if(typeof prod.sizes === 'string') parsedSizes = prod.sizes.split(','); }
-
-            const sizeDropdown = parsedSizes.length > 0 ? `
-                <select id="selected-size-node" class="size-select">
-                    <option value="">-- size --</option>
-                    ${parsedSizes.map(s => `<option value="${s}">${s}</option>`).join('')}
-                </select>
-            ` : '';
-
-            // Handle Variants Mapping (Data formatting layer)
+            // Extract & Normalize Variants
             let variants = [];
             try { variants = JSON.parse(prod.color_variants || '[]'); } catch(e) {}
             
-            // Polyfill for old db schema
+            // Legacy schema polyfill
             if (variants.length === 0) {
                 let oldImgs = [];
                 try { oldImgs = JSON.parse(prod.images || '[]'); } catch(e) { oldImgs = prod.imageurl ? [prod.imageurl] : []; }
                 if(!oldImgs.length && prod.imageurl) oldImgs = [prod.imageurl];
-                variants = [{ colorName: 'Default', images: oldImgs }];
-            }
-            
-            // Supreme-Style Exact Thumbnail Matrix
-            let initialColor = variants[0]?.colorName || 'Default';
-            let initialMainImg = variants[0]?.images.find(Boolean) || prod.imageurl || 'https://via.placeholder.com/500';
-            
-            let allThumbsHtml = '';
-            let maxImgs = 0;
-            
-            // Determine deepest view count for interleaved looping
-            variants.forEach(v => {
-                const validCount = v.images.filter(Boolean).length;
-                if (validCount > maxImgs) maxImgs = validCount;
-            });
+                
+                let legacySizes = [];
+                try { legacySizes = Array.isArray(prod.sizes) ? prod.sizes : JSON.parse(prod.sizes || "[]"); } 
+                catch(e) { if(typeof prod.sizes === 'string') legacySizes = prod.sizes.split(','); }
 
-            // Interleaved loop to match Supreme matrix logic (Row = Angle, Column = Color)
-            for (let angleIdx = 0; angleIdx < maxImgs; angleIdx++) {
-                variants.forEach(variant => {
-                    const validImgs = variant.images.filter(Boolean);
-                    const url = validImgs[angleIdx];
-                    if (url) {
-                        const isActive = (url === initialMainImg) ? ' active' : '';
-                        allThumbsHtml += `<img src="${url}" class="product-thumb${isActive}" onclick="selectVariantImage(this, '${url}', '${variant.colorName}')">`;
-                    } else {
-                        // Empty spacer block to maintain correct visual grid flow per column
-                        allThumbsHtml += `<div style="width:100%; aspect-ratio:1/1;"></div>`;
-                    }
-                });
+                variants = [{
+                    id: 'legacy-v1',
+                    colorName: 'Default',
+                    colorHex: '#000000',
+                    sku: 'LEGACY-01',
+                    stock: prod.stock || 0,
+                    sizes: legacySizes,
+                    images: oldImgs
+                }];
             }
-
-            // Dynamics column generation based on colors present
-            const thumbGridCols = variants.length > 0 ? variants.length : 1;
-            const thumbMaxWidth = thumbGridCols * 50; 
+            storeCurrentVariants = variants;
+            
+            // Initial Active Variant Setup
+            const activeVariant = variants[0];
+            const initialMainImg = activeVariant.images.find(Boolean) || 'https://via.placeholder.com/500';
 
             container.innerHTML = `
                 <div class="product-image-col">
-                    <img src="${initialMainImg}" class="product-main-image" id="main-product-img">
+                    <img src="${initialMainImg}" class="product-main-image" id="main-product-img" loading="lazy">
                 </div>
                 <div class="product-info">
                     <div class="product-title">${prod.name}</div>
-                    <div class="product-color" id="display-color-name">${initialColor}</div>
+                    
+                    ${variants.length > 1 ? `
+                        <div class="swatches-container" id="product-swatches-wrapper">
+                            ${variants.map(v => `
+                                <div class="color-swatch ${v.id === activeVariant.id ? 'active' : ''}" 
+                                     style="background-color: ${v.colorHex || '#ccc'};" 
+                                     title="${v.colorName}"
+                                     onclick="loadVariantGallery('${v.id}')">
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+
+                    <div class="product-color-label" id="display-color-name">${activeVariant.colorName}</div>
                     <div class="product-desc">${prod.description || ''}</div>
                     
-                    <div class="product-thumb-grid" style="grid-template-columns: repeat(${thumbGridCols}, 1fr); max-width: ${thumbMaxWidth}px;">
-                        ${allThumbsHtml}
+                    <div class="product-thumb-grid" id="product-dynamic-gallery">
+                        <!-- Thumbs injected by JS -->
                     </div>
                     
                     <div class="product-price">৳${prod.price}</div>
                     
                     <div class="action-controls">
-                        <!-- Hidden color state to track checkout item correctly -->
-                        <input type="hidden" id="selected-color-node" value="${initialColor}">
+                        <!-- Hidden state for checkout hooks -->
+                        <input type="hidden" id="selected-variant-id" value="${activeVariant.id}">
+                        <input type="hidden" id="selected-variant-sku" value="${activeVariant.sku || ''}">
+                        <input type="hidden" id="selected-color-node" value="${activeVariant.colorName}">
                         
                         <div class="action-row">
-                            ${parsedSizes.length > 0 ? sizeDropdown : `<div style="flex:1; padding:6px; text-align:center; border:1px solid #aaa; font-size:11px;">UNISIZE</div>`}
+                            <select id="selected-size-node" class="size-select">
+                                <!-- Sizes injected by JS -->
+                            </select>
                             <span class="next-link" onclick="setView('shop')">next &rsaquo;</span>
                         </div>
                         
-                        <div class="action-row" style="margin-bottom:0;">
-                            ${prod.stock > 0 ? `
-                            <button class="btn-action-red" onclick="commitItemToCart()">add to cart</button>
-                            <button class="btn-action-black" onclick="setView('shop')">continue shopping</button>
-                            ` : `
-                            <button class="btn-action-black" style="flex: 1; background:#999;cursor:not-allowed;" disabled>sold out</button>
-                            `}
+                        <div class="action-row" style="margin-bottom:0;" id="action-buttons-wrapper">
+                            <!-- Buttons injected by JS based on stock -->
                         </div>
                     </div>
                 </div>
             `;
+            
+            // Render active gallery & sizes
+            loadVariantGallery(activeVariant.id);
             setView('product');
         }
 
-        // Color Variant Matrix Selector Event
-        function selectVariantImage(thumbEl, imgUrl, colorName) {
-            // Update main visual display
+        function loadVariantGallery(variantId) {
+            const variant = storeCurrentVariants.find(v => v.id === variantId);
+            if(!variant) return;
+
+            // 1. Update Swatches highlighting
+            document.querySelectorAll('.color-swatch').forEach(el => {
+                el.classList.remove('active');
+                if(el.title === variant.colorName) el.classList.add('active'); // naive match for demo
+            });
+
+            // 2. Update Label & Hidden Inputs
+            document.getElementById('display-color-name').textContent = variant.colorName;
+            document.getElementById('selected-variant-id').value = variant.id;
+            document.getElementById('selected-color-node').value = variant.colorName;
+            document.getElementById('selected-variant-sku').value = variant.sku || '';
+
+            // 3. Render Independent Thumbnail Gallery for this specific color
+            const validImgs = variant.images.filter(Boolean);
+            const mainImgUrl = validImgs[0] || 'https://via.placeholder.com/500';
+            document.getElementById('main-product-img').src = mainImgUrl;
+
+            const galleryHtml = validImgs.map((url, idx) => `
+                <img src="${url}" class="product-thumb ${idx === 0 ? 'active' : ''}" 
+                     onclick="selectGalleryImage(this, '${url}')" loading="lazy">
+            `).join('');
+            
+            const galleryGrid = document.getElementById('product-dynamic-gallery');
+            galleryGrid.innerHTML = galleryHtml;
+            
+            // Adjust columns based on available images for this color
+            const cols = validImgs.length > 3 ? 3 : Math.max(1, validImgs.length);
+            galleryGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            galleryGrid.style.maxWidth = `${cols * 50}px`;
+
+            // 4. Render Variant Sizes
+            const sizeSelect = document.getElementById('selected-size-node');
+            if(variant.sizes && variant.sizes.length > 0) {
+                sizeSelect.innerHTML = `<option value="">-- size --</option>` + 
+                                       variant.sizes.map(s => `<option value="${s}">${s}</option>`).join('');
+                sizeSelect.style.display = 'block';
+            } else {
+                sizeSelect.innerHTML = `<option value="UNISIZE">UNISIZE</option>`;
+                sizeSelect.style.display = 'none'; // hidden if unisize, or can show flat label
+            }
+
+            // 5. Render Stock Buttons
+            const btnWrapper = document.getElementById('action-buttons-wrapper');
+            if(Number(variant.stock) > 0) {
+                btnWrapper.innerHTML = `
+                    <button class="btn-action-red" onclick="commitItemToCart()">add to cart</button>
+                    <button class="btn-action-black" onclick="setView('shop')">continue shopping</button>
+                `;
+            } else {
+                btnWrapper.innerHTML = `<button class="btn-action-black" style="flex: 1; background:#999;cursor:not-allowed;" disabled>sold out</button>`;
+            }
+        }
+
+        function selectGalleryImage(thumbEl, imgUrl) {
             document.getElementById('main-product-img').src = imgUrl;
-
-            // Shift active state visualizer ring
-            document.querySelectorAll('.product-thumb').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#product-dynamic-gallery .product-thumb').forEach(t => t.classList.remove('active'));
             thumbEl.classList.add('active');
-
-            // Hook data states for UI and Data logic
-            document.getElementById('display-color-name').textContent = colorName;
-            const colorInput = document.getElementById('selected-color-node');
-            if(colorInput) colorInput.value = colorName;
         }
 
         // Cart Mechanics
@@ -770,18 +836,26 @@
             const sizeEl = document.getElementById('selected-size-node');
             const sizeValue = sizeEl && sizeEl.value ? sizeEl.value : 'UNISIZE';
             
-            const colorEl = document.getElementById('selected-color-node');
-            const colorValue = colorEl ? colorEl.value : 'Default';
+            if(sizeEl && sizeEl.options.length > 1 && !sizeEl.value) {
+                alert("Please select a size before adding to cart.");
+                return;
+            }
 
+            const variantId = document.getElementById('selected-variant-id').value;
+            const colorValue = document.getElementById('selected-color-node').value;
+            const skuValue = document.getElementById('selected-variant-sku').value;
             const variantImage = document.getElementById('main-product-img').src;
 
             shoppingBagArray.push({
-                id: selectedProductPointer.id,
+                id: selectedProductPointer.id, // Product ID
+                variantId: variantId,          // specific variant ID
                 name: selectedProductPointer.name,
+                sku: skuValue,
                 price: Number(selectedProductPointer.price),
                 image: variantImage,
                 size: sizeValue,
-                color: colorValue
+                color: colorValue,
+                quantity: 1
             });
 
             updateCartWidgetState();
@@ -827,10 +901,10 @@
 
             container.innerHTML = shoppingBagArray.map((item, idx) => `
                 <div class="cart-row">
-                    <img src="${item.image || 'https://via.placeholder.com/100'}" class="cart-img-preview">
+                    <img src="${item.image || 'https://via.placeholder.com/100'}" class="cart-img-preview" loading="lazy">
                     <div style="flex:1;">
                         <div style="text-transform:uppercase; font-weight:bold;">${item.name}</div>
-                        <div style="color:#666;">Color: ${item.color} | Size: ${item.size}</div>
+                        <div style="color:#666; font-size:10px;">Color: ${item.color} | Size: ${item.size} <br>SKU: ${item.sku || 'N/A'}</div>
                     </div>
                     <div style="font-weight:bold; margin-right:20px;">৳${item.price}</div>
                     <button class="btn-action-black" style="padding:4px 8px; font-size:10px; width:auto;" onclick="evictCartIndex(${idx})">EVICT</button>
@@ -905,8 +979,13 @@
                 status: 'Pending Verification'
             };
 
+            // 1. Write the tracking record row to DB
             const { data, error } = await supabaseClient.from('orders').insert([orderPayload]).select();
             
+            // 2. Perform Stock Deductions asynchronously
+            await executeVariantStockDeduction(shoppingBagArray);
+
+            // 3. Render Success Reciept
             document.getElementById('success-receipt-content').innerHTML = `
                 <p><strong>Order ID:</strong> ${receiptId}</p>
                 <p><strong>Customer:</strong> ${name} ${email ? '('+email+')' : ''}</p>
@@ -915,7 +994,7 @@
                 
                 <hr style="border-top:1px dotted #000; margin:15px 0;">
                 <div style="margin-bottom:10px;"><strong>Order Items:</strong></div>
-                ${shoppingBagArray.map(item => `<div style="margin-bottom:5px;">• ${item.name} <br> <span style="color:#555;">Color: ${item.color} | Size: ${item.size}</span> <span style="float:right;">৳${item.price}</span></div>`).join('')}
+                ${shoppingBagArray.map(item => `<div style="margin-bottom:5px;">• ${item.name} <br> <span style="color:#555;">Color: ${item.color} | Size: ${item.size} | SKU: ${item.sku || ''}</span> <span style="float:right;">৳${item.price}</span></div>`).join('')}
                 
                 <hr style="border-top:1px dotted #000; margin:15px 0;">
                 <p style="font-size:14px;"><strong>Total Payable: <span style="color:var(--movi-red); float:right;">৳${totalPayableBill}</span></strong></p>
@@ -931,6 +1010,43 @@
             
             submitBtn.disabled = false;
             submitBtn.textContent = "CONFIRM ORDER DISPATCH";
+        }
+
+        // Executes variant-level stock reductions directly against the JSONB blob.
+        // NOTE: In production environments, an RPC function handles this securely.
+        async function executeVariantStockDeduction(cartItems) {
+            // Group operations by product ID to avoid overriding 
+            let productMap = {};
+            cartItems.forEach(item => {
+                if(!productMap[item.id]) productMap[item.id] = [];
+                productMap[item.id].push(item);
+            });
+
+            for (const [productId, itemsPurchased] of Object.entries(productMap)) {
+                // Fetch current snapshot
+                const { data: pData } = await supabaseClient.from('products').select('stock, totalstock, color_variants').eq('id', productId).single();
+                if(!pData) continue;
+
+                let variants = [];
+                try { variants = JSON.parse(pData.color_variants || '[]'); } catch(e) {}
+                
+                // Deduct qtys
+                itemsPurchased.forEach(cartItem => {
+                    let targetVar = variants.find(v => v.id === cartItem.variantId);
+                    if(targetVar) {
+                        targetVar.stock = Math.max(0, (targetVar.stock || 0) - cartItem.quantity);
+                    }
+                });
+
+                // Recalculate Global Available Stock
+                let newGlobalStock = variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0);
+
+                // Push update payload
+                await supabaseClient.from('products').update({
+                    color_variants: JSON.stringify(variants),
+                    stock: newGlobalStock
+                }).eq('id', productId);
+            }
         }
 
 
@@ -1085,10 +1201,38 @@
             container.innerHTML = adminCurrentVariants.map((v, vIdx) => `
                 <div style="border:1px solid var(--admin-border); padding:15px; margin-bottom:15px; background: var(--admin-surface2);">
                     <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                        <label style="font-size:11px; color:var(--admin-muted);">Variant Color Name</label>
-                        <button type="button" style="color:red; background:none; border:none; cursor:pointer; font-size:10px;" onclick="removeVariantBlock(${vIdx})">REMOVE</button>
+                        <label style="font-size:11px; color:var(--admin-muted); font-weight:bold;">Variant #${vIdx + 1} Configuration</label>
+                        <button type="button" style="color:red; background:none; border:none; cursor:pointer; font-size:10px;" onclick="removeVariantBlock(${vIdx})">REMOVE VARIANT</button>
                     </div>
-                    <input type="text" class="admin-input-field" value="${v.colorName}" onchange="updateVariantColor(${vIdx}, this.value)" placeholder="e.g. Matte Black">
+                    
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <div>
+                            <label style="font-size:9px; color:var(--admin-muted);">Color Name</label>
+                            <input type="text" class="admin-input-field" value="${v.colorName}" onchange="adminCurrentVariants[${vIdx}].colorName = this.value" placeholder="e.g. Matte Black">
+                        </div>
+                        <div>
+                            <label style="font-size:9px; color:var(--admin-muted);">Color Hex Code</label>
+                            <div style="display:flex; gap:5px;">
+                                <input type="color" value="${v.colorHex || '#000000'}" onchange="adminCurrentVariants[${vIdx}].colorHex = this.value" style="width:30px; height:30px; padding:0; border:none; cursor:pointer;">
+                                <input type="text" class="admin-input-field" value="${v.colorHex || '#000000'}" onchange="adminCurrentVariants[${vIdx}].colorHex = this.value" placeholder="#000000" style="margin-bottom:0; flex:1;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr 2fr; gap:10px; margin-bottom:10px;">
+                        <div>
+                            <label style="font-size:9px; color:var(--admin-muted);">Variant SKU</label>
+                            <input type="text" class="admin-input-field" value="${v.sku || ''}" onchange="adminCurrentVariants[${vIdx}].sku = this.value" placeholder="BLK-001">
+                        </div>
+                        <div>
+                            <label style="font-size:9px; color:var(--admin-muted);">Variant Stock</label>
+                            <input type="number" class="admin-input-field" value="${v.stock || 0}" onchange="adminCurrentVariants[${vIdx}].stock = Number(this.value)" placeholder="0">
+                        </div>
+                        <div>
+                            <label style="font-size:9px; color:var(--admin-muted);">Variant Sizes (comma separated)</label>
+                            <input type="text" class="admin-input-field" value="${(v.sizes || []).join(',')}" onchange="adminCurrentVariants[${vIdx}].sizes = this.value.split(',').map(s=>s.trim()).filter(Boolean)" placeholder="40, 41, 42">
+                        </div>
+                    </div>
                     
                     <label style="font-size:11px; color:var(--admin-muted); display:block; margin-top:10px; margin-bottom:5px;">Media Asserts (Front, Side, Back, Top, Sole, Extra)</label>
                     <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
@@ -1098,7 +1242,7 @@
                             <div style="border:1px dashed #444; padding:5px; text-align:center;">
                                 <div style="font-size:9px; color:var(--movi-red); margin-bottom:4px; font-weight:bold; text-transform:uppercase;">${viewLabels[iIdx]} VIEW</div>
                                 <input type="file" style="font-size:9px; width:100%; margin-bottom:5px;" accept="image/*" onchange="uploadVariantImage(${vIdx}, ${iIdx}, this)">
-                                <img src="${v.images[iIdx] || ''}" id="prev-${vIdx}-${iIdx}" style="width:100%; height:60px; object-fit:cover; display:${v.images[iIdx] ? 'block' : 'none'}; margin-bottom:4px;">
+                                <img src="${v.images[iIdx] || ''}" id="prev-${vIdx}-${iIdx}" style="width:100%; height:60px; object-fit:cover; display:${v.images[iIdx] ? 'block' : 'none'}; margin-bottom:4px;" loading="lazy">
                                 <div id="spin-${vIdx}-${iIdx}" style="display:none; color:var(--movi-red); font-size:9px;">UPLOADING...</div>
                                 ${v.images[iIdx] ? `<button type="button" style="background:var(--admin-bg); border:1px solid var(--admin-border); color:var(--admin-white); font-size:9px; width:100%; cursor:pointer;" onclick="removeVariantImage(${vIdx}, ${iIdx})">CLEAR</button>` : ''}
                             </div>
@@ -1109,18 +1253,26 @@
             `).join('');
         }
 
+        function generateUUID() {
+            return 'var_' + Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
         function addVariantBlock() {
-            adminCurrentVariants.push({ colorName: '', images: ['', '', '', '', '', ''] });
+            adminCurrentVariants.push({ 
+                id: generateUUID(), 
+                colorName: '', 
+                colorHex: '#000000', 
+                sku: '', 
+                stock: 0, 
+                sizes: [], 
+                images: ['', '', '', '', '', ''] 
+            });
             renderVariantBuilder();
         }
 
         function removeVariantBlock(idx) {
             adminCurrentVariants.splice(idx, 1);
             renderVariantBuilder();
-        }
-
-        function updateVariantColor(idx, val) {
-            adminCurrentVariants[idx].colorName = val;
         }
 
         function removeVariantImage(vIdx, iIdx) {
@@ -1163,11 +1315,11 @@
                 const tbody = document.getElementById('admin-products-rows');
                 tbody.innerHTML = data.map(prod => `
                     <tr>
-                        <td><img src="${prod.imageurl || 'https://via.placeholder.com/50'}" style="width:40px; height:40px; object-fit:cover;"></td>
+                        <td><img src="${prod.imageurl || 'https://via.placeholder.com/50'}" style="width:40px; height:40px; object-fit:cover;" loading="lazy"></td>
                         <td><strong>${prod.name}</strong></td>
                         <td style="text-transform:uppercase; font-size:11px; color:#aaa;">${prod.category}</td>
                         <td>৳${prod.price}</td>
-                        <td><span style="color:${prod.stock > 0 ? '#00d68f':'#e8001d'}">${prod.stock}</span> / ${prod.totalstock || prod.stock}</td>
+                        <td><span style="color:${prod.stock > 0 ? '#00d68f':'#e8001d'}">${prod.stock}</span></td>
                         <td>
                             <button style="background:#3b82f6; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer; margin-right:5px;" onclick="loadProductToConfigurator('${prod.id}')">EDIT</button>
                             <button style="background:red; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer;" onclick="purgeProductRecord('${prod.id}')">PURGE</button>
@@ -1184,20 +1336,29 @@
             const name = document.getElementById('form-p-name').value.trim();
             const category = document.getElementById('form-p-cat').value;
             const price = Number(document.getElementById('form-p-price').value) || 0;
-            const stock = Number(document.getElementById('form-p-stock').value) || 0;
-            const totalstock = Number(document.getElementById('form-p-totalstock').value) || stock;
             const badge = document.getElementById('form-p-badge').value.trim();
             const description = document.getElementById('form-p-desc').value.trim();
-            const sizesRawInput = document.getElementById('form-p-sizes').value.trim();
-            const parsedSizesArray = sizesRawInput ? sizesRawInput.split(',').map(s => s.trim()) : [];
-
+            
+            // Clean up and calculate global variables based on defined variants
+            adminCurrentVariants.forEach(v => {
+                if(!v.id) v.id = generateUUID();
+                v.stock = Number(v.stock) || 0;
+            });
+            
+            const totalDerivedStock = adminCurrentVariants.reduce((sum, v) => sum + v.stock, 0);
             const fallbackMainImage = adminCurrentVariants[0]?.images.find(Boolean) || '';
 
             const productPayload = {
-                name, category, price, stock, totalstock, badge, description,
-                imageurl: fallbackMainImage, 
-                color_variants: JSON.stringify(adminCurrentVariants), 
-                sizes: JSON.stringify(parsedSizesArray)
+                name, 
+                category, 
+                price, 
+                stock: totalDerivedStock, 
+                totalstock: totalDerivedStock, 
+                badge, 
+                description,
+                imageurl: fallbackMainImage, // Display fallback image
+                color_variants: JSON.stringify(adminCurrentVariants), // JSONB Payload
+                sizes: "[]" // Global sizes deprecated, preserved null to avoid schema breakage
             };
 
             if(activeEditingProductId) {
@@ -1235,26 +1396,33 @@
                 document.getElementById('form-p-name').value = data.name || '';
                 document.getElementById('form-p-cat').value = data.category || 'sneakers';
                 document.getElementById('form-p-price').value = data.price || '';
-                document.getElementById('form-p-stock').value = data.stock || '';
-                document.getElementById('form-p-totalstock').value = data.totalstock || '';
                 document.getElementById('form-p-badge').value = data.badge || '';
                 document.getElementById('form-p-desc').value = data.description || '';
                 
-                let sizeText = '';
-                try { let arr = Array.isArray(data.sizes) ? data.sizes : JSON.parse(data.sizes || '[]'); sizeText = arr.join(','); } 
-                catch(e) { sizeText = data.sizes || ''; }
-                document.getElementById('form-p-sizes').value = sizeText;
-
                 adminCurrentVariants = [];
                 try { adminCurrentVariants = JSON.parse(data.color_variants || '[]'); } catch(e) {}
                 
+                // Polyfill for migrating old db formats into new 6-slot variant system
                 if (adminCurrentVariants.length === 0) {
                     let oldImgs = [];
                     try { oldImgs = JSON.parse(data.images || '[]'); } catch(e) { oldImgs = data.imageurl ? [data.imageurl] : []; }
                     if(!oldImgs.length && data.imageurl) oldImgs = [data.imageurl];
                     
+                    let legacySizes = [];
+                    try { legacySizes = Array.isArray(data.sizes) ? data.sizes : JSON.parse(data.sizes || "[]"); } 
+                    catch(e) { if(typeof data.sizes === 'string') legacySizes = data.sizes.split(','); }
+
                     while(oldImgs.length < 6) oldImgs.push('');
-                    adminCurrentVariants = [{ colorName: 'Default', images: oldImgs }];
+                    
+                    adminCurrentVariants = [{ 
+                        id: generateUUID(),
+                        colorName: 'Default', 
+                        colorHex: '#000000',
+                        sku: 'LEG-01',
+                        stock: data.stock || 0,
+                        sizes: legacySizes,
+                        images: oldImgs 
+                    }];
                 }
                 
                 renderVariantBuilder();
@@ -1277,13 +1445,18 @@
             activeEditingProductId = null;
             document.getElementById('form-p-name').value = '';
             document.getElementById('form-p-price').value = '';
-            document.getElementById('form-p-stock').value = '';
-            document.getElementById('form-p-totalstock').value = '';
             document.getElementById('form-p-badge').value = '';
             document.getElementById('form-p-desc').value = '';
-            document.getElementById('form-p-sizes').value = '';
             
-            adminCurrentVariants = [{ colorName: '', images: ['', '', '', '', '', ''] }];
+            adminCurrentVariants = [{ 
+                id: generateUUID(), 
+                colorName: '', 
+                colorHex: '#000000', 
+                sku: '', 
+                stock: 0, 
+                sizes: [], 
+                images: ['', '', '', '', '', ''] 
+            }];
             renderVariantBuilder();
         }
 
