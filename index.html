@@ -95,8 +95,8 @@
     .product-title { font-size: 13px; font-weight: normal; margin-bottom: 2px; }
     .product-color { font-size: 11px; font-weight: bold; margin-bottom: 16px; }
     .product-desc { font-size: 10px; line-height: 1.4; margin-bottom: 20px; color: #000; text-align: justify; max-width: 90%; }
-    .product-thumb-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 20px; max-width: 150px; }
-    .product-thumb { width: 100%; aspect-ratio: 1/1; object-fit: cover; border: 1px solid #ccc; cursor: pointer; }
+    .product-thumb-grid { display: grid; gap: 4px; margin-bottom: 20px; } /* Columns dynamically set in JS */
+    .product-thumb { width: 100%; aspect-ratio: 1/1; object-fit: cover; border: 1px solid transparent; cursor: pointer; }
     .product-thumb.active { border: 1px solid #000; }
     .product-thumb:hover { border-color: #666; }
     .product-price { font-size: 13px; font-weight: normal; margin-bottom: 16px; }
@@ -679,18 +679,37 @@
                 variants = [{ colorName: 'Default', images: oldImgs }];
             }
             
-            // Generate Supreme-Style Master Thumbnail Matrix
+            // Supreme-Style Exact Thumbnail Matrix
             let initialColor = variants[0]?.colorName || 'Default';
             let initialMainImg = variants[0]?.images.find(Boolean) || prod.imageurl || 'https://via.placeholder.com/500';
             
             let allThumbsHtml = '';
-            variants.forEach(variant => {
-                const validImgs = variant.images.filter(Boolean);
-                validImgs.forEach(url => {
-                    const isActive = (url === initialMainImg) ? ' active' : '';
-                    allThumbsHtml += `<img src="${url}" class="product-thumb${isActive}" onclick="selectVariantImage(this, '${url}', '${variant.colorName}')">`;
-                });
+            let maxImgs = 0;
+            
+            // Determine deepest view count for interleaved looping
+            variants.forEach(v => {
+                const validCount = v.images.filter(Boolean).length;
+                if (validCount > maxImgs) maxImgs = validCount;
             });
+
+            // Interleaved loop to match Supreme matrix logic (Row = Angle, Column = Color)
+            for (let angleIdx = 0; angleIdx < maxImgs; angleIdx++) {
+                variants.forEach(variant => {
+                    const validImgs = variant.images.filter(Boolean);
+                    const url = validImgs[angleIdx];
+                    if (url) {
+                        const isActive = (url === initialMainImg) ? ' active' : '';
+                        allThumbsHtml += `<img src="${url}" class="product-thumb${isActive}" onclick="selectVariantImage(this, '${url}', '${variant.colorName}')">`;
+                    } else {
+                        // Empty spacer block to maintain correct visual grid flow per column
+                        allThumbsHtml += `<div style="width:100%; aspect-ratio:1/1;"></div>`;
+                    }
+                });
+            }
+
+            // Dynamics column generation based on colors present
+            const thumbGridCols = variants.length > 0 ? variants.length : 1;
+            const thumbMaxWidth = thumbGridCols * 50; 
 
             container.innerHTML = `
                 <div class="product-image-col">
@@ -701,7 +720,7 @@
                     <div class="product-color" id="display-color-name">${initialColor}</div>
                     <div class="product-desc">${prod.description || ''}</div>
                     
-                    <div class="product-thumb-grid">
+                    <div class="product-thumb-grid" style="grid-template-columns: repeat(${thumbGridCols}, 1fr); max-width: ${thumbMaxWidth}px;">
                         ${allThumbsHtml}
                     </div>
                     
@@ -1071,23 +1090,27 @@
                     </div>
                     <input type="text" class="admin-input-field" value="${v.colorName}" onchange="updateVariantColor(${vIdx}, this.value)" placeholder="e.g. Matte Black">
                     
-                    <label style="font-size:11px; color:var(--admin-muted); display:block; margin-top:10px; margin-bottom:5px;">Media Asserts (Cloudinary Auto Pipe)</label>
-                    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px;">
-                        ${[0,1,2,3].map(iIdx => `
+                    <label style="font-size:11px; color:var(--admin-muted); display:block; margin-top:10px; margin-bottom:5px;">Media Asserts (Front, Side, Back, Top, Sole, Extra)</label>
+                    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
+                        ${[0,1,2,3,4,5].map(iIdx => {
+                            const viewLabels = ['Front', 'Side', 'Back', 'Top', 'Sole', 'Additional'];
+                            return `
                             <div style="border:1px dashed #444; padding:5px; text-align:center;">
+                                <div style="font-size:9px; color:var(--movi-red); margin-bottom:4px; font-weight:bold; text-transform:uppercase;">${viewLabels[iIdx]} VIEW</div>
                                 <input type="file" style="font-size:9px; width:100%; margin-bottom:5px;" accept="image/*" onchange="uploadVariantImage(${vIdx}, ${iIdx}, this)">
                                 <img src="${v.images[iIdx] || ''}" id="prev-${vIdx}-${iIdx}" style="width:100%; height:60px; object-fit:cover; display:${v.images[iIdx] ? 'block' : 'none'}; margin-bottom:4px;">
                                 <div id="spin-${vIdx}-${iIdx}" style="display:none; color:var(--movi-red); font-size:9px;">UPLOADING...</div>
                                 ${v.images[iIdx] ? `<button type="button" style="background:var(--admin-bg); border:1px solid var(--admin-border); color:var(--admin-white); font-size:9px; width:100%; cursor:pointer;" onclick="removeVariantImage(${vIdx}, ${iIdx})">CLEAR</button>` : ''}
                             </div>
-                        `).join('')}
+                            `;
+                        }).join('')}
                     </div>
                 </div>
             `).join('');
         }
 
         function addVariantBlock() {
-            adminCurrentVariants.push({ colorName: '', images: ['', '', '', ''] });
+            adminCurrentVariants.push({ colorName: '', images: ['', '', '', '', '', ''] });
             renderVariantBuilder();
         }
 
@@ -1230,7 +1253,7 @@
                     try { oldImgs = JSON.parse(data.images || '[]'); } catch(e) { oldImgs = data.imageurl ? [data.imageurl] : []; }
                     if(!oldImgs.length && data.imageurl) oldImgs = [data.imageurl];
                     
-                    while(oldImgs.length < 4) oldImgs.push('');
+                    while(oldImgs.length < 6) oldImgs.push('');
                     adminCurrentVariants = [{ colorName: 'Default', images: oldImgs }];
                 }
                 
@@ -1260,7 +1283,7 @@
             document.getElementById('form-p-desc').value = '';
             document.getElementById('form-p-sizes').value = '';
             
-            adminCurrentVariants = [{ colorName: '', images: ['', '', '', ''] }];
+            adminCurrentVariants = [{ colorName: '', images: ['', '', '', '', '', ''] }];
             renderVariantBuilder();
         }
 
