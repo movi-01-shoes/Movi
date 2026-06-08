@@ -69,12 +69,8 @@
     .footer-top-left, .footer-top-right { display: flex; gap: 20px; flex-wrap: wrap; }
     .footer-bottom-row { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; flex-wrap: wrap; gap: 30px; }
     .footer-col { display: flex; flex-direction: column; gap: 4px; }
-    .store-footer a { cursor: pointer; color: #000; }
+    .store-footer a { cursor: pointer; color: #000; transition: color 0.2s; }
     .store-footer a:hover { text-decoration: underline; }
-
-    /* Fixed Cart Icon (Bottom Left) */
-    #fixed-cart-icon { position: fixed; bottom: 20px; left: 20px; background: var(--movi-white); color: var(--movi-black); border: 1px solid var(--movi-black); padding: 8px 12px; font-size: 11px; z-index: 9999; cursor: pointer; text-transform: lowercase; font-weight: bold; box-shadow: 2px 2px 0px rgba(0,0,0,0.1); transition: transform 0.1s; }
-    #fixed-cart-icon:hover { transform: translateY(-2px); }
 
     /* Drop Scarcity Mechanics */
     .live-scarcity-widget { max-width: 500px; margin: 0 auto 40px auto; padding: 0 20px; }
@@ -195,10 +191,6 @@
             </div>
             <div class="header-time" id="live-clock">00/00/0000 00:00am local</div>
         </header>
-        
-        <div id="fixed-cart-icon" onclick="setView('cart')">
-            cart (<span id="floating-cart-count">0</span>)
-        </div>
 
         <div id="view-home" class="page-view active">
             <!-- Supreme Horizontal Lookbook Strips -->
@@ -276,7 +268,22 @@
                             <option value="outside">Outside Dhaka (৳150 Surcharge)</option>
                         </select>
                     </div>
+                    <div class="checkout-form-group">
+                        <label>Payment Method *</label>
+                        <select id="cust-payment" class="checkout-input" onchange="togglePaymentDetails()" required>
+                            <option value="">-- Select Payment Option --</option>
+                            <option value="cod">Cash on Delivery</option>
+                            <option value="bkash">bKash</option>
+                            <option value="city">City Bank</option>
+                            <option value="dbbl">Dutch-Bangla Bank</option>
+                        </select>
+                    </div>
                     
+                    <div id="payment-instruction-box" style="display:none; margin-top:10px; margin-bottom:15px; padding:15px; border:1px solid var(--movi-black); font-size:11px; background:#f9f9f9;">
+                        <div id="payment-account-detail" style="font-weight:bold; margin-bottom:8px; font-size:12px;"></div>
+                        <div style="color:var(--movi-red);">Please complete the payment, save the transaction screenshot, and our team will contact you to complete the order process.</div>
+                    </div>
+
                     <div style="margin:20px 0; padding:15px; border:1px dotted #000; text-align:right;">
                         <span>Gross Logistics Commitment Bill: </span><strong id="checkout-total-bill" style="font-size:14px; color:var(--movi-red);">৳0</strong>
                     </div>
@@ -311,6 +318,7 @@
                 <div class="footer-top-left">
                     <a onclick="setView('shop')">shop</a>
                     <a onclick="setView('shop')">view all</a>
+                    <a onclick="setView('cart')" id="nav-cart-link">cart</a>
                 </div>
                 <div class="footer-top-right">
                     <a onclick="setView('home')">spring/summer 2026 preview</a>
@@ -478,6 +486,7 @@
         // System Initialization
         async function bootSystemContext() {
             updateStorefrontClocks();
+            updateCartWidgetState(); // Sets initial "cart" text on load
             checkRoute();
         }
 
@@ -843,40 +852,25 @@
         }
 
         function updateCartWidgetState() {
-            const count = document.getElementById('floating-cart-count');
-            if(count) count.textContent = shoppingBagArray.length;
+            const navCartLink = document.getElementById('nav-cart-link');
+            if(navCartLink) {
+                navCartLink.textContent = shoppingBagArray.length > 0 ? `cart (${shoppingBagArray.length})` : 'cart';
+            }
 
+            // Fallback clear active state for any old floating widget components if lingering in DOM
             const widget = document.getElementById('cart-widget');
-            const qtyCount = document.getElementById('widget-qty-count');
-            const totalPrice = document.getElementById('widget-total-price');
-
-            if(shoppingBagArray.length > 0) {
-                if(widget) widget.classList.add('active');
-                if(qtyCount) qtyCount.textContent = shoppingBagArray.length;
-                let total = shoppingBagArray.reduce((acc, curr) => acc + curr.price, 0);
-                if(totalPrice) totalPrice.textContent = "৳" + total;
-            } else {
-                if(widget) widget.classList.remove('active');
+            if(widget) {
+                if(shoppingBagArray.length > 0) widget.classList.add('active');
+                else widget.classList.remove('active');
             }
         }
 
         function triggerWidgetFlash() {
-            const widgetHeader = document.querySelector('.cart-header');
-            const floatingIcon = document.getElementById('fixed-cart-icon');
-            if(widgetHeader) {
-                widgetHeader.style.background = '#e8001d';
-                widgetHeader.style.color = '#fff';
-                if(floatingIcon) {
-                    floatingIcon.style.background = '#e8001d';
-                    floatingIcon.style.color = '#fff';
-                }
+            const navCartLink = document.getElementById('nav-cart-link');
+            if(navCartLink) {
+                navCartLink.style.color = '#e8001d';
                 setTimeout(() => {
-                    widgetHeader.style.background = 'var(--movi-gray)';
-                    widgetHeader.style.color = '#000';
-                    if(floatingIcon) {
-                        floatingIcon.style.background = 'var(--movi-white)';
-                        floatingIcon.style.color = 'var(--movi-black)';
-                    }
+                    navCartLink.style.color = '#000';
                 }, 400);
             }
         }
@@ -1055,7 +1049,7 @@
             window.location.hash = ''; 
         }
 
-        function switchAdminTab(targetTabId) {
+        function switchAdminTab(targetTabId, skipReset = false) {
             document.querySelectorAll('.admin-tab-view').forEach(view => view.style.display = 'none');
             document.querySelectorAll('.admin-nav-item').forEach(btn => btn.classList.remove('active'));
             
@@ -1067,7 +1061,10 @@
             const headerTitle = document.getElementById('admin-panel-header-title');
             if(targetTabId === 'orders') { headerTitle.textContent = "ORDERS MANIFEST PIPELINE"; fetchAdminOrdersPipeline(); }
             if(targetTabId === 'products') { headerTitle.textContent = "GLOBAL ARTIFACT VAULT"; fetchAdminProductsPipeline(); }
-            if(targetTabId === 'add') { headerTitle.textContent = "SCHEMA COMPONENT MINT"; resetProductConfiguratorForm(); }
+            if(targetTabId === 'add') { 
+                headerTitle.textContent = "SCHEMA COMPONENT MINT"; 
+                if(!skipReset) resetProductConfiguratorForm(); 
+            }
         }
 
         function triggerAdminAlertNotification(messageText) {
@@ -1354,6 +1351,9 @@
         }
 
         async function loadProductToConfigurator(productId) {
+            switchAdminTab('add', true); // Switches tab WITHOUT clearing the form
+            document.getElementById('admin-panel-header-title').textContent = "LOADING ARTIFACT...";
+
             const { data, error } = await supabaseClient.from('products').select('*').eq('id', productId).single();
             if(!error && data) {
                 activeEditingProductId = data.id;
@@ -1369,7 +1369,11 @@
                 // Hydrate Variants Array
                 adminCurrentVariants = [];
                 try { 
-                    adminCurrentVariants = JSON.parse(data.color_variants || '[]'); 
+                    if (typeof data.color_variants === 'string') {
+                        adminCurrentVariants = JSON.parse(data.color_variants || '[]'); 
+                    } else if (Array.isArray(data.color_variants)) {
+                        adminCurrentVariants = data.color_variants;
+                    }
                 } catch(e) {
                     console.error("Failed to parse variants", e);
                 }
@@ -1398,8 +1402,6 @@
                 }
                 
                 renderVariantBuilder();
-
-                switchAdminTab('add');
                 document.getElementById('admin-panel-header-title').textContent = "EDIT ARTIFACT PROTOCOLS";
             }
         }
