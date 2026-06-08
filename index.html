@@ -87,7 +87,7 @@
     .product-card img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; background-color: #f5f5f5; }
     .sold-out-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255, 255, 255, 0.95); color: var(--movi-black); padding: 6px 8px; font-size: 10px; font-weight: bold; pointer-events: none; text-transform: uppercase; border: 1px solid var(--movi-black); }
 
-    /* Individual View Profile — Supreme style Exact Match */
+    /* Individual View Profile */
     .product-detail-layout { display: flex; align-items: flex-start; gap: 60px; max-width: 1000px; margin: 40px auto; padding: 20px 40px; }
     .product-image-col { flex: 0 0 55%; text-align: center; }
     .product-main-image { width: 100%; max-width: 500px; height: auto; object-fit: contain; display: inline-block; }
@@ -101,10 +101,10 @@
     .product-thumb:hover { border-color: #999; }
     .product-price { font-size: 13px; font-weight: normal; margin-bottom: 16px; }
     
-    /* Action Grid Match */
+    /* Action Grid */
     .action-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 15px; max-width: 320px; align-items: center; }
     .size-select { width: 100%; padding: 6px; border: 1px solid #aaa; background: var(--movi-white); outline: none; font-size: 11px; text-align: center; cursor: pointer; }
-    .next-link { font-size: 11px; color: #000; cursor: pointer; white-space: nowrap; }
+    .next-link { font-size: 11px; color: #000; cursor: pointer; white-space: nowrap; display: inline-block; margin-top:10px; }
     .next-link:hover { text-decoration: underline; }
     .btn-action-red { width: 100%; background-color: var(--movi-red); color: var(--movi-white); border: none; padding: 8px; font-size: 11px; cursor: pointer; text-align: center; font-weight: bold; }
     .btn-action-black { width: 100%; background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 8px; font-size: 11px; cursor: pointer; text-align: center; font-weight: bold; }
@@ -133,7 +133,7 @@
     .login-sub { font-family: var(--admin-font-mono); font-size: 8px; color: var(--movi-red); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 30px; }
     
     #admin-layout { display: flex; height: 100vh; width: 100vw; }
-    #admin-sidebar { width: 220px; background: var(--admin-surface); border-right: 1px solid var(--admin-border); display: flex; flex-direction: column; }
+    #admin-sidebar { width: 220px; background: var(--admin-surface); border-right: 1px solid var(--admin-border); display: flex; flex-direction: column; overflow-y: auto;}
     .admin-nav-item { padding: 12px 20px; font-family: var(--admin-font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--admin-muted); cursor: pointer; border-left: 2px solid transparent; }
     .admin-nav-item.active, .admin-nav-item:hover { color: var(--admin-white); background: var(--admin-surface2); border-left-color: var(--movi-red); }
     #admin-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -144,6 +144,7 @@
     .admin-table td { padding: 12px; border-bottom: 1px solid var(--admin-border); font-size: 12px; }
     .admin-input-field { width: 100%; background: var(--admin-surface2); border: 1px solid var(--admin-border); color: #fff; padding: 8px; outline: none; margin-bottom: 12px; }
     #admin-toast { position: fixed; bottom: 20px; right: 20px; background: #00d68f; color: #000; padding: 10px 20px; font-family: var(--admin-font-mono); font-size: 10px; display: none; z-index: 10000; }
+    
     /* Admin light mode overrides */
     #admin-view.light-mode { --admin-bg:#f5f5f5; --admin-surface:#fff; --admin-surface2:#eee; --admin-border:#ddd; --admin-white:#111; --admin-muted:#888; }
     #admin-view.light-mode { background: #f5f5f5; color: #111; }
@@ -226,24 +227,44 @@
                 <h3 style="text-align:center; text-transform:uppercase; margin-bottom:25px;">Shipping Routing Protocol</h3>
                 <form onsubmit="handleOrderSubmission(event)">
                     <div class="checkout-form-group">
-                        <label>Consignee Legal Name *</label>
+                        <label>Customer Name *</label>
                         <input type="text" class="checkout-input" id="cust-name" required>
                     </div>
                     <div class="checkout-form-group">
-                        <label>Secure Telephone Interface *</label>
+                        <label>Contact Number *</label>
                         <input type="tel" class="checkout-input" id="cust-phone" required>
                     </div>
                     <div class="checkout-form-group">
-                        <label>Destination Terminal Address *</label>
+                        <label>Email Address</label>
+                        <input type="email" class="checkout-input" id="cust-email">
+                    </div>
+                    <div class="checkout-form-group">
+                        <label>Shipping Address *</label>
                         <textarea class="checkout-input" rows="3" id="cust-address" style="resize:none;" required></textarea>
                     </div>
                     <div class="checkout-form-group">
-                        <label>Regional Zoning Protocol *</label>
-                        <select id="cust-region" class="checkout-input" onchange="calculateFinalInvoice()">
-                            <option value="inside">Inside Capital Loop (Free Route Delivery)</option>
-                            <option value="outside">External Frontiers (৳150 Logistics Surcharge)</option>
+                        <label>Delivery Area *</label>
+                        <select id="cust-region" class="checkout-input" onchange="calculateFinalInvoice()" required>
+                            <option value="inside">Inside Dhaka (Free Delivery)</option>
+                            <option value="outside">Outside Dhaka (৳150 Surcharge)</option>
                         </select>
                     </div>
+                    <div class="checkout-form-group">
+                        <label>Payment Method *</label>
+                        <select id="cust-payment" class="checkout-input" onchange="togglePaymentDetails()" required>
+                            <option value="">-- Select Payment Option --</option>
+                            <option value="cod">Cash on Delivery</option>
+                            <option value="bkash">bKash</option>
+                            <option value="city">City Bank</option>
+                            <option value="dbbl">Dutch-Bangla Bank</option>
+                        </select>
+                    </div>
+                    
+                    <div id="payment-instruction-box" style="display:none; margin-top:10px; margin-bottom:15px; padding:15px; border:1px solid var(--movi-black); font-size:11px; background:#f9f9f9;">
+                        <div id="payment-account-detail" style="font-weight:bold; margin-bottom:8px; font-size:12px;"></div>
+                        <div style="color:var(--movi-red);">Please complete the payment, save the transaction screenshot, and our team will contact you to complete the order process.</div>
+                    </div>
+
                     <div style="margin:20px 0; padding:15px; border:1px dotted #000; text-align:right;">
                         <span>Gross Logistics Commitment Bill: </span><strong id="checkout-total-bill" style="font-size:14px; color:var(--movi-red);">৳0</strong>
                     </div>
@@ -256,11 +277,19 @@
         </div>
 
         <div id="view-success" class="page-view">
-            <div style="max-width: 450px; margin: 60px auto; border: 1px dotted #000; padding: 40px; text-align: center;">
-                <div style="font-size: 32px; color: var(--movi-red); margin-bottom: 15px;">✓</div>
-                <h4 style="text-transform:uppercase; margin-bottom:10px;">Pipeline Pipeline Locked</h4>
-                <p style="color:#555; line-height:1.6; margin-bottom:20px;">Our monitoring node has received your order array. Delivery will initiate shortly.</p>
-                <button class="btn-action-black" onclick="setView('home')" style="width:auto; padding:10px;">return to central hub</button>
+            <div style="max-width: 600px; margin: 40px auto; border: 1px dotted #000; padding: 40px;">
+                <div style="text-align:center;">
+                    <div style="font-size: 32px; color: var(--movi-red); margin-bottom: 15px;">✓</div>
+                    <h3 style="text-transform:uppercase; margin-bottom:20px;">Order Confirmed</h3>
+                </div>
+                
+                <div id="success-receipt-content" style="font-family: var(--font-main); font-size: 11px; line-height: 1.6;">
+                    <!-- JS Injects Order Data Here -->
+                </div>
+                
+                <div style="text-align:center; margin-top:30px;">
+                    <button class="btn-action-black" onclick="setView('home')" style="width:auto; padding:10px 20px;">return to central hub</button>
+                </div>
             </div>
         </div>
         
@@ -307,7 +336,7 @@
                 <div class="login-brand">MOVI</div>
                 <div class="login-sub">Database Administration Node</div>
                 <input class="admin-input-field" id="gate-pass" type="password" placeholder="Access Authentication Phrase" onkeydown="if(event.key==='Enter')verifyAdminAuthorization()">
-                <button class="login-btn" onclick="verifyAdminAuthorization()" style="padding:10px; width:100%;">AUTHORIZE ENTRY</button>
+                <button class="login-btn" onclick="verifyAdminAuthorization()" style="padding:10px; width:100%; background:var(--admin-surface2); color:#fff; border:1px solid #444; cursor:pointer;">AUTHORIZE ENTRY</button>
                 <div id="login-error-flag" style="color:var(--movi-red); font-family:var(--admin-font-mono); font-size:9px; margin-top:10px; display:none;">ACCESS KEY REJECTED</div>
                 <button style="background:none; border:none; color:var(--admin-muted); font-family:var(--admin-font-mono); font-size:9px; margin-top:20px; cursor:pointer;" onclick="bypassToStorefront()">← Abort to Public UI</button>
             </div>
@@ -322,8 +351,11 @@
                 <div class="admin-nav-item active" id="nav-orders" onclick="switchAdminTab('orders')">📋 Manifest Orders</div>
                 <div class="admin-nav-item" id="nav-products" onclick="switchAdminTab('products')">👟 Vault Products</div>
                 <div class="admin-nav-item" id="nav-add" onclick="switchAdminTab('add')">＋ Mint New Artifact</div>
+                <div class="admin-nav-item" id="nav-settings" onclick="switchAdminTab('settings')">⚙️ Payment Settings</div>
+                
                 <div style="margin-top:auto; padding:20px;">
-                    <button class="login-btn" style="font-size:12px; padding:8px; letter-spacing:2px; width:100%;" onclick="bypassToStorefront()">PUBLIC LINK</button>
+                    <div class="admin-nav-item" style="padding-left:0; margin-bottom:10px;" onclick="adminLogout()">🚪 System Logout</div>
+                    <button class="login-btn" style="font-size:12px; padding:8px; letter-spacing:2px; width:100%; background:var(--admin-surface2); color:#fff; border:1px solid #444; cursor:pointer;" onclick="bypassToStorefront()">PUBLIC LINK</button>
                 </div>
                 <button class="dark-toggle" id="dark-toggle-btn" onclick="toggleAdminDarkMode()">🌙 DARK MODE</button>
             </div>
@@ -334,6 +366,7 @@
                 </div>
                 
                 <div class="admin-content-area">
+                    <!-- Tab: Orders -->
                     <div id="tab-orders" class="admin-tab-view" style="display:block;">
                         <table class="admin-table">
                             <thead>
@@ -343,6 +376,7 @@
                         </table>
                     </div>
 
+                    <!-- Tab: Products -->
                     <div id="tab-products" class="admin-tab-view" style="display:none;">
                         <table class="admin-table">
                             <thead>
@@ -352,6 +386,7 @@
                         </table>
                     </div>
 
+                    <!-- Tab: Add/Edit Product -->
                     <div id="tab-add" class="admin-tab-view" style="display:none;">
                         <div style="background:var(--admin-surface); border:1px solid var(--admin-border); padding:24px; max-width:700px;">
                             <h3 style="font-family:var(--admin-font-mono); font-size:11px; color:var(--admin-muted); margin-bottom:20px; text-transform:uppercase;">Artifact Parameter Mapping</h3>
@@ -390,47 +425,45 @@
 
                             <label style="font-size:11px; color:var(--admin-muted);">Extended Blueprint Description</label>
                             <textarea class="admin-input-field" id="form-p-desc" rows="4" style="resize:vertical; font-family:inherit;"></textarea>
-
-                            <label style="font-size:11px; color:var(--admin-muted);">Image Upload — Up to 4 Images (Cloudinary Auto Pipe)</label>
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;" id="img-upload-grid">
-                                <div class="img-slot" id="slot-0">
-                                    <div style="font-size:9px; color:var(--admin-muted); margin-bottom:4px;">IMAGE 1 (Primary)</div>
-                                    <input type="file" class="admin-input-field" id="form-p-file-0" accept="image/*" onchange="uploadSlotImage(0)" style="margin-bottom:4px;">
-                                    <div id="spinner-0" style="font-family:var(--admin-font-mono); font-size:9px; color:var(--movi-red); display:none;">UPLOADING...</div>
-                                    <img id="preview-0" style="width:100%; height:80px; object-fit:cover; display:none; border:1px solid #333; margin-top:4px;">
-                                </div>
-                                <div class="img-slot" id="slot-1">
-                                    <div style="font-size:9px; color:var(--admin-muted); margin-bottom:4px;">IMAGE 2</div>
-                                    <input type="file" class="admin-input-field" id="form-p-file-1" accept="image/*" onchange="uploadSlotImage(1)" style="margin-bottom:4px;">
-                                    <div id="spinner-1" style="font-family:var(--admin-font-mono); font-size:9px; color:var(--movi-red); display:none;">UPLOADING...</div>
-                                    <img id="preview-1" style="width:100%; height:80px; object-fit:cover; display:none; border:1px solid #333; margin-top:4px;">
-                                </div>
-                                <div class="img-slot" id="slot-2">
-                                    <div style="font-size:9px; color:var(--admin-muted); margin-bottom:4px;">IMAGE 3</div>
-                                    <input type="file" class="admin-input-field" id="form-p-file-2" accept="image/*" onchange="uploadSlotImage(2)" style="margin-bottom:4px;">
-                                    <div id="spinner-2" style="font-family:var(--admin-font-mono); font-size:9px; color:var(--movi-red); display:none;">UPLOADING...</div>
-                                    <img id="preview-2" style="width:100%; height:80px; object-fit:cover; display:none; border:1px solid #333; margin-top:4px;">
-                                </div>
-                                <div class="img-slot" id="slot-3">
-                                    <div style="font-size:9px; color:var(--admin-muted); margin-bottom:4px;">IMAGE 4</div>
-                                    <input type="file" class="admin-input-field" id="form-p-file-3" accept="image/*" onchange="uploadSlotImage(3)" style="margin-bottom:4px;">
-                                    <div id="spinner-3" style="font-family:var(--admin-font-mono); font-size:9px; color:var(--movi-red); display:none;">UPLOADING...</div>
-                                    <img id="preview-3" style="width:100%; height:80px; object-fit:cover; display:none; border:1px solid #333; margin-top:4px;">
-                                </div>
-                            </div>
-                            <input type="hidden" id="form-p-imgurl">
-                            <input type="hidden" id="form-p-imgurl2">
-                            <input type="hidden" id="form-p-imgurl3">
-                            <input type="hidden" id="form-p-imgurl4">
-
+                            
                             <label style="font-size:11px; color:var(--admin-muted);">Size Matrices Array (Comma-Separated Values)</label>
                             <input type="text" class="admin-input-field" id="form-p-sizes" placeholder="e.g. EU40,EU41,EU42,EU43">
 
-                            <div style="margin-top:20px;">
-                                <button class="login-btn" style="width:auto; padding:12px 30px;" id="save-product-master-btn" onclick="commitProductToDatabase()">SAVE ARTIFACT MATRIX</button>
+                            <!-- New Color Variant System -->
+                            <div style="margin-top:20px; border-top:1px solid var(--admin-border); padding-top:20px;">
+                                <h4 style="font-family:var(--admin-font-mono); font-size:11px; color:var(--admin-white); margin-bottom:15px; text-transform:uppercase;">Color Variants & Media</h4>
+                                
+                                <div id="variant-builder-container"></div>
+                                
+                                <button type="button" onclick="addVariantBlock()" style="background:var(--admin-surface2); color:var(--admin-white); border:1px dashed var(--admin-border); padding:10px; width:100%; cursor:pointer; font-size:11px;">+ ADD COLOR VARIANT</button>
+                            </div>
+
+                            <div style="margin-top:30px;">
+                                <button class="login-btn" style="width:auto; padding:12px 30px; background:var(--movi-red); color:#fff; border:none; cursor:pointer;" id="save-product-master-btn" onclick="commitProductToDatabase()">SAVE ARTIFACT MATRIX</button>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Tab: Payment Settings -->
+                    <div id="tab-settings" class="admin-tab-view" style="display:none;">
+                        <div style="background:var(--admin-surface); border:1px solid var(--admin-border); padding:24px; max-width:600px;">
+                            <h3 style="font-family:var(--admin-font-mono); font-size:11px; color:var(--admin-muted); margin-bottom:20px; text-transform:uppercase;">Payment Node Routing</h3>
+                            
+                            <label style="font-size:11px; color:var(--admin-muted);">bKash Account Number</label>
+                            <input type="text" class="admin-input-field" id="set-bkash" placeholder="e.g. 01700000000 (Personal)">
+
+                            <label style="font-size:11px; color:var(--admin-muted);">City Bank Account Details</label>
+                            <textarea class="admin-input-field" id="set-city" rows="2" placeholder="e.g. Account Name\nAccount Number"></textarea>
+                            
+                            <label style="font-size:11px; color:var(--admin-muted);">Dutch-Bangla Bank Account Details</label>
+                            <textarea class="admin-input-field" id="set-dbbl" rows="2" placeholder="e.g. Account Name\nAccount Number"></textarea>
+
+                            <div style="margin-top:20px;">
+                                <button style="width:auto; padding:12px 30px; background:#00d68f; color:#000; border:none; cursor:pointer; font-weight:bold; font-size:11px;" onclick="savePaymentSettings()">UPDATE PAYMENT LOGIC</button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -448,7 +481,6 @@
         const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dv0knnmga/image/upload';
         const CLOUDINARY_PRESET = 'movi-shoes';
 
-        // Initialize Native Core Client Driver
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Core App Runtime Arrays
@@ -456,6 +488,18 @@
         let shoppingBagArray = [];
         let selectedProductPointer = null;
         let activeEditingProductId = null;
+        
+        // Variant & Payment Management
+        let adminCurrentVariants = []; 
+        window.currentViewedVariants = [];
+        let paymentSettings = { bkash: '', city: '', dbbl: '' };
+
+        // System Initialization
+        async function bootSystemContext() {
+            updateStorefrontClocks();
+            loadPaymentSettings();
+            checkRoute();
+        }
 
         // Clock System Engine
         function updateStorefrontClocks() {
@@ -527,20 +571,22 @@
             if (hash === '#admin') {
                 storefront.style.display = 'none';
                 admin.style.display = 'block';
-                adminLayout.style.display = 'none';
-                adminLogin.style.display = 'flex';
+                
+                // Persistent Admin Auth Check
+                if(localStorage.getItem('movi_admin_session') === 'active') {
+                    adminLogin.style.display = 'none';
+                    adminLayout.style.display = 'flex';
+                    fireAdminSuiteInitializations();
+                } else {
+                    adminLayout.style.display = 'none';
+                    adminLogin.style.display = 'flex';
+                }
             } else {
                 admin.style.display = 'none';
-                storefront.style.display = 'block';
+                storefront.style.display = 'flex';
                 syncStorefrontProducts();
             }
         }
-
-        window.addEventListener('hashchange', checkRoute);
-        window.addEventListener('DOMContentLoaded', () => {
-            updateStorefrontClocks();
-            checkRoute();
-        });
 
         async function syncStorefrontProducts() {
             const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
@@ -598,28 +644,44 @@
             const container = document.getElementById('product-detail-container');
             if(!container) return;
 
+            // Handle Sizes
             let parsedSizes = [];
-            try {
-                parsedSizes = Array.isArray(prod.sizes) ? prod.sizes : JSON.parse(prod.sizes || "[]");
-            } catch(e) {
-                if(typeof prod.sizes === 'string') parsedSizes = prod.sizes.split(',');
-            }
+            try { parsedSizes = Array.isArray(prod.sizes) ? prod.sizes : JSON.parse(prod.sizes || "[]"); } 
+            catch(e) { if(typeof prod.sizes === 'string') parsedSizes = prod.sizes.split(','); }
 
             const sizeDropdown = parsedSizes.length > 0 ? `
                 <select id="selected-size-node" class="size-select">
                     <option value="">-- size --</option>
                     ${parsedSizes.map(s => `<option value="${s}">${s}</option>`).join('')}
                 </select>
-            ` : `<span style="font-size:11px;">UNISIZE</span>`;
+            ` : '';
 
-            let imgs = [];
-            try { imgs = JSON.parse(prod.images || '[]'); } catch(e) { imgs = prod.imageurl ? [prod.imageurl] : []; }
-            if(!imgs.length && prod.imageurl) imgs = [prod.imageurl];
-            const thumbsHtml = imgs.length > 1 ? `<div class="product-thumb-grid">${imgs.map((url,i)=>`<img src="${url}" class="product-thumb${i===0?' active':''}" onclick="switchMainImg(this,'${url}')">`).join('')}</div>` : '';
+            // Handle Colors & Images Mapping
+            let variants = [];
+            try { variants = JSON.parse(prod.color_variants || '[]'); } catch(e) {}
+            
+            // Backwards compatibility for old database schemas without color_variants
+            if (variants.length === 0) {
+                let oldImgs = [];
+                try { oldImgs = JSON.parse(prod.images || '[]'); } catch(e) { oldImgs = prod.imageurl ? [prod.imageurl] : []; }
+                if(!oldImgs.length && prod.imageurl) oldImgs = [prod.imageurl];
+                variants = [{ colorName: 'Default', images: oldImgs }];
+            }
+            
+            window.currentViewedVariants = variants;
+            const initialImgs = variants[0]?.images.filter(Boolean) || [];
+
+            const colorDropdown = variants.length > 1 ? `
+                <select id="selected-color-node" class="size-select" onchange="changeProductColor(this.value)">
+                    ${variants.map(v => `<option value="${v.colorName}">${v.colorName}</option>`).join('')}
+                </select>
+            ` : `<input type="hidden" id="selected-color-node" value="${variants[0]?.colorName || 'Default'}">`;
+
+            const thumbsHtml = initialImgs.length > 1 ? `<div class="product-thumb-grid" id="dynamic-thumb-container">${initialImgs.map((url,i)=>`<img src="${url}" class="product-thumb${i===0?' active':''}" onclick="switchMainImg(this,'${url}')">`).join('')}</div>` : '<div id="dynamic-thumb-container"></div>';
 
             container.innerHTML = `
                 <div class="product-image-col">
-                    <img src="${imgs[0] || 'https://via.placeholder.com/500'}" class="product-main-image" id="main-product-img">
+                    <img src="${initialImgs[0] || 'https://via.placeholder.com/500'}" class="product-main-image" id="main-product-img">
                 </div>
                 <div class="product-info">
                     <div class="product-title">${prod.name}</div>
@@ -629,8 +691,8 @@
                     <div class="product-price">৳${prod.price}</div>
                     
                     <div class="action-controls">
+                        ${variants.length > 1 ? colorDropdown : `<div style="display:none;"></div>`}
                         ${parsedSizes.length > 0 ? sizeDropdown : `<div style="font-size:11px; padding:6px; text-align:center; border:1px solid #aaa;">UNISIZE</div>`}
-                        <span class="next-link" onclick="setView('shop')">next &rsaquo;</span>
                         
                         ${prod.stock > 0 ? `
                         <button class="btn-action-red" onclick="commitItemToCart()">add to cart</button>
@@ -639,9 +701,27 @@
                         <button class="btn-action-black" style="grid-column: span 2; background:#999;cursor:not-allowed;" disabled>sold out</button>
                         `}
                     </div>
+                    <div><span class="next-link" onclick="setView('shop')">next &rsaquo;</span></div>
                 </div>
             `;
             setView('product');
+        }
+
+        function changeProductColor(colorName) {
+            const variant = window.currentViewedVariants.find(v => v.colorName === colorName);
+            if(variant && variant.images.length > 0) {
+                const validImgs = variant.images.filter(Boolean);
+                if(validImgs.length > 0) {
+                    document.getElementById('main-product-img').src = validImgs[0];
+                    const thumbsHtml = validImgs.length > 1 ? validImgs.map((url,i)=>`<img src="${url}" class="product-thumb${i===0?' active':''}" onclick="switchMainImg(this,'${url}')">`).join('') : '';
+                    
+                    const thumbContainer = document.getElementById('dynamic-thumb-container');
+                    if(thumbContainer) {
+                        thumbContainer.innerHTML = thumbsHtml;
+                        thumbContainer.className = thumbsHtml ? 'product-thumb-grid' : '';
+                    }
+                }
+            }
         }
 
         function switchMainImg(thumb, url) {
@@ -655,22 +735,24 @@
             if(!selectedProductPointer) return;
             const sizeEl = document.getElementById('selected-size-node');
             const sizeValue = sizeEl && sizeEl.value ? sizeEl.value : 'UNISIZE';
+            
+            const colorEl = document.getElementById('selected-color-node');
+            const colorValue = colorEl ? colorEl.value : 'Default';
+
+            // get the correct image based on color selected
+            const variantImage = window.currentViewedVariants.find(v => v.colorName === colorValue)?.images.find(Boolean) || selectedProductPointer.imageurl;
 
             shoppingBagArray.push({
                 id: selectedProductPointer.id,
                 name: selectedProductPointer.name,
                 price: Number(selectedProductPointer.price),
-                image: selectedProductPointer.imageurl,
-                size: sizeValue
+                image: variantImage,
+                size: sizeValue,
+                color: colorValue
             });
 
             updateCartWidgetState();
             triggerWidgetFlash();
-        }
-
-        function triggerDirectCheckout() {
-            commitItemToCart();
-            setView('checkout');
         }
 
         function updateCartWidgetState() {
@@ -715,7 +797,7 @@
                     <img src="${item.image || 'https://via.placeholder.com/100'}" class="cart-img-preview">
                     <div style="flex:1;">
                         <div style="text-transform:uppercase; font-weight:bold;">${item.name}</div>
-                        <div style="color:#666;">Size Spec: ${item.size}</div>
+                        <div style="color:#666;">Color: ${item.color} | Size: ${item.size}</div>
                     </div>
                     <div style="font-weight:bold; margin-right:20px;">৳${item.price}</div>
                     <button class="btn-action-black" style="padding:4px 8px; font-size:10px; width:auto;" onclick="evictCartIndex(${idx})">EVICT</button>
@@ -732,6 +814,7 @@
             updateCartWidgetState();
         }
 
+        // Checkout & Payment Logic
         function calculateFinalInvoice() {
             const region = document.getElementById('cust-region').value;
             let subtotal = shoppingBagArray.reduce((acc, curr) => acc + curr.price, 0);
@@ -740,55 +823,77 @@
             
             const totalBillEl = document.getElementById('checkout-total-bill');
             if(totalBillEl) totalBillEl.textContent = "৳" + combinedGross;
+            return combinedGross;
+        }
+
+        function togglePaymentDetails() {
+            const method = document.getElementById('cust-payment').value;
+            const box = document.getElementById('payment-instruction-box');
+            const detail = document.getElementById('payment-account-detail');
+            
+            if(['bkash', 'city', 'dbbl'].includes(method)) {
+                box.style.display = 'block';
+                if(method === 'bkash') detail.textContent = "bKash: " + (paymentSettings.bkash || "Not configured");
+                if(method === 'city') detail.textContent = "City Bank:\n" + (paymentSettings.city || "Not configured");
+                if(method === 'dbbl') detail.textContent = "DBBL:\n" + (paymentSettings.dbbl || "Not configured");
+                detail.innerHTML = detail.innerHTML.replace(/\n/g, '<br>');
+            } else {
+                box.style.display = 'none';
+            }
         }
 
         async function handleOrderSubmission(event) {
             event.preventDefault();
+            
+            if(shoppingBagArray.length === 0) {
+                alert("Cart is empty."); return;
+            }
+
             const submitBtn = document.getElementById('submit-order-btn');
             submitBtn.disabled = true;
-            submitBtn.textContent = "RECORDING DATA...";
+            submitBtn.textContent = "PROCESSING...";
 
             const name = document.getElementById('cust-name').value.trim();
             const phone = document.getElementById('cust-phone').value.trim();
+            const email = document.getElementById('cust-email').value.trim();
             const address = document.getElementById('cust-address').value.trim();
             const region = document.getElementById('cust-region').value;
+            const paymentMethod = document.getElementById('cust-payment').value;
 
-            let subtotal = shoppingBagArray.reduce((acc, curr) => acc + curr.price, 0);
-            let logistics = region === 'outside' ? 150 : 0;
-            let totalPayableBill = subtotal + logistics;
+            let totalPayableBill = calculateFinalInvoice();
+            const receiptId = 'ORD-' + Math.random().toString(36).substr(2, 6).toUpperCase();
 
             const orderPayload = {
-                customer: { name, phone, address, region },
+                receipt_id: receiptId,
+                customer: { name, phone, email, address, region },
                 items: shoppingBagArray,
                 total: totalPayableBill,
-                status: 'Pending'
+                payment_method: paymentMethod,
+                status: 'Pending Verification'
             };
 
             const { data, error } = await supabaseClient.from('orders').insert([orderPayload]).select();
             
-            let msg = `*NEW PRODUCTION ORDER REQUEST — MOVI ARCHITECTURE*\n`;
-            msg += `----------------------------------------\n`;
-            msg += `*Consignee:* ${name}\n`;
-            msg += `*Terminal Interface:* ${phone}\n`;
-            msg += `*Routing Node Address:* ${address} (${region === 'inside' ? 'Inside Loop' : 'External frontier'})\n\n`;
-            msg += `*MANIFEST ARTIFACTS LIST:*\n`;
-            
-            shoppingBagArray.forEach((item, i) => {
-                msg += `${i+1}. ${item.name} [Size: ${item.size}] — ৳${item.price}\n`;
-            });
-            
-            msg += `\n*Logistics Route Cost:* ৳${logistics}\n`;
-            msg += `*TOTAL INVOICE DEBIT VALUE:* ৳${totalPayableBill}\n`;
-            msg += `----------------------------------------\n`;
-            msg += `_Automatic API Handshake Verified._`;
-
-            const encodedText = encodeURIComponent(msg);
-            const targetWhatsAppGateway = `https://wa.me/8801700000000?text=${encodedText}`; 
+            document.getElementById('success-receipt-content').innerHTML = `
+                <p><strong>Order ID:</strong> ${receiptId}</p>
+                <p><strong>Customer:</strong> ${name} ${email ? '('+email+')' : ''}</p>
+                <p><strong>Shipping:</strong> ${address} <br> <span style="color:#666;">(${region === 'inside' ? 'Inside Dhaka' : 'Outside Dhaka'})</span></p>
+                <p><strong>Payment Method:</strong> ${paymentMethod.toUpperCase()}</p>
+                
+                <hr style="border-top:1px dotted #000; margin:15px 0;">
+                <div style="margin-bottom:10px;"><strong>Order Items:</strong></div>
+                ${shoppingBagArray.map(item => `<div style="margin-bottom:5px;">• ${item.name} <br> <span style="color:#555;">Color: ${item.color} | Size: ${item.size}</span> <span style="float:right;">৳${item.price}</span></div>`).join('')}
+                
+                <hr style="border-top:1px dotted #000; margin:15px 0;">
+                <p style="font-size:14px;"><strong>Total Payable: <span style="color:var(--movi-red); float:right;">৳${totalPayableBill}</span></strong></p>
+                
+                <div style="background:#eee; padding:10px; margin-top:20px; text-align:center; font-weight:bold;">
+                    Status: Pending Verification
+                </div>
+            `;
 
             shoppingBagArray = [];
             updateCartWidgetState();
-
-            window.open(targetWhatsAppGateway, '_blank');
             setView('success');
             
             submitBtn.disabled = false;
@@ -802,6 +907,7 @@
         function verifyAdminAuthorization() {
             const passwordField = document.getElementById('gate-pass').value;
             if(passwordField === 'admin') { 
+                localStorage.setItem('movi_admin_session', 'active');
                 document.getElementById('admin-login-screen').style.display = 'none';
                 document.getElementById('admin-layout').style.display = 'flex';
                 fireAdminSuiteInitializations();
@@ -810,6 +916,12 @@
                 errorFlag.style.display = 'block';
                 setTimeout(() => errorFlag.style.display='none', 2000);
             }
+        }
+
+        function adminLogout() {
+            localStorage.removeItem('movi_admin_session');
+            window.location.hash = '';
+            location.reload();
         }
 
         function toggleAdminDarkMode() {
@@ -828,12 +940,15 @@
             document.querySelectorAll('.admin-nav-item').forEach(btn => btn.classList.remove('active'));
             
             document.getElementById('tab-' + targetTabId).style.display = 'block';
-            document.getElementById('nav-' + targetTabId).classList.add('active');
+            if(document.getElementById('nav-' + targetTabId)) {
+                document.getElementById('nav-' + targetTabId).classList.add('active');
+            }
             
             const headerTitle = document.getElementById('admin-panel-header-title');
             if(targetTabId === 'orders') { headerTitle.textContent = "ORDERS MANIFEST PIPELINE"; fetchAdminOrdersPipeline(); }
             if(targetTabId === 'products') { headerTitle.textContent = "GLOBAL ARTIFACT VAULT"; fetchAdminProductsPipeline(); }
             if(targetTabId === 'add') { headerTitle.textContent = "SCHEMA COMPONENT MINT"; resetProductConfiguratorForm(); }
+            if(targetTabId === 'settings') { headerTitle.textContent = "PAYMENT CONFIGURATION"; populatePaymentSettingsForm(); }
         }
 
         function triggerAdminAlertNotification(messageText) {
@@ -846,24 +961,68 @@
         function fireAdminSuiteInitializations() {
             fetchAdminOrdersPipeline();
             fetchAdminProductsPipeline();
+            loadPaymentSettings();
         }
 
+        // --- Payment Settings Config ---
+        async function loadPaymentSettings() {
+            // Load local backup first
+            const local = localStorage.getItem('movi_payment_settings');
+            if(local) paymentSettings = JSON.parse(local);
+
+            // Fetch from generic 'settings' table if user created it (safe failing)
+            try {
+                const { data, error } = await supabaseClient.from('settings').select('*').eq('id', 'payment').single();
+                if(data && data.details) {
+                    paymentSettings = data.details;
+                    localStorage.setItem('movi_payment_settings', JSON.stringify(paymentSettings));
+                }
+            } catch(e) { }
+        }
+
+        function populatePaymentSettingsForm() {
+            document.getElementById('set-bkash').value = paymentSettings.bkash || '';
+            document.getElementById('set-city').value = paymentSettings.city || '';
+            document.getElementById('set-dbbl').value = paymentSettings.dbbl || '';
+        }
+
+        async function savePaymentSettings() {
+            paymentSettings.bkash = document.getElementById('set-bkash').value.trim();
+            paymentSettings.city = document.getElementById('set-city').value.trim();
+            paymentSettings.dbbl = document.getElementById('set-dbbl').value.trim();
+            
+            localStorage.setItem('movi_payment_settings', JSON.stringify(paymentSettings));
+            
+            try {
+                // Upsert to standard settings schema if exists
+                await supabaseClient.from('settings').upsert({ id: 'payment', details: paymentSettings });
+                triggerAdminAlertNotification("PAYMENT SETTINGS SECURED");
+            } catch(e) {
+                // If table doesn't exist, local storage handles it for single admin environments
+                triggerAdminAlertNotification("LOCALLY SAVED (Create 'settings' DB table for cloud sync)");
+            }
+        }
+
+
+        // --- Orders Management ---
         async function fetchAdminOrdersPipeline() {
             const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
             if(!error && data) {
                 const tbody = document.getElementById('admin-orders-rows');
                 tbody.innerHTML = data.map(order => {
                     let client = order.customer || {};
-                    let trackingItems = (order.items || []).map(i => `${i.name}(${i.size})`).join(', ');
+                    let trackingItems = (order.items || []).map(i => `${i.name} (${i.color}/${i.size})`).join(', ');
+                    let displayId = order.receipt_id || order.id.slice(0,8) + '...';
+                    
                     return `
                         <tr>
-                            <td style="font-family:var(--admin-font-mono); font-size:10px;">${order.id.slice(0,8)}...</td>
-                            <td><strong>${client.name || 'Anonymous Node'}</strong><br><span style="font-size:10px; color:#aaa;">${trackingItems}</span></td>
-                            <td>${client.phone || 'N/A'}</td>
+                            <td style="font-family:var(--admin-font-mono); font-size:10px;">${displayId}</td>
+                            <td><strong>${client.name || 'Anonymous'}</strong><br><span style="font-size:10px; color:#aaa;">${trackingItems}</span></td>
+                            <td>${client.phone || 'N/A'}<br><span style="font-size:9px;">${client.region} | ${order.payment_method || 'N/A'}</span></td>
                             <td style="color:#00d68f; font-weight:bold;">৳${order.total}</td>
                             <td>
                                 <select onchange="updateRemoteOrderState('${order.id}', this.value)" style="background:#222; color:#fff; border:1px solid #444; padding:4px;">
-                                    <option value="Pending" ${order.status==='Pending'?'selected':''}>Pending</option>
+                                    <option value="Pending Verification" ${order.status==='Pending Verification'?'selected':''}>Pending Verification</option>
                                     <option value="Processing" ${order.status==='Processing'?'selected':''}>Processing</option>
                                     <option value="Completed" ${order.status==='Completed'?'selected':''}>Completed</option>
                                     <option value="Cancelled" ${order.status==='Cancelled'?'selected':''}>Cancelled</option>
@@ -890,6 +1049,81 @@
             }
         }
 
+
+        // --- Dynamic Product Variants (Colors/Images) Management ---
+        function renderVariantBuilder() {
+            const container = document.getElementById('variant-builder-container');
+            container.innerHTML = adminCurrentVariants.map((v, vIdx) => `
+                <div style="border:1px solid var(--admin-border); padding:15px; margin-bottom:15px; background: var(--admin-surface2);">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <label style="font-size:11px; color:var(--admin-muted);">Variant Color Name</label>
+                        <button type="button" style="color:red; background:none; border:none; cursor:pointer; font-size:10px;" onclick="removeVariantBlock(${vIdx})">REMOVE</button>
+                    </div>
+                    <input type="text" class="admin-input-field" value="${v.colorName}" onchange="updateVariantColor(${vIdx}, this.value)" placeholder="e.g. Matte Black">
+                    
+                    <label style="font-size:11px; color:var(--admin-muted); display:block; margin-top:10px; margin-bottom:5px;">Media Asserts (Cloudinary Auto Pipe)</label>
+                    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px;">
+                        ${[0,1,2,3].map(iIdx => `
+                            <div style="border:1px dashed #444; padding:5px; text-align:center;">
+                                <input type="file" style="font-size:9px; width:100%; margin-bottom:5px;" accept="image/*" onchange="uploadVariantImage(${vIdx}, ${iIdx}, this)">
+                                <img src="${v.images[iIdx] || ''}" id="prev-${vIdx}-${iIdx}" style="width:100%; height:60px; object-fit:cover; display:${v.images[iIdx] ? 'block' : 'none'}; margin-bottom:4px;">
+                                <div id="spin-${vIdx}-${iIdx}" style="display:none; color:var(--movi-red); font-size:9px;">UPLOADING...</div>
+                                ${v.images[iIdx] ? `<button type="button" style="background:var(--admin-bg); border:1px solid var(--admin-border); color:var(--admin-white); font-size:9px; width:100%; cursor:pointer;" onclick="removeVariantImage(${vIdx}, ${iIdx})">CLEAR</button>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addVariantBlock() {
+            adminCurrentVariants.push({ colorName: '', images: ['', '', '', ''] });
+            renderVariantBuilder();
+        }
+
+        function removeVariantBlock(idx) {
+            adminCurrentVariants.splice(idx, 1);
+            renderVariantBuilder();
+        }
+
+        function updateVariantColor(idx, val) {
+            adminCurrentVariants[idx].colorName = val;
+        }
+
+        function removeVariantImage(vIdx, iIdx) {
+            adminCurrentVariants[vIdx].images[iIdx] = '';
+            renderVariantBuilder();
+        }
+
+        async function uploadVariantImage(vIdx, iIdx, fileInput) {
+            const file = fileInput.files[0];
+            if(!file) return;
+            
+            const spinner = document.getElementById(`spin-${vIdx}-${iIdx}`);
+            const preview = document.getElementById(`prev-${vIdx}-${iIdx}`);
+            
+            spinner.style.display = 'block';
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_PRESET);
+            
+            try {
+                const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+                const json = await res.json();
+                if(json.secure_url) {
+                    adminCurrentVariants[vIdx].images[iIdx] = json.secure_url;
+                    renderVariantBuilder();
+                    triggerAdminAlertNotification(`ASSET UPLOADED`);
+                }
+            } catch(err) {
+                alert('Cloudinary upload failed.');
+            } finally {
+                spinner.style.display = 'none';
+            }
+        }
+
+
+        // --- Product Save / Load logic ---
         async function fetchAdminProductsPipeline() {
             const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
             if(!error && data) {
@@ -910,33 +1144,6 @@
             }
         }
 
-        const imgUrlFields = ['form-p-imgurl','form-p-imgurl2','form-p-imgurl3','form-p-imgurl4'];
-        async function uploadSlotImage(slot) {
-            const fileInput = document.getElementById('form-p-file-' + slot);
-            const file = fileInput.files[0];
-            if(!file) return;
-            const spinner = document.getElementById('spinner-' + slot);
-            const preview = document.getElementById('preview-' + slot);
-            spinner.style.display = 'block';
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', CLOUDINARY_PRESET);
-            try {
-                const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
-                const json = await res.json();
-                if(json.secure_url) {
-                    document.getElementById(imgUrlFields[slot]).value = json.secure_url;
-                    preview.src = json.secure_url;
-                    preview.style.display = 'block';
-                    triggerAdminAlertNotification(`IMAGE ${slot+1} UPLOADED TO CLOUDINARY`);
-                }
-            } catch(err) {
-                alert('Cloudinary upload failed for image ' + (slot+1));
-            } finally {
-                spinner.style.display = 'none';
-            }
-        }
-
         async function commitProductToDatabase() {
             const saveBtn = document.getElementById('save-product-master-btn');
             saveBtn.disabled = true;
@@ -948,33 +1155,46 @@
             const totalstock = Number(document.getElementById('form-p-totalstock').value) || stock;
             const badge = document.getElementById('form-p-badge').value.trim();
             const description = document.getElementById('form-p-desc').value.trim();
-            const imageurl = document.getElementById('form-p-imgurl').value;
-            const imageurl2 = document.getElementById('form-p-imgurl2').value;
-            const imageurl3 = document.getElementById('form-p-imgurl3').value;
-            const imageurl4 = document.getElementById('form-p-imgurl4').value;
-            const allImages = [imageurl, imageurl2, imageurl3, imageurl4].filter(Boolean);
             const sizesRawInput = document.getElementById('form-p-sizes').value.trim();
             const parsedSizesArray = sizesRawInput ? sizesRawInput.split(',').map(s => s.trim()) : [];
 
+            // Primary image fallback for catalogue grid (first image of first variant)
+            const fallbackMainImage = adminCurrentVariants[0]?.images.find(Boolean) || '';
+
             const productPayload = {
                 name, category, price, stock, totalstock, badge, description,
-                imageurl: allImages[0] || '',
-                images: JSON.stringify(allImages),
+                imageurl: fallbackMainImage, // Retained for backwards compatibility with catalog grid
+                color_variants: JSON.stringify(adminCurrentVariants), // Replaces problematic 'images' column
                 sizes: JSON.stringify(parsedSizesArray)
+                // Note: The 'images' column key was entirely removed to fix the Schema error.
             };
 
             if(activeEditingProductId) {
                 const { error } = await supabaseClient.from('products').update(productPayload).eq('id', activeEditingProductId);
-                if(error) { alert('Save failed: ' + error.message); saveBtn.disabled = false; return; }
+                if(error) { 
+                    handleDbError(error); 
+                    saveBtn.disabled = false; return; 
+                }
                 triggerAdminAlertNotification("PRODUCT UPDATED");
             } else {
                 const { error } = await supabaseClient.from('products').insert([productPayload]);
-                if(error) { alert('Save failed: ' + error.message); saveBtn.disabled = false; return; }
+                if(error) { 
+                    handleDbError(error); 
+                    saveBtn.disabled = false; return; 
+                }
                 triggerAdminAlertNotification("PRODUCT SAVED");
             }
             saveBtn.disabled = false;
             resetProductConfiguratorForm();
             switchAdminTab('products');
+        }
+        
+        function handleDbError(error) {
+            if(error.message.includes("color_variants")) {
+                alert("DATABASE SCHEMA UPDATE REQUIRED:\n\nPlease add a new column named 'color_variants' (Type: JSONB or Text) to your 'products' table in Supabase. This replaces the old 'images' column to support multiple colors.");
+            } else {
+                alert('Save failed: ' + error.message);
+            }
         }
 
         async function loadProductToConfigurator(productId) {
@@ -988,28 +1208,28 @@
                 document.getElementById('form-p-totalstock').value = data.totalstock || '';
                 document.getElementById('form-p-badge').value = data.badge || '';
                 document.getElementById('form-p-desc').value = data.description || '';
-                document.getElementById('form-p-imgurl').value = data.imageurl || '';
-                document.getElementById('form-p-imgurl2').value = '';
-                document.getElementById('form-p-imgurl3').value = '';
-                document.getElementById('form-p-imgurl4').value = '';
-                
-                let imgArr = [];
-                try { imgArr = JSON.parse(data.images || '[]'); } catch(e) { if(data.imageurl) imgArr = [data.imageurl]; }
-                imgArr.forEach((url, i) => {
-                    const hiddenIds = ['form-p-imgurl','form-p-imgurl2','form-p-imgurl3','form-p-imgurl4'];
-                    if(hiddenIds[i]) document.getElementById(hiddenIds[i]).value = url;
-                    const preview = document.getElementById('preview-' + i);
-                    if(url && preview) { preview.src = url; preview.style.display = 'block'; }
-                });
                 
                 let sizeText = '';
-                try {
-                    let array = Array.isArray(data.sizes) ? data.sizes : JSON.parse(data.sizes || '[]');
-                    sizeText = array.join(',');
-                } catch(e) {
-                    sizeText = data.sizes || '';
-                }
+                try { let arr = Array.isArray(data.sizes) ? data.sizes : JSON.parse(data.sizes || '[]'); sizeText = arr.join(','); } 
+                catch(e) { sizeText = data.sizes || ''; }
                 document.getElementById('form-p-sizes').value = sizeText;
+
+                // Load Variants
+                adminCurrentVariants = [];
+                try { adminCurrentVariants = JSON.parse(data.color_variants || '[]'); } catch(e) {}
+                
+                // Polyfill old DB format to new variant format
+                if (adminCurrentVariants.length === 0) {
+                    let oldImgs = [];
+                    try { oldImgs = JSON.parse(data.images || '[]'); } catch(e) { oldImgs = data.imageurl ? [data.imageurl] : []; }
+                    if(!oldImgs.length && data.imageurl) oldImgs = [data.imageurl];
+                    
+                    // Pad array to 4 slots
+                    while(oldImgs.length < 4) oldImgs.push('');
+                    adminCurrentVariants = [{ colorName: 'Default', images: oldImgs }];
+                }
+                
+                renderVariantBuilder();
 
                 switchAdminTab('add');
                 document.getElementById('admin-panel-header-title').textContent = "EDIT ARTIFACT PROTOCOLS";
@@ -1034,14 +1254,10 @@
             document.getElementById('form-p-badge').value = '';
             document.getElementById('form-p-desc').value = '';
             document.getElementById('form-p-sizes').value = '';
-            const urlIds = ['form-p-imgurl','form-p-imgurl2','form-p-imgurl3','form-p-imgurl4'];
-            urlIds.forEach((id, i) => {
-                document.getElementById(id).value = '';
-                const fi = document.getElementById('form-p-file-' + i);
-                if(fi) fi.value = '';
-                const pr = document.getElementById('preview-' + i);
-                if(pr) { pr.src=''; pr.style.display='none'; }
-            });
+            
+            // Reset to 1 empty variant block
+            adminCurrentVariants = [{ colorName: '', images: ['', '', '', ''] }];
+            renderVariantBuilder();
         }
 
         window.addEventListener('DOMContentLoaded', bootSystemContext);
