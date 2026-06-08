@@ -13,35 +13,31 @@
     ======================================================================
     SUPABASE SCHEMA AUDIT & RELATIONAL MIGRATION SCRIPT 
     ======================================================================
-    The current MVP uses a robust JSONB structure in the 'color_variants' 
-    column of the 'products' table for zero-config deployment. 
-    
-    If strict relational normalization is required, execute this in Supabase:
-    
-    CREATE TABLE product_variants (
-        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-        product_id UUID REFERENCES products(id) ON DELETE CASCADE,
-        color_name TEXT NOT NULL,
-        color_hex TEXT NOT NULL,
-        sku TEXT UNIQUE NOT NULL,
-        stock INT DEFAULT 0,
-        sizes TEXT[] DEFAULT '{}',
-        images TEXT[] DEFAULT '{}'
-    );
-    CREATE INDEX idx_variant_product ON product_variants(product_id);
+    Ensure your Supabase `products` table has these EXACT columns:
+    - id (uuid)
+    - name (text)
+    - category (text)
+    - price (numeric)
+    - stock (numeric)
+    - totalstock (numeric)
+    - badge (text)
+    - description (text)
+    - imageurl (text)
+    - color_variants (jsonb)  <-- CRITICAL for Variant Matrix
+    - sizes (jsonb or text)
 
-    CREATE TABLE order_items (
-        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-        order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
-        product_id UUID REFERENCES products(id),
-        variant_id UUID REFERENCES product_variants(id),
-        color TEXT,
-        size TEXT,
-        sku TEXT,
-        quantity INT DEFAULT 1,
-        unit_price DECIMAL,
-        total_price DECIMAL
-    );
+    Ensure your Supabase `orders` table has these EXACT columns:
+    - id (uuid)
+    - receipt_id (text)
+    - customer (jsonb)
+    - items (jsonb)
+    - total (numeric)
+    - payment_method (text)
+    - status (text)
+    - created_at (timestamptz)
+
+    Check your RLS (Row Level Security) policies on the `orders` table. 
+    If anonymous inserts are blocked, orders will silently fail.
     ======================================================================
 -->
 
@@ -95,21 +91,16 @@
     .btn-block-black { background-color: var(--movi-black); color: var(--movi-white); width: 100%; border: none; padding: 6px; margin-bottom: 6px; font-size: 11px; cursor: pointer; }
     .btn-block-red { background-color: var(--movi-red); color: var(--movi-white); width: 100%; border: none; padding: 6px; font-size: 11px; cursor: pointer; }
 
-    /* Drop Scarcity Mechanics */
-    .live-scarcity-widget { max-width: 500px; margin: 0 auto 40px auto; padding: 0 20px; }
-    .scarcity-top-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; }
-    .scarcity-pulse { display: inline-block; width: 6px; height: 6px; background-color: var(--movi-red); border-radius: 50%; margin-right: 6px; animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-    .scarcity-bar-container { width: 100%; height: 3px; background-color: var(--movi-gray); margin-bottom: 8px; }
-    .scarcity-bar-fill { height: 100%; background-color: var(--movi-black); width: 100%; transition: width 0.5s ease-out; }
-    .scarcity-bottom-row { display: flex; justify-content: space-between; font-size: 11px; }
-
-    /* Stripe Lookbook Collection */
-    .home-strip { width: 100%; overflow-x: auto; white-space: nowrap; padding-bottom: 15px; text-align: center; font-size: 0; }
-    .strip-item-wrapper { display: inline-block; position: relative; width: 16.5vw; height: 55vh; border-right: 1px solid var(--movi-white); cursor: pointer; }
-    .strip-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: filter 0.2s; }
+    /* Supreme-Style Lookbook Strips */
+    .home-strip { width: 100%; overflow-x: auto; white-space: nowrap; text-align: center; font-size: 0; padding: 0 20px 20px 20px; background: #fff; scroll-behavior: smooth; }
+    .strip-item-wrapper { display: inline-block; position: relative; width: 16vw; height: 60vh; cursor: pointer; margin-right: 2px; vertical-align: top; background: #f5f5f5; }
+    .strip-img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; transition: filter 0.2s; }
     .strip-item-wrapper:hover .strip-img { filter: brightness(0.8); }
     .badge-new { position: absolute; top: 0; left: 0; background-color: #b4b4b4; color: var(--movi-white); padding: 2px 5px; font-size: 10px; font-weight: bold; z-index: 10; text-transform: uppercase; }
+
+    @media (max-width: 768px) {
+        .strip-item-wrapper { width: 35vw; height: 45vh; }
+    }
 
     /* Look All Matrix Grid */
     #page-shop { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
@@ -228,20 +219,8 @@
         </div>
 
         <div id="view-home" class="page-view active">
+            <!-- Supreme Horizontal Lookbook Strips -->
             <div class="home-strip" id="lookbook-strip"></div>
-            <div class="live-scarcity-widget" style="margin-top:30px;">
-                <div class="scarcity-top-row">
-                    <div><span class="scarcity-pulse"></span>LIVE STAGE DROP</div>
-                    <div>CLOSING SYSTEM TIME: <span id="countdown-clock">00:00:00</span></div>
-                </div>
-                <div class="scarcity-bar-container">
-                    <div class="scarcity-bar-fill" id="scarcity-bar"></div>
-                </div>
-                <div class="scarcity-bottom-row">
-                    <div>ALLOCATED CAPSULE ORDERS: <span id="scarcity-sold">0</span></div>
-                    <div style="color: var(--movi-red); font-weight: bold;">CRITICAL RUNTIME LIMIT: <span id="scarcity-left">0</span> LEFT</div>
-                </div>
-            </div>
         </div>
 
         <div id="view-shop" class="page-view">
@@ -432,7 +411,7 @@
                     <div id="tab-products" class="admin-tab-view" style="display:none;">
                         <table class="admin-table">
                             <thead>
-                                <tr><th>Image Asset</th><th>Product Label</th><th>Zoning Category</th><th>Unit Cost</th><th>Stock State</th><th>Actions</th></tr>
+                                <tr><th>Image Assets (Fronts)</th><th>Product Label</th><th>Zoning Category</th><th>Unit Cost</th><th>Total Stock</th><th>Actions</th></tr>
                             </thead>
                             <tbody id="admin-products-rows"></tbody>
                         </table>
@@ -441,7 +420,7 @@
                     <!-- Tab: Add/Edit Product -->
                     <div id="tab-add" class="admin-tab-view" style="display:none;">
                         <div style="background:var(--admin-surface); border:1px solid var(--admin-border); padding:24px; max-width:700px;">
-                            <h3 style="font-family:var(--admin-font-mono); font-size:11px; color:var(--admin-muted); margin-bottom:20px; text-transform:uppercase;">Artifact Parameter Mapping</h3>
+                            <h3 style="font-family:var(--admin-font-mono); font-size:11px; color:var(--admin-muted); margin-bottom:20px; text-transform:uppercase;">Artifact Core Meta</h3>
                             
                             <label style="font-size:11px; color:var(--admin-muted);">Product Display Title</label>
                             <input type="text" class="admin-input-field" id="form-p-name">
@@ -473,7 +452,7 @@
                                 
                                 <div id="variant-builder-container"></div>
                                 
-                                <button type="button" onclick="addVariantBlock()" style="background:var(--admin-surface2); color:var(--admin-white); border:1px dashed var(--admin-border); padding:10px; width:100%; cursor:pointer; font-size:11px;">+ ADD COLOR VARIANT</button>
+                                <button type="button" onclick="addVariantBlock()" style="background:var(--admin-surface2); color:var(--admin-white); border:1px dashed var(--admin-border); padding:10px; width:100%; cursor:pointer; font-size:11px; margin-top:10px;">+ ADD COLOR VARIANT</button>
                             </div>
 
                             <div style="margin-top:30px;">
@@ -529,7 +508,7 @@
         
         // Variant & Payment Management
         let adminCurrentVariants = []; 
-        let storeCurrentVariants = []; // currently viewed product variants
+        let storeCurrentVariants = []; 
         let paymentSettings = { bkash: '', city: '', dbbl: '' };
 
         // System Initialization
@@ -555,36 +534,6 @@
             }
         }
         setInterval(updateStorefrontClocks, 1000);
-
-        // Scarcity Engine Countdown
-        function runScarcityCalculation() {
-            const countdownEl = document.getElementById('countdown-clock');
-            if(!countdownEl) return;
-            
-            let totalAllocated = 0;
-            let currentRemaining = 0;
-
-            databaseCacheProducts.forEach(p => {
-                totalAllocated += (Number(p.totalstock) || 0);
-                currentRemaining += (Number(p.stock) || 0);
-            });
-
-            let productsSold = totalAllocated - currentRemaining;
-            if(productsSold < 0) productsSold = 0;
-
-            document.getElementById('scarcity-sold').textContent = productsSold;
-            document.getElementById('scarcity-left').textContent = currentRemaining;
-
-            const percentage = totalAllocated > 0 ? (currentRemaining / totalAllocated) * 100 : 100;
-            document.getElementById('scarcity-bar').style.width = percentage + "%";
-
-            let now = new Date();
-            let hours = 23 - now.getHours();
-            let mins = 59 - now.getMinutes();
-            let secs = 59 - now.getSeconds();
-            countdownEl.textContent = `${String(hours).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-        }
-        setInterval(runScarcityCalculation, 1000);
 
         // ==========================================
         // CLIENT FRONTEND DISPATCH VIEW CONTROLLERS
@@ -630,20 +579,39 @@
             if(!error && data) {
                 databaseCacheProducts = data;
                 renderStorefrontLayouts();
-                runScarcityCalculation();
             }
         }
 
         function renderStorefrontLayouts() {
             const lookbook = document.getElementById('lookbook-strip');
-            if(lookbook) {
-                lookbook.innerHTML = databaseCacheProducts.map(prod => `
-                    <div class="strip-item-wrapper" onclick="inspectProductItem('${prod.id}')">
-                        ${prod.badge ? `<div class="badge-new">${prod.badge}</div>` : ''}
-                        <img src="${prod.imageurl || 'https://via.placeholder.com/400'}" class="strip-img" loading="lazy">
-                    </div>
-                `).join('');
-            }
+            let stripHtml = '';
+
+            // Supreme Style Strips: ONLY FRONT images of all color variants.
+            databaseCacheProducts.forEach(prod => {
+                let variants = [];
+                try { variants = JSON.parse(prod.color_variants || '[]'); } catch(e) {}
+                
+                if(variants.length === 0) {
+                    stripHtml += `
+                        <div class="strip-item-wrapper" onclick="inspectProductItem('${prod.id}')">
+                            ${prod.badge ? `<div class="badge-new">${prod.badge}</div>` : ''}
+                            <img src="${prod.imageurl || 'https://via.placeholder.com/400'}" class="strip-img" loading="lazy">
+                        </div>
+                    `;
+                } else {
+                    variants.forEach(variant => {
+                        const frontImg = variant.images[0] || prod.imageurl || 'https://via.placeholder.com/400';
+                        stripHtml += `
+                            <div class="strip-item-wrapper" onclick="inspectProductItem('${prod.id}', '${variant.id}')">
+                                ${prod.badge ? `<div class="badge-new">${prod.badge}</div>` : ''}
+                                <img src="${frontImg}" class="strip-img" loading="lazy" title="${prod.name} - ${variant.colorName}">
+                            </div>
+                        `;
+                    });
+                }
+            });
+
+            if(lookbook) { lookbook.innerHTML = stripHtml; }
             renderShopGrid('all');
         }
 
@@ -661,22 +629,29 @@
 
             const targetData = categoryFilter === 'all' ? databaseCacheProducts : databaseCacheProducts.filter(p => p.category === categoryFilter);
 
-            catGrid.innerHTML = targetData.map(prod => `
+            catGrid.innerHTML = targetData.map(prod => {
+                let fallbackImg = prod.imageurl || 'https://via.placeholder.com/300';
+                try { 
+                    const v = JSON.parse(prod.color_variants || '[]');
+                    if (v.length > 0 && v[0].images[0]) fallbackImg = v[0].images[0];
+                } catch(e) {}
+
+                return `
                 <div class="product-card" onclick="inspectProductItem('${prod.id}')">
-                    <img src="${prod.imageurl || 'https://via.placeholder.com/300'}" loading="lazy">
+                    <img src="${fallbackImg}" loading="lazy">
                     <div style="margin-top:8px; display:flex; justify-content:space-between;">
                         <span style="text-transform:uppercase;">${prod.name}</span>
                         <span style="color:var(--movi-red);">৳${prod.price}</span>
                     </div>
                     ${prod.stock <= 0 ? `<div class="sold-out-box">SOLD OUT</div>` : ''}
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         // ==========================================
         // SUPREME STYLE PRODUCT DISPLAY ENGINE
         // ==========================================
-        function inspectProductItem(productId) {
+        function inspectProductItem(productId, preselectedVariantId = null) {
             const prod = databaseCacheProducts.find(p => p.id === productId);
             if(!prod) return;
             selectedProductPointer = prod;
@@ -710,8 +685,13 @@
             }
             storeCurrentVariants = variants;
             
-            // Initial Active Variant Setup
-            const activeVariant = variants[0];
+            // Determine initial active variant (from Home Strip click or default first)
+            let activeVariant = variants[0];
+            if (preselectedVariantId) {
+                const found = variants.find(v => v.id === preselectedVariantId);
+                if (found) activeVariant = found;
+            }
+
             const initialMainImg = activeVariant.images.find(Boolean) || 'https://via.placeholder.com/500';
 
             container.innerHTML = `
@@ -727,6 +707,7 @@
                                 <div class="color-swatch ${v.id === activeVariant.id ? 'active' : ''}" 
                                      style="background-color: ${v.colorHex || '#ccc'};" 
                                      title="${v.colorName}"
+                                     id="swatch-${v.id}"
                                      onclick="loadVariantGallery('${v.id}')">
                                 </div>
                             `).join('')}
@@ -737,7 +718,7 @@
                     <div class="product-desc">${prod.description || ''}</div>
                     
                     <div class="product-thumb-grid" id="product-dynamic-gallery">
-                        <!-- Thumbs injected by JS -->
+                        <!-- Thumbs injected dynamically based on selected swatch -->
                     </div>
                     
                     <div class="product-price">৳${prod.price}</div>
@@ -750,13 +731,13 @@
                         
                         <div class="action-row">
                             <select id="selected-size-node" class="size-select">
-                                <!-- Sizes injected by JS -->
+                                <!-- Sizes injected dynamically -->
                             </select>
                             <span class="next-link" onclick="setView('shop')">next &rsaquo;</span>
                         </div>
                         
                         <div class="action-row" style="margin-bottom:0;" id="action-buttons-wrapper">
-                            <!-- Buttons injected by JS based on stock -->
+                            <!-- Buttons injected based on variant stock -->
                         </div>
                     </div>
                 </div>
@@ -772,10 +753,9 @@
             if(!variant) return;
 
             // 1. Update Swatches highlighting
-            document.querySelectorAll('.color-swatch').forEach(el => {
-                el.classList.remove('active');
-                if(el.title === variant.colorName) el.classList.add('active'); // naive match for demo
-            });
+            document.querySelectorAll('.color-swatch').forEach(el => el.classList.remove('active'));
+            const activeSwatch = document.getElementById(`swatch-${variant.id}`);
+            if (activeSwatch) activeSwatch.classList.add('active');
 
             // 2. Update Label & Hidden Inputs
             document.getElementById('display-color-name').textContent = variant.colorName;
@@ -796,7 +776,6 @@
             const galleryGrid = document.getElementById('product-dynamic-gallery');
             galleryGrid.innerHTML = galleryHtml;
             
-            // Adjust columns based on available images for this color
             const cols = validImgs.length > 3 ? 3 : Math.max(1, validImgs.length);
             galleryGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
             galleryGrid.style.maxWidth = `${cols * 50}px`;
@@ -809,7 +788,7 @@
                 sizeSelect.style.display = 'block';
             } else {
                 sizeSelect.innerHTML = `<option value="UNISIZE">UNISIZE</option>`;
-                sizeSelect.style.display = 'none'; // hidden if unisize, or can show flat label
+                sizeSelect.style.display = 'none'; // hidden if unisize
             }
 
             // 5. Render Stock Buttons
@@ -847,8 +826,8 @@
             const variantImage = document.getElementById('main-product-img').src;
 
             shoppingBagArray.push({
-                id: selectedProductPointer.id, // Product ID
-                variantId: variantId,          // specific variant ID
+                id: selectedProductPointer.id,
+                variantId: variantId,
                 name: selectedProductPointer.name,
                 sku: skuValue,
                 price: Number(selectedProductPointer.price),
@@ -979,13 +958,17 @@
                 status: 'Pending Verification'
             };
 
-            // 1. Write the tracking record row to DB
             const { data, error } = await supabaseClient.from('orders').insert([orderPayload]).select();
             
-            // 2. Perform Stock Deductions asynchronously
+            if (error) {
+                alert("Order submission failed. Please try again. System Error: " + error.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = "CONFIRM ORDER DISPATCH";
+                return;
+            }
+            
             await executeVariantStockDeduction(shoppingBagArray);
 
-            // 3. Render Success Reciept
             document.getElementById('success-receipt-content').innerHTML = `
                 <p><strong>Order ID:</strong> ${receiptId}</p>
                 <p><strong>Customer:</strong> ${name} ${email ? '('+email+')' : ''}</p>
@@ -1012,10 +995,7 @@
             submitBtn.textContent = "CONFIRM ORDER DISPATCH";
         }
 
-        // Executes variant-level stock reductions directly against the JSONB blob.
-        // NOTE: In production environments, an RPC function handles this securely.
         async function executeVariantStockDeduction(cartItems) {
-            // Group operations by product ID to avoid overriding 
             let productMap = {};
             cartItems.forEach(item => {
                 if(!productMap[item.id]) productMap[item.id] = [];
@@ -1023,14 +1003,12 @@
             });
 
             for (const [productId, itemsPurchased] of Object.entries(productMap)) {
-                // Fetch current snapshot
-                const { data: pData } = await supabaseClient.from('products').select('stock, totalstock, color_variants').eq('id', productId).single();
+                const { data: pData } = await supabaseClient.from('products').select('stock, color_variants').eq('id', productId).single();
                 if(!pData) continue;
 
                 let variants = [];
                 try { variants = JSON.parse(pData.color_variants || '[]'); } catch(e) {}
                 
-                // Deduct qtys
                 itemsPurchased.forEach(cartItem => {
                     let targetVar = variants.find(v => v.id === cartItem.variantId);
                     if(targetVar) {
@@ -1038,10 +1016,8 @@
                     }
                 });
 
-                // Recalculate Global Available Stock
                 let newGlobalStock = variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0);
 
-                // Push update payload
                 await supabaseClient.from('products').update({
                     color_variants: JSON.stringify(variants),
                     stock: newGlobalStock
@@ -1113,7 +1089,6 @@
             loadPaymentSettings();
         }
 
-        // --- Payment Settings Config ---
         async function loadPaymentSettings() {
             const local = localStorage.getItem('movi_payment_settings');
             if(local) paymentSettings = JSON.parse(local);
@@ -1149,7 +1124,6 @@
         }
 
 
-        // --- Orders Management ---
         async function fetchAdminOrdersPipeline() {
             const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
             if(!error && data) {
@@ -1194,8 +1168,7 @@
             }
         }
 
-
-        // --- Dynamic Product Variants (Colors/Images) Management ---
+        // --- Admin Product Form Generator (Variant Engine) ---
         function renderVariantBuilder() {
             const container = document.getElementById('variant-builder-container');
             container.innerHTML = adminCurrentVariants.map((v, vIdx) => `
@@ -1234,7 +1207,7 @@
                         </div>
                     </div>
                     
-                    <label style="font-size:11px; color:var(--admin-muted); display:block; margin-top:10px; margin-bottom:5px;">Media Asserts (Front, Side, Back, Top, Sole, Extra)</label>
+                    <label style="font-size:11px; color:var(--admin-muted); display:block; margin-top:10px; margin-bottom:5px;">Media Assets (Front, Side, Back, Top, Sole, Extra)</label>
                     <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
                         ${[0,1,2,3,4,5].map(iIdx => {
                             const viewLabels = ['Front', 'Side', 'Back', 'Top', 'Sole', 'Additional'];
@@ -1285,7 +1258,6 @@
             if(!file) return;
             
             const spinner = document.getElementById(`spin-${vIdx}-${iIdx}`);
-            const preview = document.getElementById(`prev-${vIdx}-${iIdx}`);
             
             spinner.style.display = 'block';
             const formData = new FormData();
@@ -1308,24 +1280,36 @@
         }
 
 
-        // --- Product Save / Load logic ---
+        // --- Vault Data Synching ---
         async function fetchAdminProductsPipeline() {
             const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
             if(!error && data) {
                 const tbody = document.getElementById('admin-products-rows');
-                tbody.innerHTML = data.map(prod => `
-                    <tr>
-                        <td><img src="${prod.imageurl || 'https://via.placeholder.com/50'}" style="width:40px; height:40px; object-fit:cover;" loading="lazy"></td>
-                        <td><strong>${prod.name}</strong></td>
-                        <td style="text-transform:uppercase; font-size:11px; color:#aaa;">${prod.category}</td>
-                        <td>৳${prod.price}</td>
-                        <td><span style="color:${prod.stock > 0 ? '#00d68f':'#e8001d'}">${prod.stock}</span></td>
-                        <td>
-                            <button style="background:#3b82f6; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer; margin-right:5px;" onclick="loadProductToConfigurator('${prod.id}')">EDIT</button>
-                            <button style="background:red; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer;" onclick="purgeProductRecord('${prod.id}')">PURGE</button>
-                        </td>
-                    </tr>
-                `).join('');
+                tbody.innerHTML = data.map(prod => {
+                    let variants = [];
+                    try { variants = JSON.parse(prod.color_variants || '[]'); } catch(e) {}
+                    
+                    let thumbHtml = '';
+                    if (variants.length > 0) {
+                        thumbHtml = variants.map(v => v.images[0] ? `<img src="${v.images[0]}" style="width:30px; height:30px; object-fit:cover; border-radius:2px; border:1px solid #444; margin-right:4px;" title="${v.colorName}">` : '').join('');
+                    } else {
+                        thumbHtml = `<img src="${prod.imageurl || 'https://via.placeholder.com/50'}" style="width:30px; height:30px; object-fit:cover;">`;
+                    }
+
+                    return `
+                        <tr>
+                            <td style="display:flex; align-items:center;">${thumbHtml}</td>
+                            <td><strong>${prod.name}</strong></td>
+                            <td style="text-transform:uppercase; font-size:11px; color:#aaa;">${prod.category}</td>
+                            <td>৳${prod.price}</td>
+                            <td><span style="color:${prod.stock > 0 ? '#00d68f':'#e8001d'}">${prod.stock}</span></td>
+                            <td>
+                                <button style="background:#3b82f6; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer; margin-right:5px;" onclick="loadProductToConfigurator('${prod.id}')">EDIT</button>
+                                <button style="background:red; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer;" onclick="purgeProductRecord('${prod.id}')">PURGE</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
             }
         }
 
@@ -1339,7 +1323,7 @@
             const badge = document.getElementById('form-p-badge').value.trim();
             const description = document.getElementById('form-p-desc').value.trim();
             
-            // Clean up and calculate global variables based on defined variants
+            // Re-calc dynamic fields from variants
             adminCurrentVariants.forEach(v => {
                 if(!v.id) v.id = generateUUID();
                 v.stock = Number(v.stock) || 0;
@@ -1356,9 +1340,9 @@
                 totalstock: totalDerivedStock, 
                 badge, 
                 description,
-                imageurl: fallbackMainImage, // Display fallback image
-                color_variants: JSON.stringify(adminCurrentVariants), // JSONB Payload
-                sizes: "[]" // Global sizes deprecated, preserved null to avoid schema breakage
+                imageurl: fallbackMainImage, // Legacy hook
+                color_variants: JSON.stringify(adminCurrentVariants), // Primary data engine
+                sizes: "[]" // Global sizes deprecated, pushed empty array to prevent schema fails
             };
 
             if(activeEditingProductId) {
@@ -1382,7 +1366,7 @@
         }
         
         function handleDbError(error) {
-            if(error.message.includes("color_variants")) {
+            if(error.message && error.message.includes("color_variants")) {
                 alert("DATABASE SCHEMA UPDATE REQUIRED:\n\nPlease add a new column named 'color_variants' (Type: JSONB or Text) to your 'products' table in Supabase. This replaces the old 'images' column to support multiple colors.");
             } else {
                 alert('Save failed: ' + error.message);
@@ -1393,16 +1377,23 @@
             const { data, error } = await supabaseClient.from('products').select('*').eq('id', productId).single();
             if(!error && data) {
                 activeEditingProductId = data.id;
+                
+                // Hydrate Global Fields
                 document.getElementById('form-p-name').value = data.name || '';
                 document.getElementById('form-p-cat').value = data.category || 'sneakers';
                 document.getElementById('form-p-price').value = data.price || '';
                 document.getElementById('form-p-badge').value = data.badge || '';
                 document.getElementById('form-p-desc').value = data.description || '';
                 
+                // Hydrate Variants Array
                 adminCurrentVariants = [];
-                try { adminCurrentVariants = JSON.parse(data.color_variants || '[]'); } catch(e) {}
+                try { 
+                    adminCurrentVariants = JSON.parse(data.color_variants || '[]'); 
+                } catch(e) {
+                    console.error("Failed to parse variants", e);
+                }
                 
-                // Polyfill for migrating old db formats into new 6-slot variant system
+                // Polyfill Legacy Databases missing color_variants to new 6-slot system
                 if (adminCurrentVariants.length === 0) {
                     let oldImgs = [];
                     try { oldImgs = JSON.parse(data.images || '[]'); } catch(e) { oldImgs = data.imageurl ? [data.imageurl] : []; }
@@ -1412,7 +1403,7 @@
                     try { legacySizes = Array.isArray(data.sizes) ? data.sizes : JSON.parse(data.sizes || "[]"); } 
                     catch(e) { if(typeof data.sizes === 'string') legacySizes = data.sizes.split(','); }
 
-                    while(oldImgs.length < 6) oldImgs.push('');
+                    while(oldImgs.length < 6) oldImgs.push(''); // pad missing angles
                     
                     adminCurrentVariants = [{ 
                         id: generateUUID(),
