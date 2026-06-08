@@ -87,7 +87,7 @@
     .product-card img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; background-color: #f5f5f5; }
     .sold-out-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255, 255, 255, 0.95); color: var(--movi-black); padding: 6px 8px; font-size: 10px; font-weight: bold; pointer-events: none; text-transform: uppercase; border: 1px solid var(--movi-black); }
 
-    /* Individual View Profile */
+    /* Individual View Profile — Supreme style */
     .product-detail-layout { display: flex; align-items: flex-start; gap: 60px; max-width: 1000px; margin: 40px auto; padding: 20px 40px; }
     .product-image-col { flex: 0 0 55%; text-align: center; }
     .product-main-image { width: 100%; max-width: 500px; height: auto; object-fit: contain; display: inline-block; }
@@ -96,18 +96,19 @@
     .product-color { font-size: 11px; font-weight: bold; margin-bottom: 16px; }
     .product-desc { font-size: 10px; line-height: 1.4; margin-bottom: 20px; color: #000; text-align: justify; max-width: 90%; }
     .product-thumb-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 20px; max-width: 150px; }
-    .product-thumb { width: 100%; aspect-ratio: 1/1; object-fit: cover; border: 1px solid transparent; cursor: pointer; }
-    .product-thumb.active { border-color: #000; }
-    .product-thumb:hover { border-color: #999; }
+    .product-thumb { width: 100%; aspect-ratio: 1/1; object-fit: cover; border: 1px solid #ccc; cursor: pointer; }
+    .product-thumb.active { border: 1px solid #000; }
+    .product-thumb:hover { border-color: #666; }
     .product-price { font-size: 13px; font-weight: normal; margin-bottom: 16px; }
     
-    /* Action Grid */
-    .action-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 15px; max-width: 320px; align-items: center; }
-    .size-select { width: 100%; padding: 6px; border: 1px solid #aaa; background: var(--movi-white); outline: none; font-size: 11px; text-align: center; cursor: pointer; }
-    .next-link { font-size: 11px; color: #000; cursor: pointer; white-space: nowrap; display: inline-block; margin-top:10px; }
+    /* Action Controls */
+    .action-controls { display: flex; flex-direction: column; max-width: 320px; }
+    .action-row { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; width: 100%; }
+    .size-select { flex: 1; padding: 6px; border: 1px solid #aaa; background: var(--movi-white); outline: none; font-size: 11px; text-align: center; cursor: pointer; }
+    .next-link { font-size: 11px; color: #000; cursor: pointer; white-space: nowrap; }
     .next-link:hover { text-decoration: underline; }
-    .btn-action-red { width: 100%; background-color: var(--movi-red); color: var(--movi-white); border: none; padding: 8px; font-size: 11px; cursor: pointer; text-align: center; font-weight: bold; }
-    .btn-action-black { width: 100%; background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 8px; font-size: 11px; cursor: pointer; text-align: center; font-weight: bold; }
+    .btn-action-red { flex: 1; background-color: var(--movi-red); color: var(--movi-white); border: none; padding: 8px; font-size: 11px; cursor: pointer; text-align: center; font-weight: bold; }
+    .btn-action-black { flex: 1; background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 8px; font-size: 11px; cursor: pointer; text-align: center; font-weight: bold; }
 
     /* Checkout Elements */
     #page-cart { max-width: 800px; margin: 0 auto; padding: 0 20px; }
@@ -151,6 +152,13 @@
     #admin-view.light-mode .admin-input-field { color: #111; }
     #admin-view.light-mode #admin-sidebar { background: #fff; }
     .dark-toggle { margin:auto 20px 20px; padding:8px; background:var(--admin-surface2); border:1px solid var(--admin-border); color:var(--admin-white); font-family:var(--admin-font-mono); font-size:9px; letter-spacing:2px; cursor:pointer; width:calc(100% - 40px); text-align:center; }
+
+    /* Responsive Constraints */
+    @media (max-width: 768px) {
+        .product-detail-layout { flex-direction: column; gap: 30px; }
+        .product-image-col { padding-right: 0; width: 100%; }
+        .action-controls { max-width: 100%; }
+    }
 </style>
 </head>
 <body>
@@ -636,6 +644,9 @@
             `).join('');
         }
 
+        // ==========================================
+        // SUPREME STYLE PRODUCT DISPLAY ENGINE
+        // ==========================================
         function inspectProductItem(productId) {
             const prod = databaseCacheProducts.find(p => p.id === productId);
             if(!prod) return;
@@ -656,11 +667,11 @@
                 </select>
             ` : '';
 
-            // Handle Colors & Images Mapping
+            // Handle Variants Mapping (Data formatting layer)
             let variants = [];
             try { variants = JSON.parse(prod.color_variants || '[]'); } catch(e) {}
             
-            // Backwards compatibility for old database schemas without color_variants
+            // Polyfill for old db schema
             if (variants.length === 0) {
                 let oldImgs = [];
                 try { oldImgs = JSON.parse(prod.images || '[]'); } catch(e) { oldImgs = prod.imageurl ? [prod.imageurl] : []; }
@@ -668,66 +679,70 @@
                 variants = [{ colorName: 'Default', images: oldImgs }];
             }
             
-            window.currentViewedVariants = variants;
-            const initialImgs = variants[0]?.images.filter(Boolean) || [];
-
-            const colorDropdown = variants.length > 1 ? `
-                <select id="selected-color-node" class="size-select" onchange="changeProductColor(this.value)">
-                    ${variants.map(v => `<option value="${v.colorName}">${v.colorName}</option>`).join('')}
-                </select>
-            ` : `<input type="hidden" id="selected-color-node" value="${variants[0]?.colorName || 'Default'}">`;
-
-            const thumbsHtml = initialImgs.length > 1 ? `<div class="product-thumb-grid" id="dynamic-thumb-container">${initialImgs.map((url,i)=>`<img src="${url}" class="product-thumb${i===0?' active':''}" onclick="switchMainImg(this,'${url}')">`).join('')}</div>` : '<div id="dynamic-thumb-container"></div>';
+            // Generate Supreme-Style Master Thumbnail Matrix
+            let initialColor = variants[0]?.colorName || 'Default';
+            let initialMainImg = variants[0]?.images.find(Boolean) || prod.imageurl || 'https://via.placeholder.com/500';
+            
+            let allThumbsHtml = '';
+            variants.forEach(variant => {
+                const validImgs = variant.images.filter(Boolean);
+                validImgs.forEach(url => {
+                    const isActive = (url === initialMainImg) ? ' active' : '';
+                    allThumbsHtml += `<img src="${url}" class="product-thumb${isActive}" onclick="selectVariantImage(this, '${url}', '${variant.colorName}')">`;
+                });
+            });
 
             container.innerHTML = `
                 <div class="product-image-col">
-                    <img src="${initialImgs[0] || 'https://via.placeholder.com/500'}" class="product-main-image" id="main-product-img">
+                    <img src="${initialMainImg}" class="product-main-image" id="main-product-img">
                 </div>
                 <div class="product-info">
                     <div class="product-title">${prod.name}</div>
-                    <div class="product-color">${prod.badge || ''}</div>
+                    <div class="product-color" id="display-color-name">${initialColor}</div>
                     <div class="product-desc">${prod.description || ''}</div>
-                    ${thumbsHtml}
+                    
+                    <div class="product-thumb-grid">
+                        ${allThumbsHtml}
+                    </div>
+                    
                     <div class="product-price">৳${prod.price}</div>
                     
                     <div class="action-controls">
-                        ${variants.length > 1 ? colorDropdown : `<div style="display:none;"></div>`}
-                        ${parsedSizes.length > 0 ? sizeDropdown : `<div style="font-size:11px; padding:6px; text-align:center; border:1px solid #aaa;">UNISIZE</div>`}
+                        <!-- Hidden color state to track checkout item correctly -->
+                        <input type="hidden" id="selected-color-node" value="${initialColor}">
                         
-                        ${prod.stock > 0 ? `
-                        <button class="btn-action-red" onclick="commitItemToCart()">add to cart</button>
-                        <button class="btn-action-black" onclick="setView('shop')">continue shopping</button>
-                        ` : `
-                        <button class="btn-action-black" style="grid-column: span 2; background:#999;cursor:not-allowed;" disabled>sold out</button>
-                        `}
+                        <div class="action-row">
+                            ${parsedSizes.length > 0 ? sizeDropdown : `<div style="flex:1; padding:6px; text-align:center; border:1px solid #aaa; font-size:11px;">UNISIZE</div>`}
+                            <span class="next-link" onclick="setView('shop')">next &rsaquo;</span>
+                        </div>
+                        
+                        <div class="action-row" style="margin-bottom:0;">
+                            ${prod.stock > 0 ? `
+                            <button class="btn-action-red" onclick="commitItemToCart()">add to cart</button>
+                            <button class="btn-action-black" onclick="setView('shop')">continue shopping</button>
+                            ` : `
+                            <button class="btn-action-black" style="flex: 1; background:#999;cursor:not-allowed;" disabled>sold out</button>
+                            `}
+                        </div>
                     </div>
-                    <div><span class="next-link" onclick="setView('shop')">next &rsaquo;</span></div>
                 </div>
             `;
             setView('product');
         }
 
-        function changeProductColor(colorName) {
-            const variant = window.currentViewedVariants.find(v => v.colorName === colorName);
-            if(variant && variant.images.length > 0) {
-                const validImgs = variant.images.filter(Boolean);
-                if(validImgs.length > 0) {
-                    document.getElementById('main-product-img').src = validImgs[0];
-                    const thumbsHtml = validImgs.length > 1 ? validImgs.map((url,i)=>`<img src="${url}" class="product-thumb${i===0?' active':''}" onclick="switchMainImg(this,'${url}')">`).join('') : '';
-                    
-                    const thumbContainer = document.getElementById('dynamic-thumb-container');
-                    if(thumbContainer) {
-                        thumbContainer.innerHTML = thumbsHtml;
-                        thumbContainer.className = thumbsHtml ? 'product-thumb-grid' : '';
-                    }
-                }
-            }
-        }
+        // Color Variant Matrix Selector Event
+        function selectVariantImage(thumbEl, imgUrl, colorName) {
+            // Update main visual display
+            document.getElementById('main-product-img').src = imgUrl;
 
-        function switchMainImg(thumb, url) {
-            document.getElementById('main-product-img').src = url;
+            // Shift active state visualizer ring
             document.querySelectorAll('.product-thumb').forEach(t => t.classList.remove('active'));
-            thumb.classList.add('active');
+            thumbEl.classList.add('active');
+
+            // Hook data states for UI and Data logic
+            document.getElementById('display-color-name').textContent = colorName;
+            const colorInput = document.getElementById('selected-color-node');
+            if(colorInput) colorInput.value = colorName;
         }
 
         // Cart Mechanics
@@ -739,8 +754,7 @@
             const colorEl = document.getElementById('selected-color-node');
             const colorValue = colorEl ? colorEl.value : 'Default';
 
-            // get the correct image based on color selected
-            const variantImage = window.currentViewedVariants.find(v => v.colorName === colorValue)?.images.find(Boolean) || selectedProductPointer.imageurl;
+            const variantImage = document.getElementById('main-product-img').src;
 
             shoppingBagArray.push({
                 id: selectedProductPointer.id,
@@ -966,11 +980,9 @@
 
         // --- Payment Settings Config ---
         async function loadPaymentSettings() {
-            // Load local backup first
             const local = localStorage.getItem('movi_payment_settings');
             if(local) paymentSettings = JSON.parse(local);
 
-            // Fetch from generic 'settings' table if user created it (safe failing)
             try {
                 const { data, error } = await supabaseClient.from('settings').select('*').eq('id', 'payment').single();
                 if(data && data.details) {
@@ -994,11 +1006,9 @@
             localStorage.setItem('movi_payment_settings', JSON.stringify(paymentSettings));
             
             try {
-                // Upsert to standard settings schema if exists
                 await supabaseClient.from('settings').upsert({ id: 'payment', details: paymentSettings });
                 triggerAdminAlertNotification("PAYMENT SETTINGS SECURED");
             } catch(e) {
-                // If table doesn't exist, local storage handles it for single admin environments
                 triggerAdminAlertNotification("LOCALLY SAVED (Create 'settings' DB table for cloud sync)");
             }
         }
@@ -1158,15 +1168,13 @@
             const sizesRawInput = document.getElementById('form-p-sizes').value.trim();
             const parsedSizesArray = sizesRawInput ? sizesRawInput.split(',').map(s => s.trim()) : [];
 
-            // Primary image fallback for catalogue grid (first image of first variant)
             const fallbackMainImage = adminCurrentVariants[0]?.images.find(Boolean) || '';
 
             const productPayload = {
                 name, category, price, stock, totalstock, badge, description,
-                imageurl: fallbackMainImage, // Retained for backwards compatibility with catalog grid
-                color_variants: JSON.stringify(adminCurrentVariants), // Replaces problematic 'images' column
+                imageurl: fallbackMainImage, 
+                color_variants: JSON.stringify(adminCurrentVariants), 
                 sizes: JSON.stringify(parsedSizesArray)
-                // Note: The 'images' column key was entirely removed to fix the Schema error.
             };
 
             if(activeEditingProductId) {
@@ -1214,17 +1222,14 @@
                 catch(e) { sizeText = data.sizes || ''; }
                 document.getElementById('form-p-sizes').value = sizeText;
 
-                // Load Variants
                 adminCurrentVariants = [];
                 try { adminCurrentVariants = JSON.parse(data.color_variants || '[]'); } catch(e) {}
                 
-                // Polyfill old DB format to new variant format
                 if (adminCurrentVariants.length === 0) {
                     let oldImgs = [];
                     try { oldImgs = JSON.parse(data.images || '[]'); } catch(e) { oldImgs = data.imageurl ? [data.imageurl] : []; }
                     if(!oldImgs.length && data.imageurl) oldImgs = [data.imageurl];
                     
-                    // Pad array to 4 slots
                     while(oldImgs.length < 4) oldImgs.push('');
                     adminCurrentVariants = [{ colorName: 'Default', images: oldImgs }];
                 }
@@ -1255,7 +1260,6 @@
             document.getElementById('form-p-desc').value = '';
             document.getElementById('form-p-sizes').value = '';
             
-            // Reset to 1 empty variant block
             adminCurrentVariants = [{ colorName: '', images: ['', '', '', ''] }];
             renderVariantBuilder();
         }
