@@ -11,13 +11,15 @@
 
 <!-- 
     ======================================================================
-    SUPABASE SCHEMA AUDIT & RELATIONAL MIGRATION SCRIPT 
+    SUPABASE SCHEMA AUDIT
     ======================================================================
     Ensure your Supabase `products` table has these EXACT columns:
     - id (uuid)
     - name (text)
     - category (text)
     - price (numeric)
+    - offer_price (numeric) <-- NEW
+    - discount_percent (numeric) <-- NEW
     - stock (numeric)
     - totalstock (numeric)
     - badge (text)
@@ -25,19 +27,6 @@
     - imageurl (text)
     - color_variants (jsonb)  <-- CRITICAL for Variant Matrix
     - sizes (jsonb or text)
-
-    Ensure your Supabase `orders` table has these EXACT columns:
-    - id (uuid)
-    - receipt_id (text)
-    - customer (jsonb)
-    - items (jsonb)
-    - total (numeric)
-    - payment_method (text)
-    - status (text)
-    - created_at (timestamptz)
-
-    Check your RLS (Row Level Security) policies on the `orders` table. 
-    If anonymous inserts are blocked, orders will silently fail.
     ======================================================================
 -->
 
@@ -66,7 +55,7 @@
     }
 
     #storefront-view { font-family: var(--font-main); background-color: var(--movi-white); color: var(--movi-black); font-size: 11px; min-height: 100vh; position: relative; display: flex; flex-direction: column; }
-    #storefront-view .page-view { display: none; min-height: 60vh; }
+    #storefront-view .page-view { display: none; min-height: 60vh; padding-bottom: 40px;}
     #storefront-view .page-view.active { display: block; flex: 1; }
 
     header { text-align: center; padding-top: 40px; padding-bottom: 20px; position: relative; border-bottom: none; }
@@ -83,23 +72,28 @@
     .store-footer a { cursor: pointer; color: #000; }
     .store-footer a:hover { text-decoration: underline; }
 
-    /* Cart Floating Widget */
-    .cart-widget { position: absolute; left: 20px; top: 120px; width: 160px; display: none; z-index: 1000; background: var(--movi-white); }
-    .cart-widget.active { display: block; }
-    .cart-header { background-color: var(--movi-gray); text-align: center; padding: 4px; font-weight: bold; }
-    .cart-body { border: 1px solid var(--movi-gray); border-top: none; padding: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .btn-block-black { background-color: var(--movi-black); color: var(--movi-white); width: 100%; border: none; padding: 6px; margin-bottom: 6px; font-size: 11px; cursor: pointer; }
-    .btn-block-red { background-color: var(--movi-red); color: var(--movi-white); width: 100%; border: none; padding: 6px; font-size: 11px; cursor: pointer; }
+    /* Fixed Cart Icon (Bottom Left) */
+    #fixed-cart-icon { position: fixed; bottom: 20px; left: 20px; background: var(--movi-white); color: var(--movi-black); border: 1px solid var(--movi-black); padding: 8px 12px; font-size: 11px; z-index: 9999; cursor: pointer; text-transform: lowercase; font-weight: bold; box-shadow: 2px 2px 0px rgba(0,0,0,0.1); transition: transform 0.1s; }
+    #fixed-cart-icon:hover { transform: translateY(-2px); }
+
+    /* Drop Scarcity Mechanics */
+    .live-scarcity-widget { max-width: 500px; margin: 0 auto 40px auto; padding: 0 20px; }
+    .scarcity-top-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; }
+    .scarcity-pulse { display: inline-block; width: 6px; height: 6px; background-color: var(--movi-red); border-radius: 50%; margin-right: 6px; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+    .scarcity-bar-container { width: 100%; height: 3px; background-color: var(--movi-gray); margin-bottom: 8px; }
+    .scarcity-bar-fill { height: 100%; background-color: var(--movi-black); width: 100%; transition: width 0.5s ease-out; }
+    .scarcity-bottom-row { display: flex; justify-content: space-between; font-size: 11px; }
 
     /* Supreme-Style Lookbook Strips */
     .home-strip { width: 100%; overflow-x: auto; white-space: nowrap; text-align: center; font-size: 0; padding: 0 20px 20px 20px; background: #fff; scroll-behavior: smooth; }
-    .strip-item-wrapper { display: inline-block; position: relative; width: 16vw; height: 60vh; cursor: pointer; margin-right: 2px; vertical-align: top; background: #f5f5f5; }
+    .strip-item-wrapper { display: inline-block; position: relative; width: 12vw; min-width: 140px; max-width: 180px; height: 50vh; cursor: pointer; margin: 0 1px; vertical-align: top; background: #f5f5f5; }
     .strip-img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; transition: filter 0.2s; }
     .strip-item-wrapper:hover .strip-img { filter: brightness(0.8); }
     .badge-new { position: absolute; top: 0; left: 0; background-color: #b4b4b4; color: var(--movi-white); padding: 2px 5px; font-size: 10px; font-weight: bold; z-index: 10; text-transform: uppercase; }
 
     @media (max-width: 768px) {
-        .strip-item-wrapper { width: 35vw; height: 45vh; }
+        .strip-item-wrapper { width: 35vw; height: 45vh; min-width: 120px; }
     }
 
     /* Look All Matrix Grid */
@@ -181,13 +175,6 @@
     .admin-input-field { width: 100%; background: var(--admin-surface2); border: 1px solid var(--admin-border); color: #fff; padding: 8px; outline: none; margin-bottom: 12px; }
     #admin-toast { position: fixed; bottom: 20px; right: 20px; background: #00d68f; color: #000; padding: 10px 20px; font-family: var(--admin-font-mono); font-size: 10px; display: none; z-index: 10000; }
     
-    /* Admin light mode overrides */
-    #admin-view.light-mode { --admin-bg:#f5f5f5; --admin-surface:#fff; --admin-surface2:#eee; --admin-border:#ddd; --admin-white:#111; --admin-muted:#888; }
-    #admin-view.light-mode { background: #f5f5f5; color: #111; }
-    #admin-view.light-mode .admin-input-field { color: #111; }
-    #admin-view.light-mode #admin-sidebar { background: #fff; }
-    .dark-toggle { margin:auto 20px 20px; padding:8px; background:var(--admin-surface2); border:1px solid var(--admin-border); color:var(--admin-white); font-family:var(--admin-font-mono); font-size:9px; letter-spacing:2px; cursor:pointer; width:calc(100% - 40px); text-align:center; }
-
     /* Responsive Constraints */
     @media (max-width: 768px) {
         .product-detail-layout { flex-direction: column; gap: 30px; }
@@ -208,19 +195,28 @@
             </div>
             <div class="header-time" id="live-clock">00/00/0000 00:00am local</div>
         </header>
-        <div id="cart-widget" class="cart-widget" style="top:160px;">
-            <div class="cart-header"><span id="widget-qty-count">0</span> item in cart</div>
-            <div class="cart-body">
-                <div>Subtotal<br><span style="font-size:9px;">(including tax)</span></div>
-                <div><strong id="widget-total-price">৳0</strong></div>
-            </div>
-            <button class="btn-block-black" onclick="setView('cart')">your shopping cart con...</button>
-            <button class="btn-block-red" onclick="setView('checkout')">proceed to checkout</button>
+        
+        <div id="fixed-cart-icon" onclick="setView('cart')">
+            cart (<span id="floating-cart-count">0</span>)
         </div>
 
         <div id="view-home" class="page-view active">
             <!-- Supreme Horizontal Lookbook Strips -->
             <div class="home-strip" id="lookbook-strip"></div>
+            
+            <div class="live-scarcity-widget" style="margin-top:30px;">
+                <div class="scarcity-top-row">
+                    <div><span class="scarcity-pulse"></span>LIVE STAGE DROP</div>
+                    <div>CLOSING SYSTEM TIME: <span id="countdown-clock">00:00:00</span></div>
+                </div>
+                <div class="scarcity-bar-container">
+                    <div class="scarcity-bar-fill" id="scarcity-bar"></div>
+                </div>
+                <div class="scarcity-bottom-row">
+                    <div>ALLOCATED CAPSULE ORDERS: <span id="scarcity-sold">0</span></div>
+                    <div style="color: var(--movi-red); font-weight: bold;">CRITICAL RUNTIME LIMIT: <span id="scarcity-left">0</span> LEFT</div>
+                </div>
+            </div>
         </div>
 
         <div id="view-shop" class="page-view">
@@ -280,22 +276,7 @@
                             <option value="outside">Outside Dhaka (৳150 Surcharge)</option>
                         </select>
                     </div>
-                    <div class="checkout-form-group">
-                        <label>Payment Method *</label>
-                        <select id="cust-payment" class="checkout-input" onchange="togglePaymentDetails()" required>
-                            <option value="">-- Select Payment Option --</option>
-                            <option value="cod">Cash on Delivery</option>
-                            <option value="bkash">bKash</option>
-                            <option value="city">City Bank</option>
-                            <option value="dbbl">Dutch-Bangla Bank</option>
-                        </select>
-                    </div>
                     
-                    <div id="payment-instruction-box" style="display:none; margin-top:10px; margin-bottom:15px; padding:15px; border:1px solid var(--movi-black); font-size:11px; background:#f9f9f9;">
-                        <div id="payment-account-detail" style="font-weight:bold; margin-bottom:8px; font-size:12px;"></div>
-                        <div style="color:var(--movi-red);">Please complete the payment, save the transaction screenshot, and our team will contact you to complete the order process.</div>
-                    </div>
-
                     <div style="margin:20px 0; padding:15px; border:1px dotted #000; text-align:right;">
                         <span>Gross Logistics Commitment Bill: </span><strong id="checkout-total-bill" style="font-size:14px; color:var(--movi-red);">৳0</strong>
                     </div>
@@ -382,13 +363,11 @@
                 <div class="admin-nav-item active" id="nav-orders" onclick="switchAdminTab('orders')">📋 Manifest Orders</div>
                 <div class="admin-nav-item" id="nav-products" onclick="switchAdminTab('products')">👟 Vault Products</div>
                 <div class="admin-nav-item" id="nav-add" onclick="switchAdminTab('add')">＋ Mint New Artifact</div>
-                <div class="admin-nav-item" id="nav-settings" onclick="switchAdminTab('settings')">⚙️ Payment Settings</div>
                 
                 <div style="margin-top:auto; padding:20px;">
                     <div class="admin-nav-item" style="padding-left:0; margin-bottom:10px;" onclick="adminLogout()">🚪 System Logout</div>
                     <button class="login-btn" style="font-size:12px; padding:8px; letter-spacing:2px; width:100%; background:var(--admin-surface2); color:#fff; border:1px solid #444; cursor:pointer;" onclick="bypassToStorefront()">PUBLIC LINK</button>
                 </div>
-                <button class="dark-toggle" id="dark-toggle-btn" onclick="toggleAdminDarkMode()">🌙 DARK MODE</button>
             </div>
 
             <div id="admin-main">
@@ -435,13 +414,21 @@
                                     </select>
                                 </div>
                                 <div style="flex:1;">
-                                    <label style="font-size:11px; color:var(--admin-muted);">Retail Price (৳)</label>
-                                    <input type="number" class="admin-input-field" id="form-p-price">
+                                    <label style="font-size:11px; color:var(--admin-muted);">Promotional Badge</label>
+                                    <input type="text" class="admin-input-field" id="form-p-badge" placeholder="e.g. NEW, 20% OFF">
                                 </div>
                             </div>
 
-                            <label style="font-size:11px; color:var(--admin-muted);">Promotional Notification Badge</label>
-                            <input type="text" class="admin-input-field" id="form-p-badge" placeholder="e.g. NEW, 20% OFF">
+                            <div style="display:flex; gap:15px; margin-bottom: 12px;">
+                                <div style="flex:1;">
+                                    <label style="font-size:11px; color:var(--admin-muted);">Retail Price (৳)</label>
+                                    <input type="number" class="admin-input-field" id="form-p-price" oninput="calculateDiscount()">
+                                </div>
+                                <div style="flex:1;">
+                                    <label style="font-size:11px; color:var(--admin-muted);">Offer Price (৳) (Optional)</label>
+                                    <input type="number" class="admin-input-field" id="form-p-offer" oninput="calculateDiscount()">
+                                </div>
+                            </div>
 
                             <label style="font-size:11px; color:var(--admin-muted);">Extended Blueprint Description</label>
                             <textarea class="admin-input-field" id="form-p-desc" rows="4" style="resize:vertical; font-family:inherit;"></textarea>
@@ -460,27 +447,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Tab: Payment Settings -->
-                    <div id="tab-settings" class="admin-tab-view" style="display:none;">
-                        <div style="background:var(--admin-surface); border:1px solid var(--admin-border); padding:24px; max-width:600px;">
-                            <h3 style="font-family:var(--admin-font-mono); font-size:11px; color:var(--admin-muted); margin-bottom:20px; text-transform:uppercase;">Payment Node Routing</h3>
-                            
-                            <label style="font-size:11px; color:var(--admin-muted);">bKash Account Number</label>
-                            <input type="text" class="admin-input-field" id="set-bkash" placeholder="e.g. 01700000000 (Personal)">
-
-                            <label style="font-size:11px; color:var(--admin-muted);">City Bank Account Details</label>
-                            <textarea class="admin-input-field" id="set-city" rows="2" placeholder="e.g. Account Name\nAccount Number"></textarea>
-                            
-                            <label style="font-size:11px; color:var(--admin-muted);">Dutch-Bangla Bank Account Details</label>
-                            <textarea class="admin-input-field" id="set-dbbl" rows="2" placeholder="e.g. Account Name\nAccount Number"></textarea>
-
-                            <div style="margin-top:20px;">
-                                <button style="width:auto; padding:12px 30px; background:#00d68f; color:#000; border:none; cursor:pointer; font-weight:bold; font-size:11px;" onclick="savePaymentSettings()">UPDATE PAYMENT LOGIC</button>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </div>
@@ -490,11 +456,10 @@
 
     <script>
         // ==========================================
-        // CONFIGURATION PARAMETERS (REAL KEYS)
+        // CONFIGURATION PARAMETERS
         // ==========================================
         const SUPABASE_URL = 'https://mbrkeowkfexhyeycegny.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icmtlb3drZmV4aHlleWNlZ255Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4MDgxOTIsImV4cCI6MjA5NjM4NDE5Mn0.qaya2DoqVpdHD4gzaIRGzmFCJVjYOU47z1yQ1Z1OzfI';
-        
         const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dv0knnmga/image/upload';
         const CLOUDINARY_PRESET = 'movi-shoes';
 
@@ -506,15 +471,13 @@
         let selectedProductPointer = null;
         let activeEditingProductId = null;
         
-        // Variant & Payment Management
+        // Variant Management
         let adminCurrentVariants = []; 
         let storeCurrentVariants = []; 
-        let paymentSettings = { bkash: '', city: '', dbbl: '' };
 
         // System Initialization
         async function bootSystemContext() {
             updateStorefrontClocks();
-            loadPaymentSettings();
             checkRoute();
         }
 
@@ -534,6 +497,35 @@
             }
         }
         setInterval(updateStorefrontClocks, 1000);
+
+        function runScarcityCalculation() {
+            const countdownEl = document.getElementById('countdown-clock');
+            if(!countdownEl) return;
+            
+            let totalAllocated = 0;
+            let currentRemaining = 0;
+
+            databaseCacheProducts.forEach(p => {
+                totalAllocated += (Number(p.totalstock) || 0);
+                currentRemaining += (Number(p.stock) || 0);
+            });
+
+            let productsSold = totalAllocated - currentRemaining;
+            if(productsSold < 0) productsSold = 0;
+
+            document.getElementById('scarcity-sold').textContent = productsSold;
+            document.getElementById('scarcity-left').textContent = currentRemaining;
+
+            const percentage = totalAllocated > 0 ? (currentRemaining / totalAllocated) * 100 : 100;
+            document.getElementById('scarcity-bar').style.width = percentage + "%";
+
+            let now = new Date();
+            let hours = 23 - now.getHours();
+            let mins = 59 - now.getMinutes();
+            let secs = 59 - now.getSeconds();
+            countdownEl.textContent = `${String(hours).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+        }
+        setInterval(runScarcityCalculation, 1000);
 
         // ==========================================
         // CLIENT FRONTEND DISPATCH VIEW CONTROLLERS
@@ -579,6 +571,7 @@
             if(!error && data) {
                 databaseCacheProducts = data;
                 renderStorefrontLayouts();
+                runScarcityCalculation();
             }
         }
 
@@ -601,12 +594,14 @@
                 } else {
                     variants.forEach(variant => {
                         const frontImg = variant.images[0] || prod.imageurl || 'https://via.placeholder.com/400';
-                        stripHtml += `
-                            <div class="strip-item-wrapper" onclick="inspectProductItem('${prod.id}', '${variant.id}')">
-                                ${prod.badge ? `<div class="badge-new">${prod.badge}</div>` : ''}
-                                <img src="${frontImg}" class="strip-img" loading="lazy" title="${prod.name} - ${variant.colorName}">
-                            </div>
-                        `;
+                        if(frontImg) {
+                            stripHtml += `
+                                <div class="strip-item-wrapper" onclick="inspectProductItem('${prod.id}', '${variant.id}')">
+                                    ${prod.badge ? `<div class="badge-new">${prod.badge}</div>` : ''}
+                                    <img src="${frontImg}" class="strip-img" loading="lazy" title="${prod.name} - ${variant.colorName}">
+                                </div>
+                            `;
+                        }
                     });
                 }
             });
@@ -635,13 +630,18 @@
                     const v = JSON.parse(prod.color_variants || '[]');
                     if (v.length > 0 && v[0].images[0]) fallbackImg = v[0].images[0];
                 } catch(e) {}
+                
+                const hasOffer = prod.offer_price && prod.offer_price > 0 && prod.offer_price < prod.price;
+                const priceHtml = hasOffer 
+                    ? `<span style="text-decoration: line-through; color: #888; font-size:10px; margin-right:4px;">৳${prod.price}</span><span style="color:var(--movi-red);">৳${prod.offer_price}</span>` 
+                    : `<span style="color:var(--movi-red);">৳${prod.price}</span>`;
 
                 return `
                 <div class="product-card" onclick="inspectProductItem('${prod.id}')">
                     <img src="${fallbackImg}" loading="lazy">
                     <div style="margin-top:8px; display:flex; justify-content:space-between;">
                         <span style="text-transform:uppercase;">${prod.name}</span>
-                        <span style="color:var(--movi-red);">৳${prod.price}</span>
+                        <div>${priceHtml}</div>
                     </div>
                     ${prod.stock <= 0 ? `<div class="sold-out-box">SOLD OUT</div>` : ''}
                 </div>
@@ -659,11 +659,9 @@
             const container = document.getElementById('product-detail-container');
             if(!container) return;
 
-            // Extract & Normalize Variants
             let variants = [];
             try { variants = JSON.parse(prod.color_variants || '[]'); } catch(e) {}
             
-            // Legacy schema polyfill
             if (variants.length === 0) {
                 let oldImgs = [];
                 try { oldImgs = JSON.parse(prod.images || '[]'); } catch(e) { oldImgs = prod.imageurl ? [prod.imageurl] : []; }
@@ -685,7 +683,6 @@
             }
             storeCurrentVariants = variants;
             
-            // Determine initial active variant (from Home Strip click or default first)
             let activeVariant = variants[0];
             if (preselectedVariantId) {
                 const found = variants.find(v => v.id === preselectedVariantId);
@@ -693,6 +690,11 @@
             }
 
             const initialMainImg = activeVariant.images.find(Boolean) || 'https://via.placeholder.com/500';
+
+            const hasOffer = prod.offer_price && prod.offer_price > 0 && prod.offer_price < prod.price;
+            const priceHtml = hasOffer 
+                ? `<span style="text-decoration: line-through; color: var(--movi-red); margin-right: 10px;">৳${prod.price}</span><span>৳${prod.offer_price}</span>` 
+                : `<span>৳${prod.price}</span>`;
 
             container.innerHTML = `
                 <div class="product-image-col">
@@ -718,10 +720,10 @@
                     <div class="product-desc">${prod.description || ''}</div>
                     
                     <div class="product-thumb-grid" id="product-dynamic-gallery">
-                        <!-- Thumbs injected dynamically based on selected swatch -->
+                        <!-- Thumbs injected dynamically -->
                     </div>
                     
-                    <div class="product-price">৳${prod.price}</div>
+                    <div class="product-price">${priceHtml}</div>
                     
                     <div class="action-controls">
                         <!-- Hidden state for checkout hooks -->
@@ -743,7 +745,6 @@
                 </div>
             `;
             
-            // Render active gallery & sizes
             loadVariantGallery(activeVariant.id);
             setView('product');
         }
@@ -752,18 +753,15 @@
             const variant = storeCurrentVariants.find(v => v.id === variantId);
             if(!variant) return;
 
-            // 1. Update Swatches highlighting
             document.querySelectorAll('.color-swatch').forEach(el => el.classList.remove('active'));
             const activeSwatch = document.getElementById(`swatch-${variant.id}`);
             if (activeSwatch) activeSwatch.classList.add('active');
 
-            // 2. Update Label & Hidden Inputs
             document.getElementById('display-color-name').textContent = variant.colorName;
             document.getElementById('selected-variant-id').value = variant.id;
             document.getElementById('selected-color-node').value = variant.colorName;
             document.getElementById('selected-variant-sku').value = variant.sku || '';
 
-            // 3. Render Independent Thumbnail Gallery for this specific color
             const validImgs = variant.images.filter(Boolean);
             const mainImgUrl = validImgs[0] || 'https://via.placeholder.com/500';
             document.getElementById('main-product-img').src = mainImgUrl;
@@ -780,7 +778,6 @@
             galleryGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
             galleryGrid.style.maxWidth = `${cols * 50}px`;
 
-            // 4. Render Variant Sizes
             const sizeSelect = document.getElementById('selected-size-node');
             if(variant.sizes && variant.sizes.length > 0) {
                 sizeSelect.innerHTML = `<option value="">-- size --</option>` + 
@@ -788,10 +785,9 @@
                 sizeSelect.style.display = 'block';
             } else {
                 sizeSelect.innerHTML = `<option value="UNISIZE">UNISIZE</option>`;
-                sizeSelect.style.display = 'none'; // hidden if unisize
+                sizeSelect.style.display = 'none';
             }
 
-            // 5. Render Stock Buttons
             const btnWrapper = document.getElementById('action-buttons-wrapper');
             if(Number(variant.stock) > 0) {
                 btnWrapper.innerHTML = `
@@ -825,12 +821,17 @@
             const skuValue = document.getElementById('selected-variant-sku').value;
             const variantImage = document.getElementById('main-product-img').src;
 
+            // Use offer price if exists
+            const pPrice = selectedProductPointer.offer_price > 0 && selectedProductPointer.offer_price < selectedProductPointer.price 
+                ? Number(selectedProductPointer.offer_price) 
+                : Number(selectedProductPointer.price);
+
             shoppingBagArray.push({
                 id: selectedProductPointer.id,
                 variantId: variantId,
                 name: selectedProductPointer.name,
                 sku: skuValue,
-                price: Number(selectedProductPointer.price),
+                price: pPrice,
                 image: variantImage,
                 size: sizeValue,
                 color: colorValue,
@@ -842,28 +843,40 @@
         }
 
         function updateCartWidgetState() {
+            const count = document.getElementById('floating-cart-count');
+            if(count) count.textContent = shoppingBagArray.length;
+
             const widget = document.getElementById('cart-widget');
             const qtyCount = document.getElementById('widget-qty-count');
             const totalPrice = document.getElementById('widget-total-price');
 
             if(shoppingBagArray.length > 0) {
-                widget.classList.add('active');
-                qtyCount.textContent = shoppingBagArray.length;
+                if(widget) widget.classList.add('active');
+                if(qtyCount) qtyCount.textContent = shoppingBagArray.length;
                 let total = shoppingBagArray.reduce((acc, curr) => acc + curr.price, 0);
-                totalPrice.textContent = "৳" + total;
+                if(totalPrice) totalPrice.textContent = "৳" + total;
             } else {
-                widget.classList.remove('active');
+                if(widget) widget.classList.remove('active');
             }
         }
 
         function triggerWidgetFlash() {
             const widgetHeader = document.querySelector('.cart-header');
+            const floatingIcon = document.getElementById('fixed-cart-icon');
             if(widgetHeader) {
                 widgetHeader.style.background = '#e8001d';
                 widgetHeader.style.color = '#fff';
+                if(floatingIcon) {
+                    floatingIcon.style.background = '#e8001d';
+                    floatingIcon.style.color = '#fff';
+                }
                 setTimeout(() => {
                     widgetHeader.style.background = 'var(--movi-gray)';
                     widgetHeader.style.color = '#000';
+                    if(floatingIcon) {
+                        floatingIcon.style.background = 'var(--movi-white)';
+                        floatingIcon.style.color = 'var(--movi-black)';
+                    }
                 }, 400);
             }
         }
@@ -900,7 +913,7 @@
             updateCartWidgetState();
         }
 
-        // Checkout & Payment Logic
+        // Checkout Logic
         function calculateFinalInvoice() {
             const region = document.getElementById('cust-region').value;
             let subtotal = shoppingBagArray.reduce((acc, curr) => acc + curr.price, 0);
@@ -910,22 +923,6 @@
             const totalBillEl = document.getElementById('checkout-total-bill');
             if(totalBillEl) totalBillEl.textContent = "৳" + combinedGross;
             return combinedGross;
-        }
-
-        function togglePaymentDetails() {
-            const method = document.getElementById('cust-payment').value;
-            const box = document.getElementById('payment-instruction-box');
-            const detail = document.getElementById('payment-account-detail');
-            
-            if(['bkash', 'city', 'dbbl'].includes(method)) {
-                box.style.display = 'block';
-                if(method === 'bkash') detail.textContent = "bKash: " + (paymentSettings.bkash || "Not configured");
-                if(method === 'city') detail.textContent = "City Bank:\n" + (paymentSettings.city || "Not configured");
-                if(method === 'dbbl') detail.textContent = "DBBL:\n" + (paymentSettings.dbbl || "Not configured");
-                detail.innerHTML = detail.innerHTML.replace(/\n/g, '<br>');
-            } else {
-                box.style.display = 'none';
-            }
         }
 
         async function handleOrderSubmission(event) {
@@ -944,7 +941,6 @@
             const email = document.getElementById('cust-email').value.trim();
             const address = document.getElementById('cust-address').value.trim();
             const region = document.getElementById('cust-region').value;
-            const paymentMethod = document.getElementById('cust-payment').value;
 
             let totalPayableBill = calculateFinalInvoice();
             const receiptId = 'ORD-' + Math.random().toString(36).substr(2, 6).toUpperCase();
@@ -954,7 +950,7 @@
                 customer: { name, phone, email, address, region },
                 items: shoppingBagArray,
                 total: totalPayableBill,
-                payment_method: paymentMethod,
+                payment_method: 'N/A',
                 status: 'Pending Verification'
             };
 
@@ -973,7 +969,6 @@
                 <p><strong>Order ID:</strong> ${receiptId}</p>
                 <p><strong>Customer:</strong> ${name} ${email ? '('+email+')' : ''}</p>
                 <p><strong>Shipping:</strong> ${address} <br> <span style="color:#666;">(${region === 'inside' ? 'Inside Dhaka' : 'Outside Dhaka'})</span></p>
-                <p><strong>Payment Method:</strong> ${paymentMethod.toUpperCase()}</p>
                 
                 <hr style="border-top:1px dotted #000; margin:15px 0;">
                 <div style="margin-bottom:10px;"><strong>Order Items:</strong></div>
@@ -1073,7 +1068,6 @@
             if(targetTabId === 'orders') { headerTitle.textContent = "ORDERS MANIFEST PIPELINE"; fetchAdminOrdersPipeline(); }
             if(targetTabId === 'products') { headerTitle.textContent = "GLOBAL ARTIFACT VAULT"; fetchAdminProductsPipeline(); }
             if(targetTabId === 'add') { headerTitle.textContent = "SCHEMA COMPONENT MINT"; resetProductConfiguratorForm(); }
-            if(targetTabId === 'settings') { headerTitle.textContent = "PAYMENT CONFIGURATION"; populatePaymentSettingsForm(); }
         }
 
         function triggerAdminAlertNotification(messageText) {
@@ -1086,43 +1080,7 @@
         function fireAdminSuiteInitializations() {
             fetchAdminOrdersPipeline();
             fetchAdminProductsPipeline();
-            loadPaymentSettings();
         }
-
-        async function loadPaymentSettings() {
-            const local = localStorage.getItem('movi_payment_settings');
-            if(local) paymentSettings = JSON.parse(local);
-
-            try {
-                const { data, error } = await supabaseClient.from('settings').select('*').eq('id', 'payment').single();
-                if(data && data.details) {
-                    paymentSettings = data.details;
-                    localStorage.setItem('movi_payment_settings', JSON.stringify(paymentSettings));
-                }
-            } catch(e) { }
-        }
-
-        function populatePaymentSettingsForm() {
-            document.getElementById('set-bkash').value = paymentSettings.bkash || '';
-            document.getElementById('set-city').value = paymentSettings.city || '';
-            document.getElementById('set-dbbl').value = paymentSettings.dbbl || '';
-        }
-
-        async function savePaymentSettings() {
-            paymentSettings.bkash = document.getElementById('set-bkash').value.trim();
-            paymentSettings.city = document.getElementById('set-city').value.trim();
-            paymentSettings.dbbl = document.getElementById('set-dbbl').value.trim();
-            
-            localStorage.setItem('movi_payment_settings', JSON.stringify(paymentSettings));
-            
-            try {
-                await supabaseClient.from('settings').upsert({ id: 'payment', details: paymentSettings });
-                triggerAdminAlertNotification("PAYMENT SETTINGS SECURED");
-            } catch(e) {
-                triggerAdminAlertNotification("LOCALLY SAVED (Create 'settings' DB table for cloud sync)");
-            }
-        }
-
 
         async function fetchAdminOrdersPipeline() {
             const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
@@ -1165,6 +1123,20 @@
             if(!error) {
                 triggerAdminAlertNotification("RECORD EVICTED");
                 fetchAdminOrdersPipeline();
+            }
+        }
+
+        // --- Admin Pricing Logic ---
+        function calculateDiscount() {
+            const retail = parseFloat(document.getElementById('form-p-price').value) || 0;
+            const offer = parseFloat(document.getElementById('form-p-offer').value) || 0;
+            const badgeInput = document.getElementById('form-p-badge');
+            
+            if (retail > 0 && offer > 0 && offer < retail) {
+                const discount = Math.round(((retail - offer) / retail) * 100);
+                badgeInput.value = `${discount}% OFF`;
+            } else {
+                badgeInput.value = '';
             }
         }
 
@@ -1320,8 +1292,14 @@
             const name = document.getElementById('form-p-name').value.trim();
             const category = document.getElementById('form-p-cat').value;
             const price = Number(document.getElementById('form-p-price').value) || 0;
+            const offer_price = Number(document.getElementById('form-p-offer').value) || null;
             const badge = document.getElementById('form-p-badge').value.trim();
             const description = document.getElementById('form-p-desc').value.trim();
+            
+            let discount_percent = 0;
+            if (price > 0 && offer_price > 0 && offer_price < price) {
+                discount_percent = Math.round(((price - offer_price) / price) * 100);
+            }
             
             // Re-calc dynamic fields from variants
             adminCurrentVariants.forEach(v => {
@@ -1336,13 +1314,15 @@
                 name, 
                 category, 
                 price, 
+                offer_price,
+                discount_percent,
                 stock: totalDerivedStock, 
                 totalstock: totalDerivedStock, 
                 badge, 
                 description,
                 imageurl: fallbackMainImage, // Legacy hook
                 color_variants: JSON.stringify(adminCurrentVariants), // Primary data engine
-                sizes: "[]" // Global sizes deprecated, pushed empty array to prevent schema fails
+                sizes: "[]" // Global sizes deprecated
             };
 
             if(activeEditingProductId) {
@@ -1366,8 +1346,8 @@
         }
         
         function handleDbError(error) {
-            if(error.message && error.message.includes("color_variants")) {
-                alert("DATABASE SCHEMA UPDATE REQUIRED:\n\nPlease add a new column named 'color_variants' (Type: JSONB or Text) to your 'products' table in Supabase. This replaces the old 'images' column to support multiple colors.");
+            if(error.message && (error.message.includes("color_variants") || error.message.includes("offer_price"))) {
+                alert("DATABASE SCHEMA UPDATE REQUIRED:\n\nPlease add missing columns to 'products' table:\n- 'color_variants' (JSONB)\n- 'offer_price' (numeric)\n- 'discount_percent' (numeric)");
             } else {
                 alert('Save failed: ' + error.message);
             }
@@ -1382,6 +1362,7 @@
                 document.getElementById('form-p-name').value = data.name || '';
                 document.getElementById('form-p-cat').value = data.category || 'sneakers';
                 document.getElementById('form-p-price').value = data.price || '';
+                document.getElementById('form-p-offer').value = data.offer_price || '';
                 document.getElementById('form-p-badge').value = data.badge || '';
                 document.getElementById('form-p-desc').value = data.description || '';
                 
@@ -1393,7 +1374,7 @@
                     console.error("Failed to parse variants", e);
                 }
                 
-                // Polyfill Legacy Databases missing color_variants to new 6-slot system
+                // Polyfill Legacy Databases
                 if (adminCurrentVariants.length === 0) {
                     let oldImgs = [];
                     try { oldImgs = JSON.parse(data.images || '[]'); } catch(e) { oldImgs = data.imageurl ? [data.imageurl] : []; }
@@ -1403,7 +1384,7 @@
                     try { legacySizes = Array.isArray(data.sizes) ? data.sizes : JSON.parse(data.sizes || "[]"); } 
                     catch(e) { if(typeof data.sizes === 'string') legacySizes = data.sizes.split(','); }
 
-                    while(oldImgs.length < 6) oldImgs.push(''); // pad missing angles
+                    while(oldImgs.length < 6) oldImgs.push(''); 
                     
                     adminCurrentVariants = [{ 
                         id: generateUUID(),
@@ -1436,6 +1417,7 @@
             activeEditingProductId = null;
             document.getElementById('form-p-name').value = '';
             document.getElementById('form-p-price').value = '';
+            document.getElementById('form-p-offer').value = '';
             document.getElementById('form-p-badge').value = '';
             document.getElementById('form-p-desc').value = '';
             
