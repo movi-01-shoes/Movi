@@ -33,20 +33,23 @@
         --font-serif: Georgia, "Times New Roman", serif;
     }
 
-    #storefront-view { font-family: var(--font-main); background-color: var(--movi-white); color: var(--movi-black); font-size: 11px; min-height: 100vh; padding-bottom: 40px; position: relative; }
+    #storefront-view { font-family: var(--font-main); background-color: var(--movi-white); color: var(--movi-black); font-size: 11px; min-height: 100vh; position: relative; display: flex; flex-direction: column; }
     #storefront-view .page-view { display: none; min-height: 60vh; }
-    #storefront-view .page-view.active { display: block; }
+    #storefront-view .page-view.active { display: block; flex: 1; }
 
-    header { text-align: center; padding-top: 28px; padding-bottom: 18px; position: relative; border-bottom: none; }
-    .brand-box { display: inline-block; background-color: var(--movi-red); padding: 5px 18px; margin-bottom: 10px; cursor: pointer; }
-    .brand-name { color: var(--movi-white); font-family: var(--font-serif); font-size: 32px; font-style: italic; font-weight: bold; letter-spacing: 2px; }
-    .header-time { font-size: 11px; letter-spacing: 1px; color: #333; }
-    /* Supreme-style fixed bottom nav */
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; font-size: 11px; background: #fff; border-top: 1px solid #e0e0e0; z-index: 9998; }
-    .bottom-nav-left { display: flex; gap: 20px; }
-    .bottom-nav-right { display: flex; gap: 20px; }
-    .bottom-nav a { cursor: pointer; color: #000; }
-    .bottom-nav a:hover { text-decoration: underline; }
+    header { text-align: center; padding-top: 40px; padding-bottom: 20px; position: relative; border-bottom: none; }
+    .brand-box { display: inline-block; background-color: var(--movi-red); padding: 5px 15px; margin-bottom: 10px; cursor: pointer; }
+    .brand-name { color: var(--movi-white); font-family: 'Arial', sans-serif; font-size: 28px; font-style: italic; font-weight: 900; letter-spacing: -1px; }
+    .header-time { font-size: 11px; letter-spacing: 1px; color: #000; font-family: var(--font-main); }
+    
+    /* Supreme-style Unified Footer */
+    .store-footer { display: flex; flex-direction: column; justify-content: flex-end; width: 100%; margin-top: auto; padding: 100px 40px 40px; font-size: 11px; background: transparent; z-index: 9998; gap: 50px; }
+    .footer-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 20px; }
+    .footer-top-left, .footer-top-right { display: flex; gap: 20px; flex-wrap: wrap; }
+    .footer-bottom-row { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; flex-wrap: wrap; gap: 30px; }
+    .footer-col { display: flex; flex-direction: column; gap: 4px; }
+    .store-footer a { cursor: pointer; color: #000; }
+    .store-footer a:hover { text-decoration: underline; }
 
     /* Cart Floating Widget */
     .cart-widget { position: absolute; left: 20px; top: 120px; width: 160px; display: none; z-index: 1000; background: var(--movi-white); }
@@ -84,25 +87,27 @@
     .product-card img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; background-color: #f5f5f5; }
     .sold-out-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255, 255, 255, 0.95); color: var(--movi-black); padding: 6px 8px; font-size: 10px; font-weight: bold; pointer-events: none; text-transform: uppercase; border: 1px solid var(--movi-black); }
 
-    /* Individual View Profile — Supreme style */
-    .product-detail-layout { display: flex; align-items: flex-start; gap: 0; max-width: 1100px; margin: 0 auto; padding: 20px 40px; }
-    .product-image-col { flex: 0 0 55%; padding-right: 40px; }
-    .product-main-image { width: 100%; height: auto; object-fit: contain; display: block; }
-    .product-info { flex: 1; padding-top: 0; }
-    .product-thumb-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; margin: 14px 0 20px; }
-    .product-thumb { width: 100%; aspect-ratio: 1/1; object-fit: cover; border: 2px solid transparent; cursor: pointer; }
+    /* Individual View Profile — Supreme style Exact Match */
+    .product-detail-layout { display: flex; align-items: flex-start; gap: 60px; max-width: 1000px; margin: 40px auto; padding: 20px 40px; }
+    .product-image-col { flex: 0 0 55%; text-align: center; }
+    .product-main-image { width: 100%; max-width: 500px; height: auto; object-fit: contain; display: inline-block; }
+    .product-info { flex: 1; padding-top: 0; font-family: var(--font-main); }
+    .product-title { font-size: 13px; font-weight: normal; margin-bottom: 2px; }
+    .product-color { font-size: 11px; font-weight: bold; margin-bottom: 16px; }
+    .product-desc { font-size: 10px; line-height: 1.4; margin-bottom: 20px; color: #000; text-align: justify; max-width: 90%; }
+    .product-thumb-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 20px; max-width: 150px; }
+    .product-thumb { width: 100%; aspect-ratio: 1/1; object-fit: cover; border: 1px solid transparent; cursor: pointer; }
     .product-thumb.active { border-color: #000; }
     .product-thumb:hover { border-color: #999; }
-    .product-title { font-size: 18px; font-weight: normal; margin-bottom: 2px; font-family: var(--font-serif); }
-    .product-color { font-size: 12px; font-weight: bold; margin-bottom: 16px; }
-    .product-desc { font-size: 11px; line-height: 1.6; margin-bottom: 20px; color: #333; font-family: var(--font-main); }
-    .product-price { font-size: 16px; font-weight: normal; margin-bottom: 16px; }
-    .size-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-    .size-select { padding: 6px 10px; border: 1px solid #aaa; background: var(--movi-white); outline: none; font-size: 11px; min-width: 140px; }
-    .next-link { font-size: 11px; color: #555; cursor: pointer; white-space: nowrap; }
+    .product-price { font-size: 13px; font-weight: normal; margin-bottom: 16px; }
+    
+    /* Action Grid Match */
+    .action-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 15px; max-width: 320px; align-items: center; }
+    .size-select { width: 100%; padding: 6px; border: 1px solid #aaa; background: var(--movi-white); outline: none; font-size: 11px; text-align: center; cursor: pointer; }
+    .next-link { font-size: 11px; color: #000; cursor: pointer; white-space: nowrap; }
     .next-link:hover { text-decoration: underline; }
-    .btn-action-red { display: block; width: 100%; background-color: var(--movi-red); color: var(--movi-white); border: none; padding: 10px; font-size: 12px; cursor: pointer; margin-bottom: 8px; text-align: center; }
-    .btn-action-black { display: block; width: 100%; background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 10px; font-size: 12px; cursor: pointer; text-align: center; }
+    .btn-action-red { width: 100%; background-color: var(--movi-red); color: var(--movi-white); border: none; padding: 8px; font-size: 11px; cursor: pointer; text-align: center; font-weight: bold; }
+    .btn-action-black { width: 100%; background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 8px; font-size: 11px; cursor: pointer; text-align: center; font-weight: bold; }
 
     /* Checkout Elements */
     #page-cart { max-width: 800px; margin: 0 auto; padding: 0 20px; }
@@ -184,27 +189,6 @@
                     <div style="color: var(--movi-red); font-weight: bold;">CRITICAL RUNTIME LIMIT: <span id="scarcity-left">0</span> LEFT</div>
                 </div>
             </div>
-            <!-- Supreme-style footer -->
-            <div style="display:flex; justify-content:space-between; padding:40px 20px 20px; font-size:11px; font-family:var(--font-main); border-top:1px solid #eee; margin-top:40px;">
-                <div style="display:flex; flex-direction:column; gap:4px;">
-                    <a style="cursor:pointer;" onclick="setView('home')">random</a>
-                    <a style="cursor:pointer;" onclick="setView('home')">about</a>
-                    <a style="cursor:pointer;" onclick="setView('shop')">store</a>
-                </div>
-                <div style="display:flex; flex-direction:column; gap:4px;">
-                    <a style="cursor:pointer;">Frequently Asked Questions</a>
-                    <a style="cursor:pointer;">Size/Product Dimensions</a>
-                    <a style="cursor:pointer;">contact</a>
-                </div>
-                <div style="display:flex; flex-direction:column; gap:4px;">
-                    <a style="cursor:pointer;">terms of service</a>
-                    <a style="cursor:pointer;">Display under the Specified<br>Commercial Transactions Law</a>
-                    <a style="cursor:pointer;">privacy policy</a>
-                </div>
-                <div>
-                    <a style="cursor:pointer;">Mailing list</a>
-                </div>
-            </div>
         </div>
 
         <div id="view-shop" class="page-view">
@@ -231,8 +215,8 @@
                 <div id="cart-items-list"></div>
                 <div style="text-align: right; margin-top: 20px; font-size:13px; font-weight:bold;" id="cart-grand-total">Total: ৳0</div>
                 <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-                    <button class="btn-action-black" onclick="setView('shop')">continue shopping</button>
-                    <button class="btn-action-red" onclick="setView('checkout')">initialize checkout</button>
+                    <button class="btn-action-black" onclick="setView('shop')" style="width:auto; padding:10px;">continue shopping</button>
+                    <button class="btn-action-red" onclick="setView('checkout')" style="width:auto; padding:10px;">initialize checkout</button>
                 </div>
             </div>
         </div>
@@ -264,8 +248,8 @@
                         <span>Gross Logistics Commitment Bill: </span><strong id="checkout-total-bill" style="font-size:14px; color:var(--movi-red);">৳0</strong>
                     </div>
                     <div style="display:flex; justify-content:flex-end; gap:10px;">
-                        <button type="button" class="btn-action-black" onclick="setView('cart')">abort sequence</button>
-                        <button type="submit" class="btn-action-red" id="submit-order-btn">CONFIRM ORDER DISPATCH</button>
+                        <button type="button" class="btn-action-black" onclick="setView('cart')" style="width:auto; padding:10px;">abort sequence</button>
+                        <button type="submit" class="btn-action-red" id="submit-order-btn" style="width:auto; padding:10px;">CONFIRM ORDER DISPATCH</button>
                     </div>
                 </form>
             </div>
@@ -276,21 +260,44 @@
                 <div style="font-size: 32px; color: var(--movi-red); margin-bottom: 15px;">✓</div>
                 <h4 style="text-transform:uppercase; margin-bottom:10px;">Pipeline Pipeline Locked</h4>
                 <p style="color:#555; line-height:1.6; margin-bottom:20px;">Our monitoring node has received your order array. Delivery will initiate shortly.</p>
-                <button class="btn-action-black" onclick="setView('home')">return to central hub</button>
+                <button class="btn-action-black" onclick="setView('home')" style="width:auto; padding:10px;">return to central hub</button>
             </div>
         </div>
-        <!-- Supreme-style fixed bottom nav -->
-        <div class="bottom-nav">
-            <div class="bottom-nav-left">
-                <a onclick="setView('shop')"><strong>shop</strong></a>
-                <a onclick="setView('shop')">look all</a>
+        
+        <!-- Supreme-style Unified Footer -->
+        <footer class="store-footer">
+            <div class="footer-top-row">
+                <div class="footer-top-left">
+                    <a onclick="setView('shop')">shop</a>
+                    <a onclick="setView('shop')">view all</a>
+                </div>
+                <div class="footer-top-right">
+                    <a onclick="setView('home')">spring/summer 2026 preview</a>
+                    <a onclick="setView('home')">lookbook</a>
+                    <a onclick="setView('home')">news</a>
+                </div>
             </div>
-            <div class="bottom-nav-right">
-                <a onclick="setView('home')">Spring/Summer 2026 Preview</a>
-                <a onclick="setView('home')">digitalbook</a>
-                <a onclick="setView('home')">news</a>
+            <div class="footer-bottom-row">
+                <div class="footer-col">
+                    <a onclick="setView('home')">random</a>
+                    <a onclick="setView('home')">about</a>
+                    <a onclick="setView('shop')">stores</a>
+                </div>
+                <div class="footer-col">
+                    <a>Frequently Asked Questions</a>
+                    <a>Size/Product Dimensions</a>
+                    <a>contact</a>
+                </div>
+                <div class="footer-col">
+                    <a>terms of service</a>
+                    <a>Display under the Specified<br>Commercial Transactions Law</a>
+                    <a>privacy policy</a>
+                </div>
+                <div class="footer-col">
+                    <a>Mailing List</a>
+                </div>
             </div>
-        </div>
+        </footer>
     </div>
 
     <!-- ADMIN SECURITY NODE MARKUP -->
@@ -300,7 +307,7 @@
                 <div class="login-brand">MOVI</div>
                 <div class="login-sub">Database Administration Node</div>
                 <input class="admin-input-field" id="gate-pass" type="password" placeholder="Access Authentication Phrase" onkeydown="if(event.key==='Enter')verifyAdminAuthorization()">
-                <button class="login-btn" onclick="verifyAdminAuthorization()">AUTHORIZE ENTRY</button>
+                <button class="login-btn" onclick="verifyAdminAuthorization()" style="padding:10px; width:100%;">AUTHORIZE ENTRY</button>
                 <div id="login-error-flag" style="color:var(--movi-red); font-family:var(--admin-font-mono); font-size:9px; margin-top:10px; display:none;">ACCESS KEY REJECTED</div>
                 <button style="background:none; border:none; color:var(--admin-muted); font-family:var(--admin-font-mono); font-size:9px; margin-top:20px; cursor:pointer;" onclick="bypassToStorefront()">← Abort to Public UI</button>
             </div>
@@ -316,7 +323,7 @@
                 <div class="admin-nav-item" id="nav-products" onclick="switchAdminTab('products')">👟 Vault Products</div>
                 <div class="admin-nav-item" id="nav-add" onclick="switchAdminTab('add')">＋ Mint New Artifact</div>
                 <div style="margin-top:auto; padding:20px;">
-                    <button class="login-btn" style="font-size:12px; padding:8px; letter-spacing:2px;" onclick="bypassToStorefront()">PUBLIC LINK</button>
+                    <button class="login-btn" style="font-size:12px; padding:8px; letter-spacing:2px; width:100%;" onclick="bypassToStorefront()">PUBLIC LINK</button>
                 </div>
                 <button class="dark-toggle" id="dark-toggle-btn" onclick="toggleAdminDarkMode()">🌙 DARK MODE</button>
             </div>
@@ -489,7 +496,6 @@
             const percentage = totalAllocated > 0 ? (currentRemaining / totalAllocated) * 100 : 100;
             document.getElementById('scarcity-bar').style.width = percentage + "%";
 
-            // Simple ticking loop representation for countdown timer metrics
             let now = new Date();
             let hours = 23 - now.getHours();
             let mins = 59 - now.getMinutes();
@@ -511,7 +517,6 @@
             if(targetViewId === 'checkout') calculateFinalInvoice();
         }
 
-        // --- THE CRITICAL ROUTING FIX IS HERE ---
         function checkRoute() {
             const hash = window.location.hash;
             const storefront = document.getElementById('storefront-view');
@@ -522,7 +527,6 @@
             if (hash === '#admin') {
                 storefront.style.display = 'none';
                 admin.style.display = 'block';
-                // Reset to login screen just in case when opening URL anew
                 adminLayout.style.display = 'none';
                 adminLogin.style.display = 'flex';
             } else {
@@ -549,8 +553,6 @@
 
         function renderStorefrontLayouts() {
             const lookbook = document.getElementById('lookbook-strip');
-            const catGrid = document.getElementById('catalog-grid');
-            
             if(lookbook) {
                 lookbook.innerHTML = databaseCacheProducts.map(prod => `
                     <div class="strip-item-wrapper" onclick="inspectProductItem('${prod.id}')">
@@ -605,9 +607,10 @@
 
             const sizeDropdown = parsedSizes.length > 0 ? `
                 <select id="selected-size-node" class="size-select">
+                    <option value="">-- size --</option>
                     ${parsedSizes.map(s => `<option value="${s}">${s}</option>`).join('')}
                 </select>
-            ` : `<span style="font-family:var(--font-main);">UNISIZE MATRIX</span>`;
+            ` : `<span style="font-size:11px;">UNISIZE</span>`;
 
             let imgs = [];
             try { imgs = JSON.parse(prod.images || '[]'); } catch(e) { imgs = prod.imageurl ? [prod.imageurl] : []; }
@@ -624,16 +627,18 @@
                     <div class="product-desc">${prod.description || ''}</div>
                     ${thumbsHtml}
                     <div class="product-price">৳${prod.price}</div>
-                    <div class="size-row">
-                        ${sizeDropdown}
+                    
+                    <div class="action-controls">
+                        ${parsedSizes.length > 0 ? sizeDropdown : `<div style="font-size:11px; padding:6px; text-align:center; border:1px solid #aaa;">UNISIZE</div>`}
                         <span class="next-link" onclick="setView('shop')">next &rsaquo;</span>
-                    </div>
-                    ${prod.stock > 0 ? `
+                        
+                        ${prod.stock > 0 ? `
                         <button class="btn-action-red" onclick="commitItemToCart()">add to cart</button>
                         <button class="btn-action-black" onclick="setView('shop')">continue shopping</button>
-                    ` : `
-                        <button class="btn-action-black" style="background:#999;cursor:not-allowed;" disabled>sold out</button>
-                    `}
+                        ` : `
+                        <button class="btn-action-black" style="grid-column: span 2; background:#999;cursor:not-allowed;" disabled>sold out</button>
+                        `}
+                    </div>
                 </div>
             `;
             setView('product');
@@ -649,7 +654,7 @@
         function commitItemToCart() {
             if(!selectedProductPointer) return;
             const sizeEl = document.getElementById('selected-size-node');
-            const sizeValue = sizeEl ? sizeEl.value : 'UNISIZE';
+            const sizeValue = sizeEl && sizeEl.value ? sizeEl.value : 'UNISIZE';
 
             shoppingBagArray.push({
                 id: selectedProductPointer.id,
@@ -713,7 +718,7 @@
                         <div style="color:#666;">Size Spec: ${item.size}</div>
                     </div>
                     <div style="font-weight:bold; margin-right:20px;">৳${item.price}</div>
-                    <button class="btn-action-black" style="padding:4px 8px; font-size:10px;" onclick="evictCartIndex(${idx})">EVICT</button>
+                    <button class="btn-action-black" style="padding:4px 8px; font-size:10px; width:auto;" onclick="evictCartIndex(${idx})">EVICT</button>
                 </div>
             `).join('');
 
@@ -737,7 +742,6 @@
             if(totalBillEl) totalBillEl.textContent = "৳" + combinedGross;
         }
 
-        // WhatsApp Order Link Builder & Supabase Storage Integration Pipeline
         async function handleOrderSubmission(event) {
             event.preventDefault();
             const submitBtn = document.getElementById('submit-order-btn');
@@ -760,10 +764,8 @@
                 status: 'Pending'
             };
 
-            // Write tracking record row to remote Database node
             const { data, error } = await supabaseClient.from('orders').insert([orderPayload]).select();
             
-            // Format WhatsApp Message String Layout
             let msg = `*NEW PRODUCTION ORDER REQUEST — MOVI ARCHITECTURE*\n`;
             msg += `----------------------------------------\n`;
             msg += `*Consignee:* ${name}\n`;
@@ -781,13 +783,11 @@
             msg += `_Automatic API Handshake Verified._`;
 
             const encodedText = encodeURIComponent(msg);
-            const targetWhatsAppGateway = `https://wa.me/8801700000000?text=${encodedText}`; // Replace with actual business string endpoint
+            const targetWhatsAppGateway = `https://wa.me/8801700000000?text=${encodedText}`; 
 
-            // Reset local bag components
             shoppingBagArray = [];
             updateCartWidgetState();
 
-            // Redirect client window browser interface straight out to whatsapp context loop 
             window.open(targetWhatsAppGateway, '_blank');
             setView('success');
             
@@ -803,7 +803,7 @@
             const passwordField = document.getElementById('gate-pass').value;
             if(passwordField === 'admin') { 
                 document.getElementById('admin-login-screen').style.display = 'none';
-                document.getElementById('admin-layout').style.display = 'flex'; // Reveals Admin Dashboard Content
+                document.getElementById('admin-layout').style.display = 'flex';
                 fireAdminSuiteInitializations();
             } else {
                 const errorFlag = document.getElementById('login-error-flag');
@@ -820,7 +820,7 @@
         }
 
         function bypassToStorefront() {
-            window.location.hash = ''; // This will securely kick user out of admin and trigger hashchange
+            window.location.hash = ''; 
         }
 
         function switchAdminTab(targetTabId) {
@@ -910,7 +910,6 @@
             }
         }
 
-        // Multi-slot Cloudinary Image Upload (max 4)
         const imgUrlFields = ['form-p-imgurl','form-p-imgurl2','form-p-imgurl3','form-p-imgurl4'];
         async function uploadSlotImage(slot) {
             const fileInput = document.getElementById('form-p-file-' + slot);
@@ -993,7 +992,7 @@
                 document.getElementById('form-p-imgurl2').value = '';
                 document.getElementById('form-p-imgurl3').value = '';
                 document.getElementById('form-p-imgurl4').value = '';
-                // Restore images from JSON array
+                
                 let imgArr = [];
                 try { imgArr = JSON.parse(data.images || '[]'); } catch(e) { if(data.imageurl) imgArr = [data.imageurl]; }
                 imgArr.forEach((url, i) => {
@@ -1045,7 +1044,6 @@
             });
         }
 
-        // Core Platform Entry Event Handshaking Hooks
         window.addEventListener('DOMContentLoaded', bootSystemContext);
         window.addEventListener('hashchange', bootSystemContext);
     </script>
