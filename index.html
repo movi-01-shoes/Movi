@@ -27,6 +27,18 @@
     - imageurl (text)
     - color_variants (jsonb)  
     - sizes (jsonb or text)
+
+    Ensure your Supabase `payment_methods` table has these EXACT columns:
+    - id (uuid, default gen_random_uuid())
+    - name (text)
+    - type (text) - e.g. "cod", "mobile", "bank"
+    - instructions (text)
+    - account_name (text)
+    - account_number (text)
+    - phone_number (text)
+    - qr_image (text)
+    - is_active (boolean)
+    - created_at (timestampz)
     ======================================================================
 -->
 
@@ -314,27 +326,27 @@
                         <label>Shipping Address *</label>
                         <textarea class="checkout-input" rows="3" id="cust-address" style="resize:none;" required></textarea>
                     </div>
+                    
                     <div class="checkout-form-group">
+                        <label>Payment Method *</label>
+                        <select id="cust-payment" class="checkout-input" onchange="togglePaymentDetails()" required>
+                            <option value="">-- Loading Payment Options --</option>
+                        </select>
+                    </div>
+
+                    <!-- Condition Driven Rendering: Visible only when COD selected -->
+                    <div class="checkout-form-group" id="delivery-area-group" style="display:none;">
                         <label>Delivery Area *</label>
-                        <select id="cust-region" class="checkout-input" onchange="calculateFinalInvoice()" required>
+                        <select id="cust-region" class="checkout-input" onchange="calculateFinalInvoice()">
                             <option value="inside">Inside Dhaka (Free Delivery)</option>
                             <option value="outside">Outside Dhaka (৳150 Surcharge)</option>
                         </select>
                     </div>
-                    <div class="checkout-form-group">
-                        <label>Payment Method *</label>
-                        <select id="cust-payment" class="checkout-input" onchange="togglePaymentDetails()" required>
-                            <option value="">-- Select Payment Option --</option>
-                            <option value="cod">Cash on Delivery</option>
-                            <option value="bkash">bKash</option>
-                            <option value="city">City Bank</option>
-                            <option value="dbbl">Dutch-Bangla Bank</option>
-                        </select>
-                    </div>
                     
+                    <!-- Condition Driven Rendering: Visible only when Online Payment selected -->
                     <div id="payment-instruction-box" style="display:none; margin-top:10px; margin-bottom:15px; padding:15px; border:1px solid var(--movi-black); font-size:11px; background:#f9f9f9;">
                         <div id="payment-account-detail" style="font-weight:bold; margin-bottom:8px; font-size:12px;"></div>
-                        <div style="color:var(--movi-red);">Please complete the payment, save the transaction screenshot, and our team will contact you to complete the order process.</div>
+                        <div style="color:var(--movi-red);">Please complete the payment securely. Save the transaction screenshot, and our team will contact you to complete the order process.</div>
                     </div>
 
                     <div style="margin:20px 0; padding:15px; border:1px dotted #000; text-align:right;">
@@ -424,6 +436,7 @@
                 <div class="admin-nav-item active" id="nav-orders" onclick="switchAdminTab('orders')">📋 Manifest Orders</div>
                 <div class="admin-nav-item" id="nav-products" onclick="switchAdminTab('products')">👟 Vault Products</div>
                 <div class="admin-nav-item" id="nav-add" onclick="switchAdminTab('add')">＋ Mint New Artifact</div>
+                <div class="admin-nav-item" id="nav-payments" onclick="switchAdminTab('payments')">💳 Payment Nodes</div>
                 
                 <div style="margin-top:auto; padding:20px;">
                     <div class="admin-nav-item" style="padding-left:0; margin-bottom:10px;" onclick="adminLogout()">🚪 System Logout</div>
@@ -508,6 +521,79 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Tab: Payment Nodes -->
+                    <div id="tab-payments" class="admin-tab-view" style="display:none;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 20px;">
+                            <h3 style="font-family:var(--admin-font-mono); font-size:11px; color:var(--admin-muted); text-transform:uppercase;">Registered Payment Nodes</h3>
+                            <button class="login-btn" style="padding:6px 12px; background:var(--movi-red); color:#fff; border:none; cursor:pointer;" onclick="resetPaymentForm()">+ NEW NODE</button>
+                        </div>
+                        
+                        <table class="admin-table" style="margin-bottom: 30px;">
+                            <thead>
+                                <tr><th>Method Name</th><th>Type Schema</th><th>Status</th><th>Actions</th></tr>
+                            </thead>
+                            <tbody id="admin-payments-rows"></tbody>
+                        </table>
+
+                        <div id="admin-payment-form-container" style="background:var(--admin-surface); border:1px solid var(--admin-border); padding:24px; max-width:700px; display:none;">
+                            <h3 style="font-family:var(--admin-font-mono); font-size:11px; color:var(--admin-muted); margin-bottom:20px; text-transform:uppercase;" id="pm-form-title">Mint New Payment Node</h3>
+                            
+                            <input type="hidden" id="form-pm-id">
+                            
+                            <label style="font-size:11px; color:var(--admin-muted);">Method Name (e.g. bKash Personal, Cash on Delivery)</label>
+                            <input type="text" class="admin-input-field" id="form-pm-name">
+
+                            <div style="display:flex; gap:15px; margin-bottom: 12px;">
+                                <div style="flex:1;">
+                                    <label style="font-size:11px; color:var(--admin-muted);">Method Type</label>
+                                    <select class="admin-input-field" id="form-pm-type">
+                                        <option value="cod">Cash on Delivery</option>
+                                        <option value="mobile">Mobile Banking (bKash, Nagad)</option>
+                                        <option value="bank">Bank Transfer</option>
+                                    </select>
+                                </div>
+                                <div style="flex:1;">
+                                    <label style="font-size:11px; color:var(--admin-muted);">Availability Status</label>
+                                    <select class="admin-input-field" id="form-pm-active">
+                                        <option value="true">Active (Visible to users)</option>
+                                        <option value="false">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label style="font-size:11px; color:var(--admin-muted);">Client Instructions (Visible in checkout)</label>
+                            <textarea class="admin-input-field" id="form-pm-instructions" rows="2"></textarea>
+                            
+                            <div style="display:flex; gap:15px; margin-bottom: 12px;">
+                                <div style="flex:1;">
+                                    <label style="font-size:11px; color:var(--admin-muted);">Account Name (Optional)</label>
+                                    <input type="text" class="admin-input-field" id="form-pm-acc-name">
+                                </div>
+                                <div style="flex:1;">
+                                    <label style="font-size:11px; color:var(--admin-muted);">Account Number (Optional)</label>
+                                    <input type="text" class="admin-input-field" id="form-pm-acc-number">
+                                </div>
+                            </div>
+
+                            <div style="display:flex; gap:15px; margin-bottom: 12px;">
+                                <div style="flex:1;">
+                                    <label style="font-size:11px; color:var(--admin-muted);">Contact/Account Phone Number (Optional)</label>
+                                    <input type="text" class="admin-input-field" id="form-pm-phone">
+                                </div>
+                                <div style="flex:1;">
+                                    <label style="font-size:11px; color:var(--admin-muted);">QR Code Image URL (Optional)</label>
+                                    <input type="text" class="admin-input-field" id="form-pm-qr">
+                                </div>
+                            </div>
+
+                            <div style="margin-top:20px;">
+                                <button class="login-btn" style="width:auto; padding:12px 30px; background:var(--movi-red); color:#fff; border:none; cursor:pointer;" onclick="commitPaymentMethod()">SAVE PAYMENT NODE</button>
+                                <button class="login-btn" style="width:auto; padding:12px 30px; background:var(--admin-surface2); color:#fff; border:1px solid #444; cursor:pointer; margin-left: 10px;" onclick="document.getElementById('admin-payment-form-container').style.display='none'">CANCEL</button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -528,6 +614,7 @@
 
         // Core App Runtime Arrays
         let databaseCacheProducts = [];
+        let databaseCachePaymentMethods = [];
         let shoppingBagArray = [];
         let selectedProductPointer = null;
         let activeEditingProductId = null;
@@ -553,6 +640,7 @@
             loadCartState(); // Restore persistent cart
             updateStorefrontClocks();
             updateCartWidgetState(); 
+            await fetchActivePaymentMethods(); // Initialize active payment nodes
             checkRoute();
         }
 
@@ -1035,11 +1123,70 @@
             updateCartWidgetState();
         }
 
-        // Checkout Logic
+        // ==========================================
+        // DYNAMIC CHECKOUT & PAYMENT LOGIC
+        // ==========================================
+        async function fetchActivePaymentMethods() {
+            const { data, error } = await supabaseClient.from('payment_methods').select('*').eq('is_active', true).order('created_at', { ascending: true });
+            if(!error && data) {
+                databaseCachePaymentMethods = data;
+                const selectElement = document.getElementById('cust-payment');
+                if(selectElement) {
+                    selectElement.innerHTML = '<option value="">-- Select Payment Option --</option>' + 
+                        data.map(pm => `<option value="${pm.id}">${pm.name}</option>`).join('');
+                }
+            }
+        }
+
+        function togglePaymentDetails() {
+            const pmId = document.getElementById('cust-payment').value;
+            const pm = databaseCachePaymentMethods.find(p => p.id === pmId);
+            
+            const instBox = document.getElementById('payment-instruction-box');
+            const accDetail = document.getElementById('payment-account-detail');
+            const deliveryAreaGroup = document.getElementById('delivery-area-group');
+            
+            if(!pm) {
+                instBox.style.display = 'none';
+                deliveryAreaGroup.style.display = 'none';
+                calculateFinalInvoice();
+                return;
+            }
+
+            if(pm.type === 'cod') {
+                // Show Delivery Details, Hide Online Account Details
+                instBox.style.display = 'none';
+                deliveryAreaGroup.style.display = 'block';
+            } else {
+                // Hide Delivery Details, Show Online Account Details
+                deliveryAreaGroup.style.display = 'none';
+                instBox.style.display = 'block';
+                
+                let html = '';
+                if(pm.instructions) html += `<div style="margin-bottom:12px; font-weight:normal; line-height: 1.4;">${pm.instructions}</div>`;
+                
+                if(pm.type === 'mobile' || pm.type === 'bank') {
+                    if(pm.account_name) html += `<div style="margin-top: 4px;">Account Name: <span style="font-weight:normal;">${pm.account_name}</span></div>`;
+                    if(pm.account_number) html += `<div style="margin-top: 4px;">Account Number: <span style="font-weight:normal;">${pm.account_number}</span></div>`;
+                    if(pm.phone_number) html += `<div style="margin-top: 4px;">Contact/Phone: <span style="font-weight:normal;">${pm.phone_number}</span></div>`;
+                    if(pm.qr_image) html += `<div style="margin-top: 10px;"><img src="${pm.qr_image}" style="max-width:140px; border:1px solid #ddd; border-radius:4px;"></div>`;
+                }
+                accDetail.innerHTML = html;
+            }
+            calculateFinalInvoice();
+        }
+
         function calculateFinalInvoice() {
-            const region = document.getElementById('cust-region').value;
             let subtotal = shoppingBagArray.reduce((acc, curr) => acc + curr.price, 0);
-            let logisticsSurcharge = region === 'outside' ? 150 : 0;
+            let logisticsSurcharge = 0;
+            
+            const deliveryAreaGroup = document.getElementById('delivery-area-group');
+            // Apply surcharge only if Delivery Area select is active/visible
+            if (deliveryAreaGroup.style.display !== 'none') {
+                const region = document.getElementById('cust-region').value;
+                if (region === 'outside') { logisticsSurcharge = 150; }
+            }
+            
             let combinedGross = subtotal + logisticsSurcharge;
             
             const totalBillEl = document.getElementById('checkout-total-bill');
@@ -1062,7 +1209,13 @@
             const phone = document.getElementById('cust-phone').value.trim();
             const email = document.getElementById('cust-email').value.trim();
             const address = document.getElementById('cust-address').value.trim();
-            const region = document.getElementById('cust-region').value;
+            
+            const deliveryAreaGroup = document.getElementById('delivery-area-group');
+            const region = deliveryAreaGroup.style.display !== 'none' ? document.getElementById('cust-region').value : 'Standard/Digital';
+
+            const pmId = document.getElementById('cust-payment').value;
+            const selectedPm = databaseCachePaymentMethods.find(p => p.id === pmId);
+            const paymentMethodName = selectedPm ? selectedPm.name : 'Unknown';
 
             let totalPayableBill = calculateFinalInvoice();
             const receiptId = 'ORD-' + Math.random().toString(36).substr(2, 6).toUpperCase();
@@ -1072,7 +1225,7 @@
                 customer: { name, phone, email, address, region },
                 items: shoppingBagArray,
                 total: totalPayableBill,
-                payment_method: 'N/A',
+                payment_method: paymentMethodName,
                 status: 'Pending Verification'
             };
 
@@ -1090,7 +1243,8 @@
             document.getElementById('success-receipt-content').innerHTML = `
                 <p><strong>Order ID:</strong> ${receiptId}</p>
                 <p><strong>Customer:</strong> ${name} ${email ? '('+email+')' : ''}</p>
-                <p><strong>Shipping:</strong> ${address} <br> <span style="color:#666;">(${region === 'inside' ? 'Inside Dhaka' : 'Outside Dhaka'})</span></p>
+                <p><strong>Shipping:</strong> ${address} <br> <span style="color:#666;">(${region === 'inside' ? 'Inside Dhaka' : (region === 'outside' ? 'Outside Dhaka' : 'Standard Address')})</span></p>
+                <p><strong>Payment Entity:</strong> ${paymentMethodName}</p>
                 
                 <hr style="border-top:1px dotted #000; margin:15px 0;">
                 <div style="margin-bottom:10px;"><strong>Order Items:</strong></div>
@@ -1167,13 +1321,6 @@
             location.reload();
         }
 
-        function toggleAdminDarkMode() {
-            const adminView = document.getElementById('admin-view');
-            const btn = document.getElementById('dark-toggle-btn');
-            adminView.classList.toggle('light-mode');
-            btn.textContent = adminView.classList.contains('light-mode') ? '🌙 DARK MODE' : '☀️ LIGHT MODE';
-        }
-
         function bypassToStorefront() {
             window.location.hash = ''; 
         }
@@ -1194,6 +1341,7 @@
                 headerTitle.textContent = "SCHEMA COMPONENT MINT"; 
                 if(!skipReset) resetProductConfiguratorForm(); 
             }
+            if(targetTabId === 'payments') { headerTitle.textContent = "PAYMENT SYSTEM NODES"; fetchAdminPaymentMethodsPipeline(); }
         }
 
         function triggerAdminAlertNotification(messageText) {
@@ -1206,6 +1354,7 @@
         function fireAdminSuiteInitializations() {
             fetchAdminOrdersPipeline();
             fetchAdminProductsPipeline();
+            fetchAdminPaymentMethodsPipeline();
         }
 
         async function fetchAdminOrdersPipeline() {
@@ -1563,6 +1712,104 @@
             }];
             renderVariantBuilder();
         }
+
+        // ==========================================
+        // ADMIN PAYMENT METHODS PIPELINE (CRUD)
+        // ==========================================
+        async function fetchAdminPaymentMethodsPipeline() {
+            const { data, error } = await supabaseClient.from('payment_methods').select('*').order('created_at', { ascending: false });
+            if(!error && data) {
+                const tbody = document.getElementById('admin-payments-rows');
+                tbody.innerHTML = data.map(pm => `
+                    <tr>
+                        <td><strong>${pm.name}</strong></td>
+                        <td style="text-transform:uppercase; font-size:10px;">${pm.type}</td>
+                        <td><span style="color:${pm.is_active ? '#00d68f' : '#e8001d'}">${pm.is_active ? 'ACTIVE' : 'INACTIVE'}</span></td>
+                        <td>
+                            <button style="background:#3b82f6; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer; margin-right:5px;" onclick="loadPaymentMethodToForm('${pm.id}')">EDIT</button>
+                            <button style="background:red; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer;" onclick="purgePaymentMethod('${pm.id}')">PURGE</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function resetPaymentForm() {
+            document.getElementById('form-pm-id').value = '';
+            document.getElementById('form-pm-name').value = '';
+            document.getElementById('form-pm-type').value = 'mobile';
+            document.getElementById('form-pm-active').value = 'true';
+            document.getElementById('form-pm-instructions').value = '';
+            document.getElementById('form-pm-acc-name').value = '';
+            document.getElementById('form-pm-acc-number').value = '';
+            document.getElementById('form-pm-phone').value = '';
+            document.getElementById('form-pm-qr').value = '';
+            document.getElementById('pm-form-title').textContent = 'Mint New Payment Node';
+            document.getElementById('admin-payment-form-container').style.display = 'block';
+        }
+
+        async function loadPaymentMethodToForm(id) {
+            const { data, error } = await supabaseClient.from('payment_methods').select('*').eq('id', id).single();
+            if(!error && data) {
+                document.getElementById('form-pm-id').value = data.id;
+                document.getElementById('form-pm-name').value = data.name || '';
+                document.getElementById('form-pm-type').value = data.type || 'mobile';
+                document.getElementById('form-pm-active').value = data.is_active ? 'true' : 'false';
+                document.getElementById('form-pm-instructions').value = data.instructions || '';
+                document.getElementById('form-pm-acc-name').value = data.account_name || '';
+                document.getElementById('form-pm-acc-number').value = data.account_number || '';
+                document.getElementById('form-pm-phone').value = data.phone_number || '';
+                document.getElementById('form-pm-qr').value = data.qr_image || '';
+                
+                document.getElementById('pm-form-title').textContent = 'Edit Payment Node';
+                document.getElementById('admin-payment-form-container').style.display = 'block';
+            }
+        }
+
+        async function commitPaymentMethod() {
+            const id = document.getElementById('form-pm-id').value;
+            const payload = {
+                name: document.getElementById('form-pm-name').value.trim(),
+                type: document.getElementById('form-pm-type').value,
+                is_active: document.getElementById('form-pm-active').value === 'true',
+                instructions: document.getElementById('form-pm-instructions').value.trim(),
+                account_name: document.getElementById('form-pm-acc-name').value.trim(),
+                account_number: document.getElementById('form-pm-acc-number').value.trim(),
+                phone_number: document.getElementById('form-pm-phone').value.trim(),
+                qr_image: document.getElementById('form-pm-qr').value.trim()
+            };
+
+            if(id) {
+                const { error } = await supabaseClient.from('payment_methods').update(payload).eq('id', id);
+                if(error) { 
+                    alert("Error Updating Node: Check database schema.\n\n" + error.message); 
+                    return; 
+                }
+                triggerAdminAlertNotification("PAYMENT NODE UPDATED");
+            } else {
+                const { error } = await supabaseClient.from('payment_methods').insert([payload]);
+                if(error) { 
+                    alert("Error Inserting Node: Check database schema. Ensure `payment_methods` table is created.\n\n" + error.message); 
+                    return; 
+                }
+                triggerAdminAlertNotification("PAYMENT NODE MINTED");
+            }
+
+            document.getElementById('admin-payment-form-container').style.display = 'none';
+            fetchAdminPaymentMethodsPipeline();
+            fetchActivePaymentMethods(); // Update client facing cache
+        }
+
+        async function purgePaymentMethod(id) {
+            if(!confirm("Purge payment node?")) return;
+            const { error } = await supabaseClient.from('payment_methods').delete().eq('id', id);
+            if(!error) {
+                triggerAdminAlertNotification("PAYMENT NODE PURGED");
+                fetchAdminPaymentMethodsPipeline();
+                fetchActivePaymentMethods(); // Update client facing cache
+            }
+        }
+
 
         window.addEventListener('DOMContentLoaded', bootSystemContext);
         window.addEventListener('hashchange', bootSystemContext);
