@@ -18,14 +18,14 @@
     - name (text)
     - category (text)
     - price (numeric)
-    - offer_price (numeric) <-- NEW
-    - discount_percent (numeric) <-- NEW
+    - offer_price (numeric) 
+    - discount_percent (numeric) 
     - stock (numeric)
     - totalstock (numeric)
     - badge (text)
     - description (text)
     - imageurl (text)
-    - color_variants (jsonb)  <-- CRITICAL for Variant Matrix
+    - color_variants (jsonb)  
     - sizes (jsonb or text)
     ======================================================================
 -->
@@ -125,15 +125,49 @@
     .product-thumb:hover { border-color: #666; }
     .product-price { font-size: 13px; font-weight: normal; margin-bottom: 16px; }
     
-    /* Action Controls */
-    .action-controls { display: flex; flex-direction: column; max-width: 320px; }
+    /* Action Controls & New State Buttons */
+    .action-controls { display: flex; flex-direction: column; max-width: 320px; width: 100%; }
     .action-row { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; width: 100%; }
-    .size-select { flex: 1; padding: 6px; border: 1px solid #aaa; background: var(--movi-white); outline: none; font-size: 11px; text-align: center; cursor: pointer; }
+    .size-select { flex: 1; padding: 6px; border: 1px solid #aaa; background: var(--movi-white); outline: none; font-size: 11px; text-align: center; cursor: pointer; border-radius: 0; }
     .size-select:disabled { background: #eee; cursor: not-allowed; }
     .next-link { font-size: 11px; color: #000; cursor: pointer; white-space: nowrap; }
     .next-link:hover { text-decoration: underline; }
-    .btn-action-red { flex: 1; background-color: var(--movi-red); color: var(--movi-white); border: none; padding: 8px; font-size: 11px; cursor: pointer; text-align: center; font-weight: bold; }
-    .btn-action-black { flex: 1; background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 8px; font-size: 11px; cursor: pointer; text-align: center; font-weight: bold; }
+    
+    .btn-action-red { flex: 1; background-color: var(--movi-red); color: var(--movi-white); border: none; padding: 8px; font-size: 11px; cursor: pointer; text-align: center; border-radius: 0; }
+    .btn-action-black { flex: 1; background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 8px; font-size: 11px; cursor: pointer; text-align: center; border-radius: 0; }
+
+    /* Supreme State Buttons */
+    .btn-in-cart { border: 1px solid var(--movi-red); color: var(--movi-red); background-color: var(--movi-white); padding: 6px; text-align: center; width: 100%; margin-bottom: 4px; font-size: 11px; cursor: default; border-radius: 0; }
+    .action-row-split { display: flex; gap: 4px; width: 100%; }
+    .btn-supreme-delete { background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 6px; flex: 1; cursor: pointer; font-size: 11px; text-align: center; border-radius: 0; }
+    .btn-supreme-delete:hover { color: #ccc; }
+    .btn-supreme-continue { background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 6px; flex: 1.5; cursor: pointer; font-size: 11px; text-align: center; border-radius: 0; }
+    .btn-supreme-continue:hover { color: #ccc; }
+
+    /* Supreme Left Cart Widget */
+    .supreme-cart-widget {
+        position: fixed;
+        top: 200px;
+        left: 40px;
+        width: 170px;
+        font-family: var(--font-main);
+        font-size: 11px;
+        z-index: 9000;
+        background: var(--movi-white);
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
+    .cart-widget-top { background-color: #d1d1d1; color: #000; text-align: center; padding: 6px 0; }
+    .cart-widget-mid { border-left: 1px solid #d1d1d1; border-right: 1px solid #d1d1d1; border-bottom: 1px solid #d1d1d1; padding: 12px 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+    .cart-widget-mid .sub-label { font-size: 10px; line-height: 1.2; text-align: left;}
+    .cart-widget-mid .sub-tax { font-size: 9px; color: #666; }
+    .cart-widget-mid .sub-price { font-weight: bold; font-size: 11px; }
+    .cart-widget-link { background-color: var(--movi-black); color: var(--movi-white); text-align: center; padding: 8px 0; cursor: pointer; margin-bottom: 5px; font-weight: normal; font-size: 10px; }
+    .cart-widget-link:hover { background-color: #333; }
+    .cart-widget-checkout { background-color: var(--movi-red); color: var(--movi-white); text-align: center; padding: 8px 0; cursor: pointer; font-weight: normal; font-size: 10px; }
+    .cart-widget-checkout:hover { background-color: #cc0000; }
 
     /* Checkout Elements */
     #page-cart { max-width: 800px; margin: 0 auto; padding: 0 20px; }
@@ -173,9 +207,17 @@
     
     /* Responsive Constraints */
     @media (max-width: 768px) {
-        .product-detail-layout { flex-direction: column; gap: 30px; }
+        .product-detail-layout { flex-direction: column; gap: 30px; padding: 20px; }
         .product-image-col { padding-right: 0; width: 100%; }
         .action-controls { max-width: 100%; }
+        
+        .supreme-cart-widget {
+            position: relative;
+            top: auto;
+            left: auto;
+            width: calc(100% - 40px);
+            margin: 0 auto 20px auto;
+        }
     }
 </style>
 </head>
@@ -191,6 +233,17 @@
             </div>
             <div class="header-time" id="live-clock">00/00/0000 00:00am local</div>
         </header>
+
+        <!-- Supreme Style Cart Summary Widget (Static Left Block) -->
+        <div id="supreme-cart-widget" class="supreme-cart-widget">
+            <div class="cart-widget-top"><span id="widget-item-count">1 item</span> in cart</div>
+            <div class="cart-widget-mid">
+                <div class="sub-label">Subtotal<br><span class="sub-tax">(including tax)</span></div>
+                <div class="sub-price" id="widget-subtotal">৳0</div>
+            </div>
+            <div class="cart-widget-link" onclick="setView('cart')">your shopping cart ></div>
+            <div class="cart-widget-checkout" onclick="setView('checkout')">proceed to checkout</div>
+        </div>
 
         <div id="view-home" class="page-view active">
             <!-- Supreme Horizontal Lookbook Strips -->
@@ -483,10 +536,23 @@
         let adminCurrentVariants = []; 
         let storeCurrentVariants = []; 
 
+        // State Management 
+        function saveCartState() {
+            localStorage.setItem('movi_shopping_cart', JSON.stringify(shoppingBagArray));
+        }
+
+        function loadCartState() {
+            try {
+                const stored = localStorage.getItem('movi_shopping_cart');
+                if (stored) shoppingBagArray = JSON.parse(stored);
+            } catch(e) {}
+        }
+
         // System Initialization
         async function bootSystemContext() {
+            loadCartState(); // Restore persistent cart
             updateStorefrontClocks();
-            updateCartWidgetState(); // Sets initial "cart" text on load
+            updateCartWidgetState(); 
             checkRoute();
         }
 
@@ -588,7 +654,6 @@
             const lookbook = document.getElementById('lookbook-strip');
             let stripHtml = '';
 
-            // Supreme Style Strips: ONLY FRONT images of all color variants.
             databaseCacheProducts.forEach(prod => {
                 let variants = [];
                 try { variants = JSON.parse(prod.color_variants || '[]'); } catch(e) {}
@@ -735,7 +800,6 @@
                     <div class="product-price">${priceHtml}</div>
                     
                     <div class="action-controls">
-                        <!-- Hidden state for checkout hooks -->
                         <input type="hidden" id="selected-variant-id" value="${activeVariant.id}">
                         <input type="hidden" id="selected-variant-sku" value="${activeVariant.sku || ''}">
                         <input type="hidden" id="selected-color-node" value="${activeVariant.colorName}">
@@ -748,7 +812,7 @@
                         </div>
                         
                         <div class="action-row" style="margin-bottom:0;" id="action-buttons-wrapper">
-                            <!-- Buttons injected based on variant stock -->
+                            <!-- Buttons managed dynamically based on cart state -->
                         </div>
                     </div>
                 </div>
@@ -796,16 +860,11 @@
                 sizeSelect.innerHTML = `<option value="UNISIZE">UNISIZE</option>`;
                 sizeSelect.style.display = 'none';
             }
+            
+            // Listen to size change to determine if variant/size combo is in cart
+            sizeSelect.onchange = () => { updateActionButtons(); };
 
-            const btnWrapper = document.getElementById('action-buttons-wrapper');
-            if(Number(variant.stock) > 0) {
-                btnWrapper.innerHTML = `
-                    <button class="btn-action-red" onclick="commitItemToCart()">add to cart</button>
-                    <button class="btn-action-black" onclick="setView('shop')">continue shopping</button>
-                `;
-            } else {
-                btnWrapper.innerHTML = `<button class="btn-action-black" style="flex: 1; background:#999;cursor:not-allowed;" disabled>sold out</button>`;
-            }
+            updateActionButtons();
         }
 
         function selectGalleryImage(thumbEl, imgUrl) {
@@ -814,7 +873,49 @@
             thumbEl.classList.add('active');
         }
 
-        // Cart Mechanics
+        // Context-Aware State Controls (Supreme style Add-to-cart replacements)
+        function updateActionButtons() {
+            if(!selectedProductPointer) return;
+
+            const variantId = document.getElementById('selected-variant-id')?.value;
+            const sizeEl = document.getElementById('selected-size-node');
+            const sizeValue = sizeEl ? sizeEl.value : 'UNISIZE';
+            const btnWrapper = document.getElementById('action-buttons-wrapper');
+            if(!btnWrapper) return;
+
+            const variant = storeCurrentVariants.find(v => v.id === variantId);
+            
+            if(variant && Number(variant.stock) <= 0) {
+                btnWrapper.innerHTML = `<button class="btn-action-black" style="flex: 1; background:#999;cursor:not-allowed;" disabled>sold out</button>`;
+                return;
+            }
+
+            const itemInCart = shoppingBagArray.find(item =>
+                item.id === selectedProductPointer.id &&
+                item.variantId === variantId &&
+                item.size === sizeValue
+            );
+
+            if (itemInCart) {
+                // Render Supreme style state indicators
+                btnWrapper.innerHTML = `
+                    <div style="width: 100%;">
+                        <div class="btn-in-cart">✓ in cart</div>
+                        <div class="action-row-split">
+                            <button class="btn-supreme-delete" onclick="evictCurrentSelection()">× delete</button>
+                            <button class="btn-supreme-continue" onclick="setView('shop')">continue shopping</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Revert to add to cart
+                btnWrapper.innerHTML = `
+                    <button class="btn-action-red" onclick="commitItemToCart()">add to cart</button>
+                `;
+            }
+        }
+
+        // Cart Mechanics & Supreme Left Widget Sync
         function commitItemToCart() {
             if(!selectedProductPointer) return;
             const sizeEl = document.getElementById('selected-size-node');
@@ -830,7 +931,6 @@
             const skuValue = document.getElementById('selected-variant-sku').value;
             const variantImage = document.getElementById('main-product-img').src;
 
-            // Use offer price if exists
             const pPrice = selectedProductPointer.offer_price > 0 && selectedProductPointer.offer_price < selectedProductPointer.price 
                 ? Number(selectedProductPointer.offer_price) 
                 : Number(selectedProductPointer.price);
@@ -847,31 +947,58 @@
                 quantity: 1
             });
 
+            saveCartState();
             updateCartWidgetState();
-            triggerWidgetFlash();
+        }
+
+        function evictCurrentSelection() {
+            const variantId = document.getElementById('selected-variant-id').value;
+            const sizeEl = document.getElementById('selected-size-node');
+            const sizeValue = sizeEl ? sizeEl.value : 'UNISIZE';
+
+            const itemIndex = shoppingBagArray.findIndex(item =>
+                item.id === selectedProductPointer.id &&
+                item.variantId === variantId &&
+                item.size === sizeValue
+            );
+
+            if(itemIndex > -1) {
+                shoppingBagArray.splice(itemIndex, 1);
+                saveCartState();
+                updateCartWidgetState();
+            }
         }
 
         function updateCartWidgetState() {
+            // Top right nav text sync
             const navCartLink = document.getElementById('nav-cart-link');
             if(navCartLink) {
                 navCartLink.textContent = shoppingBagArray.length > 0 ? `cart (${shoppingBagArray.length})` : 'cart';
             }
 
-            // Fallback clear active state for any old floating widget components if lingering in DOM
-            const widget = document.getElementById('cart-widget');
-            if(widget) {
-                if(shoppingBagArray.length > 0) widget.classList.add('active');
-                else widget.classList.remove('active');
+            // Floating Supreme Left Widget sync
+            const supremeWidget = document.getElementById('supreme-cart-widget');
+            if(supremeWidget) {
+                if(shoppingBagArray.length > 0) {
+                    supremeWidget.style.display = 'block';
+                    
+                    const countEl = document.getElementById('widget-item-count');
+                    const subtotalEl = document.getElementById('widget-subtotal');
+                    
+                    const totalItems = shoppingBagArray.reduce((acc, curr) => acc + curr.quantity, 0);
+                    countEl.textContent = totalItems === 1 ? '1 item' : `${totalItems} items`;
+                    
+                    const totalCost = shoppingBagArray.reduce((acc, curr) => acc + (curr.price * curr.quantity), 0);
+                    subtotalEl.textContent = `৳${totalCost.toLocaleString()}`;
+                } else {
+                    supremeWidget.style.display = 'none';
+                }
             }
-        }
 
-        function triggerWidgetFlash() {
-            const navCartLink = document.getElementById('nav-cart-link');
-            if(navCartLink) {
-                navCartLink.style.color = '#e8001d';
-                setTimeout(() => {
-                    navCartLink.style.color = '#000';
-                }, 400);
+            // Sync Context Buttons if on Product Page
+            const productView = document.getElementById('view-product');
+            if(productView && productView.classList.contains('active')) {
+                updateActionButtons();
             }
         }
 
@@ -903,6 +1030,7 @@
 
         function evictCartIndex(index) {
             shoppingBagArray.splice(index, 1);
+            saveCartState();
             renderCartBreakdownView();
             updateCartWidgetState();
         }
@@ -977,6 +1105,7 @@
             `;
 
             shoppingBagArray = [];
+            saveCartState();
             updateCartWidgetState();
             setView('success');
             
