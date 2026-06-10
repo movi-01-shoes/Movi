@@ -2566,50 +2566,55 @@
             const qrData = encodeURIComponent(window.location.href.split('#')[0]);
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
 
-            // Create an isolated container with fixed dimensions for perfect A4 scaling
-            const container = document.createElement('div');
-            container.style.width = '800px'; 
-            container.style.padding = '0'; // Padding is handled natively by html2pdf margins
-            container.style.backgroundColor = '#ffffff';
-            container.style.color = '#000000';
-            container.style.position = 'relative';
-            container.style.margin = '0 auto';
+            // SVG Watermark background (Repeats seamlessly every ~1000px height, acting like A4 pages)
+            const watermarkSvg = `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='1050'><text x='400' y='525' font-family='Arial' font-size='180' font-weight='900' font-style='italic' fill='%23e8001d' fill-opacity='0.03' text-anchor='middle' dominant-baseline='middle' transform='rotate(-45 400 525)'>MOVI</text></svg>`;
+            const watermarkDataUrl = "data:image/svg+xml;charset=utf-8," + watermarkSvg.replace(/#/g, '%23');
 
-            container.innerHTML = `
-                <!-- Centered Luxury Watermark -->
-                <div style="position: absolute; top: 450px; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 180px; font-weight: 900; font-family: 'Arial', sans-serif; font-style: italic; color: #000000; opacity: 0.03; z-index: 1; pointer-events: none; letter-spacing: -5px; white-space: nowrap;">MOVI</div>
+            // Build pure HTML string to bypass DOM scrolling/viewport clipping bugs
+            const invoiceHTML = `
+                <div style="width: 800px; padding: 40px; box-sizing: border-box; background-color: #ffffff; background-image: url('${watermarkDataUrl}'); background-repeat: repeat-y; background-position: top center; color: #000000; font-family: 'Inter', Helvetica, Arial, sans-serif; position: relative;">
+                    <style>
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        .item-row { page-break-inside: avoid; }
+                        .no-break { page-break-inside: avoid; }
+                    </style>
 
-                <div style="position: relative; z-index: 10; font-family: 'Inter', Helvetica, Arial, sans-serif; width: 100%;">
                     <!-- Header -->
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; border-bottom: 2px solid #000; padding-bottom: 20px;">
-                        <div style="font-family: 'Arial', sans-serif; font-size: 54px; font-style: italic; font-weight: 900; letter-spacing: -2px; color: #e8001d; line-height: 1;">MOVI</div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 24px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; font-family: 'Bebas Neue', sans-serif;">Receipt</div>
-                            <div style="font-size: 12px; color: #666; margin-top: 4px;">Date: ${formattedDate}</div>
-                            <div style="font-size: 12px; color: #000; font-weight: bold; margin-top: 2px;">Order No: ${receiptId}</div>
-                        </div>
-                    </div>
+                    <table width="100%" style="border-bottom: 2px solid #000; margin-bottom: 30px; padding-bottom: 20px; border-collapse: collapse;">
+                        <tr>
+                            <td style="vertical-align: bottom; width: 50%;">
+                                <div style="font-family: 'Arial', sans-serif; font-size: 54px; font-style: italic; font-weight: 900; letter-spacing: -2px; color: #e8001d; line-height: 1; margin: 0;">MOVI</div>
+                            </td>
+                            <td style="text-align: right; vertical-align: bottom; width: 50%;">
+                                <div style="font-size: 24px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; font-family: 'Bebas Neue', sans-serif; margin: 0; color: #000;">Receipt</div>
+                                <div style="font-size: 12px; color: #666; margin-top: 4px;">Date: ${formattedDate}</div>
+                                <div style="font-size: 12px; color: #000; font-weight: bold; margin-top: 2px;">Order No: ${receiptId}</div>
+                            </td>
+                        </tr>
+                    </table>
 
-                    <!-- Customer & Order Details -->
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; font-size: 13px; line-height: 1.6;">
-                        <div style="width: 45%;">
-                            <div style="font-weight: bold; text-transform: uppercase; margin-bottom: 8px; color: #888; font-size: 10px; letter-spacing: 1px;">Billed To</div>
-                            <div style="font-weight: bold; font-size: 16px; color: #000;">${customer.name}</div>
-                            <div style="color: #000; margin-top: 4px;">${customer.phone}</div>
-                            <div style="color: #000;">${customer.email || 'N/A'}</div>
-                        </div>
-                        <div style="width: 45%; text-align: right;">
-                            <div style="font-weight: bold; text-transform: uppercase; margin-bottom: 8px; color: #888; font-size: 10px; letter-spacing: 1px;">Shipping Details</div>
-                            <div style="text-align: right; margin-left: auto; color: #000;">${customer.address}</div>
-                            <div style="margin-top: 15px; border-top: 1px dotted #ccc; padding-top: 10px; display: inline-block;">
-                                <span style="color:#888; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;">Payment Method</span> <br>
-                                <strong style="font-size: 14px; color: #000;">${pmName}</strong>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Customer Details -->
+                    <table width="100%" style="margin-bottom: 40px; font-size: 13px; line-height: 1.6; table-layout: fixed; border-collapse: collapse;">
+                        <tr>
+                            <td style="width: 50%; vertical-align: top; padding-right: 20px; word-wrap: break-word;">
+                                <div style="font-weight: bold; text-transform: uppercase; margin-bottom: 8px; color: #888; font-size: 10px; letter-spacing: 1px;">Billed To</div>
+                                <div style="font-weight: bold; font-size: 16px; color: #000;">${customer.name}</div>
+                                <div style="color: #000; margin-top: 4px;">${customer.phone}</div>
+                                <div style="color: #000;">${customer.email || 'N/A'}</div>
+                            </td>
+                            <td style="width: 50%; vertical-align: top; text-align: right; padding-left: 20px; word-wrap: break-word;">
+                                <div style="font-weight: bold; text-transform: uppercase; margin-bottom: 8px; color: #888; font-size: 10px; letter-spacing: 1px;">Shipping Details</div>
+                                <div style="color: #000; white-space: pre-wrap; text-align: right;">${customer.address}</div>
+                                <div style="margin-top: 15px; border-top: 1px dotted #ccc; padding-top: 10px; display: inline-block;">
+                                    <span style="color:#888; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;">Payment Method</span> <br>
+                                    <strong style="font-size: 14px; color: #000;">${pmName}</strong>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
 
                     <!-- Items Table -->
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 13px; color: #000;">
+                    <table width="100%" style="border-collapse: collapse; margin-bottom: 30px; font-size: 13px; color: #000;">
                         <thead>
                             <tr style="border-bottom: 2px solid #000;">
                                 <th style="text-align: left; padding: 12px 8px; font-weight: bold; text-transform: uppercase; font-size: 10px; color:#666; letter-spacing: 1px;">Item Description</th>
@@ -2620,66 +2625,98 @@
                         </thead>
                         <tbody>
                             ${items.map(item => `
-                                <tr style="border-bottom: 1px solid #eee;">
-                                    <td style="padding: 16px 8px;">
-                                        <div style="font-weight: bold; text-transform: uppercase; color: #000; font-size: 14px;">${item.name}</div>
-                                        <div style="color: #666; font-size: 11px; margin-top: 4px;">Color: ${item.color} | Size: ${item.size}</div>
+                                <tr class="item-row" style="border-bottom: 1px solid #eee;">
+                                    <td style="padding: 16px 8px; vertical-align: top; max-width: 350px;">
+                                        <div style="font-weight: bold; text-transform: uppercase; color: #000; font-size: 14px; word-wrap: break-word;">${item.name}</div>
+                                        <div style="color: #666; font-size: 11px; margin-top: 4px;">Color: ${item.color} &bull; Size: ${item.size}</div>
+                                        ${item.sku ? `<div style="color: #999; font-size: 10px; margin-top: 2px;">SKU: ${item.sku}</div>` : ''}
                                     </td>
-                                    <td style="text-align: center; padding: 16px 8px; color: #000;">${item.quantity || 1}</td>
-                                    <td style="text-align: right; padding: 16px 8px; color: #000;">৳${item.price.toLocaleString()}</td>
-                                    <td style="text-align: right; padding: 16px 8px; color: #000;">৳${(item.price * (item.quantity || 1)).toLocaleString()}</td>
+                                    <td style="text-align: center; padding: 16px 8px; color: #000; vertical-align: top;">${item.quantity || 1}</td>
+                                    <td style="text-align: right; padding: 16px 8px; color: #000; vertical-align: top; white-space: nowrap;">৳${item.price.toLocaleString()}</td>
+                                    <td style="text-align: right; padding: 16px 8px; color: #000; vertical-align: top; white-space: nowrap;">৳${(item.price * (item.quantity || 1)).toLocaleString()}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
                     </table>
 
-                    <!-- Totals -->
-                    <div style="display: flex; justify-content: flex-end; margin-bottom: 60px;">
-                        <div style="width: 300px;">
-                            <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; border-top: 2px solid #000; padding-top: 15px;">
-                                <div style="text-transform: uppercase; color: #000;">Total</div>
-                                <div style="color: #e8001d;">৳${total.toLocaleString()}</div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Summary Section -->
+                    <table width="100%" class="no-break" style="margin-bottom: 50px; border-collapse: collapse;">
+                        <tr>
+                            <td style="width: 50%;"></td>
+                            <td style="width: 50%;">
+                                <table width="100%" style="border-collapse: collapse; font-size: 13px;">
+                                    <tr>
+                                        <td style="padding: 8px 0; color: #666; text-transform: uppercase; font-size: 11px;">Subtotal</td>
+                                        <td style="padding: 8px 0; text-align: right; color: #000; font-weight: bold;">৳${total.toLocaleString()}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; color: #666; text-transform: uppercase; font-size: 11px;">Shipping</td>
+                                        <td style="padding: 8px 0; text-align: right; color: #000;">Calculated</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="border-top: 2px solid #000; margin-top: 8px; padding-top: 12px;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 4px 0; font-weight: bold; text-transform: uppercase; font-size: 16px; color: #000;">Grand Total</td>
+                                        <td style="padding: 4px 0; text-align: right; font-weight: bold; font-size: 18px; color: #e8001d; white-space: nowrap;">৳${total.toLocaleString()}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
 
-                    <!-- Marketing Section -->
-                    <div style="background-color: #f9f9f9; padding: 30px; border-left: 5px solid #e8001d; display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px;">
-                        <div>
-                            <div style="font-weight: bold; font-size: 15px; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px; color:#000;">MOVI Exclusive Benefits</div>
-                            <ul style="margin: 0; padding: 0 0 0 16px; font-size: 12px; line-height: 1.8; color: #444;">
-                                <li>Priority access to new drops</li>
-                                <li>Exclusive member offers</li>
-                                <li>Early access collections</li>
-                                <li>Seasonal promotions</li>
-                            </ul>
-                        </div>
-                        <div style="text-align: center;">
-                            <img src="${qrUrl}" crossorigin="anonymous" style="width: 75px; height: 75px; background: white; padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
-                            <div style="font-size: 9px; color: #666; margin-top: 8px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">Scan to Shop</div>
-                        </div>
+                    <!-- Marketing Banner -->
+                    <div class="no-break" style="background-color: #f9f9f9; padding: 25px; border-left: 5px solid #e8001d; margin-bottom: 40px;">
+                        <table width="100%" style="border-collapse: collapse;">
+                            <tr>
+                                <td style="vertical-align: top;">
+                                    <div style="font-weight: bold; font-size: 14px; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px; color:#000;">MOVI Member Benefits</div>
+                                    <ul style="margin: 0; padding: 0 0 0 16px; font-size: 11px; line-height: 1.8; color: #444;">
+                                        <li>Priority access to new drops</li>
+                                        <li>Exclusive member offers</li>
+                                        <li>Early access collections</li>
+                                        <li>Seasonal promotions</li>
+                                    </ul>
+                                </td>
+                                <td style="vertical-align: middle; text-align: right; width: 100px;">
+                                    <img src="${qrUrl}" crossorigin="anonymous" style="width: 70px; height: 70px; background: white; padding: 4px; border: 1px solid #ddd; border-radius: 4px; display: inline-block;">
+                                    <div style="font-size: 8px; color: #666; margin-top: 6px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; text-align: center;">Scan to Shop</div>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
 
                     <!-- Footer -->
-                    <div style="text-align: center; font-size: 11px; color: #666; border-top: 1px solid #ddd; padding-top: 25px; line-height: 1.8;">
-                        <div style="font-weight: bold; color: #000; font-size: 14px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Thank you for shopping with MOVI.</div>
-                        <div>Official Support:<br> WhatsApp: +880 1234 567890 | Email: support@movi.com | Web: www.movi.com</div>
+                    <div class="no-break" style="text-align: center; font-size: 11px; color: #666; border-top: 1px solid #ddd; padding-top: 20px; line-height: 1.8;">
+                        <div style="font-weight: bold; color: #000; font-size: 14px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">Thank you for shopping with MOVI.</div>
+                        <div>Official Support:<br> WhatsApp: +880 1701065065 | Email: support@movi.com | Web: https://movi-01-shoes.github.io/Movi/</div>
                     </div>
+
                 </div>
             `;
 
-            // By setting proper margins in html2pdf instead of manual DOM padding, 
-            // the content stays perfectly centered on the generated A4 page.
+            // Explicitly force html2canvas to render at true (0,0) without scroll influences
             const opt = {
-                margin:       [0.5, 0.4], // 0.5 inch top/bottom, 0.4 inch left/right margins
+                margin:       [0.4, 0], // Top/Bottom margins handled natively. Left/Right handled strictly by our table wrapper.
                 filename:     `MOVI-ORDER-${receiptId}.pdf`,
                 image:        { type: 'jpeg', quality: 1.0 },
-                html2canvas:  { scale: 2, useCORS: true, windowWidth: 800, backgroundColor: '#ffffff' },
+                pagebreak:    { mode: ['css', 'legacy'] },
+                html2canvas:  { 
+                    scale: 2, 
+                    useCORS: true,
+                    windowWidth: 800, // Forces rigid structural width
+                    width: 800,       // Absolute lock on rendering width
+                    x: 0,             // Absolute lock on horizontal rendering start
+                    y: 0,             // Absolute lock on vertical rendering start
+                    scrollX: 0,       // Ignore browser horizontal scroll 
+                    scrollY: 0,       // Ignore browser vertical scroll
+                    backgroundColor: '#ffffff'
+                },
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
             };
 
-            // Pass the container element directly (it creates a hidden worker)
-            html2pdf().set(opt).from(container).save().catch(err => {
+            // Process directly from string—no DOM pollution, no viewport clipping.
+            html2pdf().set(opt).from(invoiceHTML).save().catch(err => {
                 console.error("PDF generation error: ", err);
             });
         }
