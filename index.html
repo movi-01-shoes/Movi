@@ -336,6 +336,25 @@
     .checkout-form-group label { display: block; margin-bottom: 5px; text-transform: lowercase; font-weight: bold; }
     .checkout-input { width: 100%; padding: 8px; border: 1px solid var(--movi-black); background: transparent; outline: none; font-size: 12px; }
 
+    /* Order Tracking Timeline System */
+    .tracking-container { max-width: 500px; margin: 0 auto; padding: 20px; font-family: var(--font-main); }
+    .tracking-input-group { display: flex; gap: 10px; margin-bottom: 30px; }
+    .tracking-input { flex: 1; padding: 10px; border: 1px solid var(--movi-black); outline: none; font-size: 12px; text-transform: uppercase; font-family: inherit; }
+    .timeline { position: relative; padding-left: 20px; margin-top: 20px; }
+    .timeline::before { content: ''; position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: var(--movi-gray); }
+    .timeline-step { position: relative; margin-bottom: 25px; padding-left: 20px; }
+    .timeline-step:last-child { margin-bottom: 0; }
+    .timeline-indicator { position: absolute; left: -21px; top: 0; width: 14px; height: 14px; border-radius: 50%; background: var(--movi-white); border: 2px solid var(--movi-gray); z-index: 2; }
+    .timeline-step.completed .timeline-indicator { background: var(--movi-black); border-color: var(--movi-black); }
+    .timeline-step.active .timeline-indicator { background: var(--movi-red); border-color: var(--movi-red); box-shadow: 0 0 0 3px rgba(232,0,29,0.2); }
+    .timeline-step.cancelled .timeline-indicator { background: var(--movi-red); border-color: var(--movi-red); }
+    .timeline-step.cancelled .timeline-indicator::after { content: '×'; color: white; position: absolute; top: -3px; left: 2px; font-size: 14px; font-weight: bold; line-height: 1; font-family: sans-serif; }
+    .timeline-step.completed .timeline-indicator::after { content: '✓'; color: white; position: absolute; top: -1px; left: 2px; font-size: 10px; font-weight: bold; line-height: 1; font-family: sans-serif; }
+    .timeline-title { font-size: 13px; font-weight: bold; text-transform: uppercase; color: var(--movi-gray); }
+    .timeline-step.completed .timeline-title, .timeline-step.active .timeline-title { color: var(--movi-black); }
+    .timeline-step.cancelled .timeline-title { color: var(--movi-red); }
+    .timeline-time { font-size: 10px; color: #666; margin-top: 4px; }
+
     /* =========================================================
        CYBERPUNK ENGINE VISUAL SYSTEM (ADMIN VIEW)
        ========================================================= */
@@ -645,6 +664,21 @@
             </div>
         </div>
         
+        <!-- Track Order View -->
+        <div id="view-track" class="page-view">
+            <div class="tracking-container">
+                <h3 style="text-align:center; text-transform:uppercase; margin-bottom:20px;">Track Your Order</h3>
+                <div class="tracking-input-group">
+                    <input type="text" id="track-order-id" class="tracking-input" placeholder="Enter Order ID (e.g. ORD-XXXXXX)">
+                    <button class="btn-action-black" onclick="fetchOrderTracking()" style="padding: 10px 20px; border-radius: 0;">TRACK</button>
+                </div>
+                <div id="tracking-result-area" style="display:none;">
+                    <div style="font-weight:bold; margin-bottom:15px; text-transform:uppercase; font-size:14px; border-bottom:1px dotted #000; padding-bottom:10px;" id="track-display-id"></div>
+                    <div class="timeline" id="tracking-timeline"></div>
+                </div>
+            </div>
+        </div>
+
         <!-- Supreme-style Unified Footer -->
         <footer class="store-footer">
             <div class="footer-top-row">
@@ -661,7 +695,7 @@
             </div>
             <div class="footer-bottom-row">
                 <div class="footer-col">
-                    <a onclick="setView('home')">random</a>
+                    <a onclick="setView('track')">track order</a>
                     <a onclick="setView('home')">about</a>
                     <a onclick="setView('shop')">stores</a>
                 </div>
@@ -1713,7 +1747,8 @@
                 items: shoppingBagArray,
                 total: totalPayableBill,
                 payment_method: paymentMethodName,
-                status: 'Pending Verification'
+                status: 'Order Received',
+                status_history: JSON.stringify([{ status: 'Order Received', timestamp: new Date().toISOString() }])
             };
 
             const { data, error } = await supabaseClient.from('orders').insert([orderPayload]).select();
@@ -1741,7 +1776,7 @@
                 <p style="font-size:14px;"><strong>Total Payable: <span style="color:var(--movi-red); float:right;">৳${totalPayableBill}</span></strong></p>
                 
                 <div style="background:#eee; padding:10px; margin-top:20px; text-align:center; font-weight:bold;">
-                    Status: Pending Verification
+                    Status: Order Received
                 </div>
             `;
 
@@ -1863,9 +1898,12 @@
                             <td style="color:#00d68f; font-weight:bold;">৳${order.total}</td>
                             <td>
                                 <select onchange="updateRemoteOrderState('${order.id}', this.value)" style="background:#222; color:#fff; border:1px solid #444; padding:4px;">
-                                    <option value="Pending Verification" ${order.status==='Pending Verification'?'selected':''}>Pending Verification</option>
-                                    <option value="Processing" ${order.status==='Processing'?'selected':''}>Processing</option>
-                                    <option value="Completed" ${order.status==='Completed'?'selected':''}>Completed</option>
+                                    <option value="Order Received" ${order.status==='Order Received' || order.status==='Pending Verification' ? 'selected':''}>Order Received</option>
+                                    <option value="MOVI Received Order" ${order.status==='MOVI Received Order'?'selected':''}>MOVI Received Order</option>
+                                    <option value="Our Team Processing" ${order.status==='Our Team Processing' || order.status==='Processing' ? 'selected':''}>Our Team Processing</option>
+                                    <option value="Handed Over To Delivery Partner" ${order.status==='Handed Over To Delivery Partner'?'selected':''}>Handed Over To Delivery Partner</option>
+                                    <option value="Out For Delivery" ${order.status==='Out For Delivery'?'selected':''}>Out For Delivery</option>
+                                    <option value="Delivered" ${order.status==='Delivered' || order.status==='Completed' ? 'selected':''}>Delivered</option>
                                     <option value="Cancelled" ${order.status==='Cancelled'?'selected':''}>Cancelled</option>
                                 </select>
                             </td>
@@ -1877,8 +1915,27 @@
         }
 
         async function updateRemoteOrderState(orderId, updatedStateString) {
-            const { error } = await supabaseClient.from('orders').update({ status: updatedStateString }).eq('id', orderId);
-            if(!error) triggerAdminAlertNotification("ORDER ARRAYS CONFIG RUNTIME UPDATED");
+            // First fetch current to append history safely
+            const { data: currentOrder } = await supabaseClient.from('orders').select('status_history').eq('id', orderId).single();
+            
+            let history = [];
+            if (currentOrder && currentOrder.status_history) {
+                try { history = typeof currentOrder.status_history === 'string' ? JSON.parse(currentOrder.status_history) : currentOrder.status_history; } catch(e) {}
+            }
+            if(!Array.isArray(history)) history = [];
+
+            history.push({
+                status: updatedStateString,
+                timestamp: new Date().toISOString()
+            });
+
+            const { error } = await supabaseClient.from('orders').update({ 
+                status: updatedStateString,
+                status_history: JSON.stringify(history)
+            }).eq('id', orderId);
+            
+            if(!error) triggerAdminAlertNotification("ORDER STATE UPDATED");
+            else alert("Error: Make sure 'status_history' column (type jsonb) is added to your 'orders' table in Supabase.");
         }
 
         async function purgeOrderRecord(orderId) {
@@ -2313,6 +2370,101 @@
             }
         }
 
+        // ==========================================
+        // ORDER TRACKING FRONTEND SYSTEM
+        // ==========================================
+        const ORDER_STATUS_FLOW = [
+            "Order Received",
+            "MOVI Received Order",
+            "Our Team Processing",
+            "Handed Over To Delivery Partner",
+            "Out For Delivery",
+            "Delivered"
+        ];
+
+        async function fetchOrderTracking() {
+            const orderId = document.getElementById('track-order-id').value.trim();
+            if(!orderId) return;
+
+            const btn = document.querySelector('.tracking-input-group button');
+            btn.textContent = "SEARCHING...";
+            
+            const { data, error } = await supabaseClient.from('orders').select('*').eq('receipt_id', orderId).single();
+            
+            btn.textContent = "TRACK";
+
+            const resultArea = document.getElementById('tracking-result-area');
+            const timelineArea = document.getElementById('tracking-timeline');
+            
+            if(error || !data) {
+                resultArea.style.display = 'block';
+                document.getElementById('track-display-id').textContent = `Order ${orderId}`;
+                timelineArea.innerHTML = `<div style="color:var(--movi-red); padding: 20px 0; font-weight:bold;">Order not found. Please verify your Order ID.</div>`;
+                return;
+            }
+
+            resultArea.style.display = 'block';
+            document.getElementById('track-display-id').textContent = `Order ${data.receipt_id}`;
+            
+            let history = [];
+            try { history = typeof data.status_history === 'string' ? JSON.parse(data.status_history) : data.status_history || []; } catch(e) {}
+            if(!Array.isArray(history)) history = [];
+
+            // Map old system statuses for backwards compatibility
+            let currentStatus = data.status || 'Order Received';
+            if (currentStatus === 'Pending Verification') currentStatus = 'Order Received';
+            if (currentStatus === 'Processing') currentStatus = 'Our Team Processing';
+            if (currentStatus === 'Completed') currentStatus = 'Delivered';
+
+            const isCancelled = currentStatus === 'Cancelled';
+            let html = '';
+            
+            const formatTime = (isoString) => {
+                if(!isoString) return '';
+                return new Date(isoString).toLocaleString('en-GB', { day:'numeric', month:'short', year:'numeric', hour:'numeric', minute:'2-digit', hour12:true });
+            };
+            
+            if(isCancelled) {
+                const steps = ["Order Received", "MOVI Received Order", "Cancelled"];
+                steps.forEach((step, idx) => {
+                    const stepHistory = history.find(h => h.status === step) || history.find(h => h.status === currentStatus);
+                    const timeStr = stepHistory && stepHistory.timestamp ? formatTime(stepHistory.timestamp) : '';
+                    const isLast = idx === steps.length - 1;
+                    
+                    html += `
+                        <div class="timeline-step ${isLast ? 'cancelled' : 'completed'}">
+                            <div class="timeline-indicator"></div>
+                            <div class="timeline-title">${step}</div>
+                            ${timeStr ? `<div class="timeline-time">${timeStr}</div>` : ''}
+                        </div>
+                    `;
+                });
+            } else {
+                let currentIndex = ORDER_STATUS_FLOW.indexOf(currentStatus);
+                if(currentIndex === -1) currentIndex = 0; 
+
+                ORDER_STATUS_FLOW.forEach((step, idx) => {
+                    let statusClass = '';
+                    if (idx < currentIndex) statusClass = 'completed';
+                    else if (idx === currentIndex) statusClass = 'active';
+
+                    const stepHistory = history.find(h => h.status === step) || (idx === currentIndex && history.length > 0 ? history[history.length - 1] : null);
+                    let timeStr = stepHistory && stepHistory.timestamp ? formatTime(stepHistory.timestamp) : '';
+                    
+                    if (!timeStr && idx === 0 && data.created_at) timeStr = formatTime(data.created_at);
+
+                    html += `
+                        <div class="timeline-step ${statusClass}">
+                            <div class="timeline-indicator"></div>
+                            <div class="timeline-title">${step}</div>
+                            ${timeStr && statusClass ? `<div class="timeline-time">${timeStr}</div>` : ''}
+                        </div>
+                    `;
+                });
+            }
+            
+            timelineArea.innerHTML = html;
+        }
 
         window.addEventListener('DOMContentLoaded', bootSystemContext);
         window.addEventListener('hashchange', bootSystemContext);
