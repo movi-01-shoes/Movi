@@ -175,7 +175,11 @@
     .product-thumb { width: 100%; aspect-ratio: 1/1; object-fit: cover; border: 1px solid transparent; cursor: pointer; background: #f5f5f5; }
     .product-thumb.active { border: 1px solid #000; }
     .product-thumb:hover { border-color: #666; }
-    .product-price { font-size: 13px; font-weight: normal; margin-bottom: 16px; }
+    
+    .product-price { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; font-family: var(--font-main); }
+    .sale-price { font-size: 22px; font-weight: 700; }
+    .original-price { text-decoration: line-through; color: #777; font-size: 16px; }
+    .discount-badge { background: var(--movi-red); color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
     
     /* Action Controls & New State Buttons */
     .action-controls { display: flex; flex-direction: column; max-width: 320px; width: 100%; }
@@ -1292,10 +1296,21 @@
 
             const initialMainImg = activeVariant.images.find(Boolean) || 'https://via.placeholder.com/500';
 
-            const hasOffer = prod.offer_price && prod.offer_price > 0 && prod.offer_price < prod.price;
-            const priceHtml = hasOffer 
-                ? `<span style="text-decoration: line-through; color: var(--movi-red); margin-right: 10px;">৳${prod.price}</span><span>৳${prod.offer_price}</span>` 
-                : `<span>৳${prod.price}</span>`;
+            const retailPrice = Number(prod.price) || 0;
+            const offerPrice = Number(prod.offer_price) || 0;
+            const hasOffer = offerPrice > 0 && offerPrice < retailPrice;
+
+            let priceHtml = '';
+            if (hasOffer) {
+                const discountPercent = Math.round(((retailPrice - offerPrice) / retailPrice) * 100);
+                priceHtml = `
+                    <span class="sale-price">৳${offerPrice.toLocaleString()}</span>
+                    <span class="original-price">৳${retailPrice.toLocaleString()}</span>
+                    <span class="discount-badge">${discountPercent}% OFF</span>
+                `;
+            } else {
+                priceHtml = `<span class="sale-price">৳${retailPrice.toLocaleString()}</span>`;
+            }
 
             container.innerHTML = `
                 <div class="product-image-col">
