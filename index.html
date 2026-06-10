@@ -71,17 +71,29 @@
         --font-serif: Georgia, "Times New Roman", serif;
     }
 
-    #storefront-view { font-family: var(--font-main); background-color: var(--movi-white); color: var(--movi-black); font-size: 11px; min-height: 100vh; position: relative; display: flex; flex-direction: column; }
+    /* Brutalist Text Hover Effect - strictly for clickable/interactive items */
+    #storefront-view a:hover,
+    #storefront-view button:hover,
+    #storefront-view .brand-box:hover,
+    #storefront-view .next-link:hover,
+    #storefront-view .cart-widget-link:hover,
+    #storefront-view .cart-widget-checkout:hover {
+        background-color: var(--movi-red) !important;
+        color: var(--movi-white) !important;
+        text-decoration: none !important;
+    }
+
+    #storefront-view { font-family: var(--font-main); background-color: var(--movi-white); color: var(--movi-black); font-size: 13px; min-height: 100vh; position: relative; display: flex; flex-direction: column; }
     #storefront-view .page-view { display: none; min-height: 60vh; padding-bottom: 40px;}
     #storefront-view .page-view.active { display: block; flex: 1; }
 
     header { text-align: center; padding-top: 40px; padding-bottom: 20px; position: relative; border-bottom: none; }
     .brand-box { display: inline-block; background-color: var(--movi-red); padding: 5px 15px; margin-bottom: 10px; cursor: pointer; }
     .brand-name { color: var(--movi-white); font-family: 'Arial', sans-serif; font-size: 28px; font-style: italic; font-weight: 900; letter-spacing: -1px; }
-    .header-time { font-size: 11px; letter-spacing: 1px; color: #000; font-family: var(--font-main); }
+    .header-time { font-size: 12px; letter-spacing: 1px; color: #000; font-family: var(--font-main); }
     
     /* Supreme-style Unified Footer */
-    .store-footer { display: flex; flex-direction: column; justify-content: flex-end; width: 100%; margin-top: auto; padding: 100px 40px 40px; font-size: 11px; background: transparent; z-index: 9998; gap: 50px; }
+    .store-footer { display: flex; flex-direction: column; justify-content: flex-end; width: 100%; margin-top: auto; padding: 100px 40px 40px; font-size: 12px; background: transparent; z-index: 9998; gap: 50px; }
     .footer-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 20px; }
     .footer-top-left, .footer-top-right { display: flex; gap: 20px; flex-wrap: wrap; }
     .footer-bottom-row { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; flex-wrap: wrap; gap: 30px; }
@@ -91,12 +103,12 @@
 
     /* Drop Scarcity Mechanics */
     .live-scarcity-widget { max-width: 500px; margin: 0 auto 40px auto; padding: 0 20px; }
-    .scarcity-top-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; }
+    .scarcity-top-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; }
     .scarcity-pulse { display: inline-block; width: 6px; height: 6px; background-color: var(--movi-red); border-radius: 50%; margin-right: 6px; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     .scarcity-bar-container { width: 100%; height: 3px; background-color: var(--movi-gray); margin-bottom: 8px; }
     .scarcity-bar-fill { height: 100%; background-color: var(--movi-black); width: 100%; transition: width 0.5s ease-out; }
-    .scarcity-bottom-row { display: flex; justify-content: space-between; font-size: 11px; }
+    .scarcity-bottom-row { display: flex; justify-content: space-between; font-size: 12px; }
 
     /* Supreme-Style Lookbook Strips */
     .home-strip { width: 100%; overflow-x: auto; white-space: nowrap; text-align: center; font-size: 0; padding: 0 20px 20px 20px; background: #fff; scroll-behavior: smooth; }
@@ -111,14 +123,14 @@
     .strip-item-wrapper { display: inline-block; position: relative; width: 8vw; min-width: 90px; max-width: 130px; height: 50vh; cursor: pointer; margin: 0 1px; vertical-align: top; background: #f5f5f5; }
     .strip-img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; transition: filter 0.2s; }
     .strip-item-wrapper:hover .strip-img { filter: brightness(0.8); }
-    .badge-new { position: absolute; top: 0; left: 0; background-color: #b4b4b4; color: var(--movi-white); padding: 2px 5px; font-size: 10px; font-weight: bold; z-index: 10; text-transform: uppercase; }
+    .badge-new { position: absolute; top: 0; left: 0; background-color: #b4b4b4; color: var(--movi-white); padding: 2px 5px; font-size: 11px; font-weight: bold; z-index: 10; text-transform: uppercase; }
 
     /* Layout Exactly like Supreme */
     #page-shop { width: 100%; max-width: 1600px; margin: 0 auto; padding: 0 40px; }
     .shop-layout { display: flex; align-items: flex-start; min-height: 100%; }
     
     .cat-sidebar { width: 120px; text-align: right; margin-right: 50px; line-height: 1.6; flex-shrink: 0; position: sticky; top: 40px; }
-    .cat-sidebar a { display: block; cursor: pointer; color: #777; font-size: 11px; }
+    .cat-sidebar a { display: block; cursor: pointer; color: #777; font-size: 12px; }
     .cat-sidebar a:hover, .cat-sidebar a.active { font-weight: bold; color: #000; }
     
     .product-grid-container { flex: 1; padding-bottom: 100px; height: calc(100vh - 200px); overflow-y: auto; padding-right: 10px; }
@@ -134,21 +146,21 @@
     .product-card img { width: 100%; aspect-ratio: 1 / 1; object-fit: contain; background-color: transparent; transition: opacity 0.2s ease; }
     .product-card:hover img { opacity: 0.8; }
     
-    .sold-out-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255, 255, 255, 0.95); color: var(--movi-black); padding: 6px 8px; font-size: 10px; font-weight: bold; pointer-events: none; text-transform: uppercase; border: 1px solid var(--movi-black); box-shadow: 0px 2px 4px rgba(0,0,0,0.1); }
+    .sold-out-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255, 255, 255, 0.95); color: var(--movi-black); padding: 6px 8px; font-size: 11px; font-weight: bold; pointer-events: none; text-transform: uppercase; border: 1px solid var(--movi-black); box-shadow: 0px 2px 4px rgba(0,0,0,0.1); }
 
     /* Individual View Profile — Supreme style */
     .product-detail-layout { display: flex; align-items: flex-start; gap: 60px; max-width: 1000px; margin: 40px auto; padding: 20px 40px; }
     .product-image-col { flex: 0 0 55%; text-align: center; }
     .product-main-image { width: 100%; max-width: 500px; height: auto; object-fit: contain; display: inline-block; }
     .product-info { flex: 1; padding-top: 0; font-family: var(--font-main); }
-    .product-title { font-size: 14px; font-weight: normal; margin-bottom: 8px; text-transform: uppercase; }
-    .product-desc { font-size: 10px; line-height: 1.4; margin-bottom: 20px; color: #000; text-align: justify; max-width: 90%; }
+    .product-title { font-size: 16px; font-weight: normal; margin-bottom: 8px; text-transform: uppercase; }
+    .product-desc { font-size: 11px; line-height: 1.4; margin-bottom: 20px; color: #000; text-align: justify; max-width: 90%; }
     
     /* Variant Color Swatches */
     .swatches-container { display: flex; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }
     .color-swatch { width: 22px; height: 22px; border-radius: 50%; border: 1px solid #ddd; cursor: pointer; box-shadow: inset 0 0 2px rgba(0,0,0,0.1); }
     .color-swatch.active { border: 2px solid var(--movi-black); outline: 1px solid #fff; outline-offset: -2px; }
-    .product-color-label { font-size: 11px; font-weight: bold; margin-bottom: 16px; color: #444; }
+    .product-color-label { font-size: 12px; font-weight: bold; margin-bottom: 16px; color: #444; }
 
     /* Product Image Zoom System */
     .product-image-zoom-container {
@@ -184,20 +196,20 @@
     /* Action Controls & New State Buttons */
     .action-controls { display: flex; flex-direction: column; max-width: 320px; width: 100%; }
     .action-row { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; width: 100%; }
-    .size-select { flex: 1; padding: 6px; border: 1px solid #aaa; background: var(--movi-white); outline: none; font-size: 11px; text-align: center; cursor: pointer; border-radius: 0; }
+    .size-select { flex: 1; padding: 6px; border: 1px solid #aaa; background: var(--movi-white); outline: none; font-size: 12px; text-align: center; cursor: pointer; border-radius: 0; }
     .size-select:disabled { background: #eee; cursor: not-allowed; }
-    .next-link { font-size: 11px; color: #000; cursor: pointer; white-space: nowrap; }
+    .next-link { font-size: 12px; color: #000; cursor: pointer; white-space: nowrap; }
     .next-link:hover { text-decoration: underline; }
     
-    .btn-action-red { flex: 1; background-color: var(--movi-red); color: var(--movi-white); border: none; padding: 8px; font-size: 11px; cursor: pointer; text-align: center; border-radius: 0; }
-    .btn-action-black { flex: 1; background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 8px; font-size: 11px; cursor: pointer; text-align: center; border-radius: 0; }
+    .btn-action-red { flex: 1; background-color: var(--movi-red); color: var(--movi-white); border: none; padding: 8px; font-size: 12px; cursor: pointer; text-align: center; border-radius: 0; }
+    .btn-action-black { flex: 1; background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 8px; font-size: 12px; cursor: pointer; text-align: center; border-radius: 0; }
 
     /* Supreme State Buttons */
-    .btn-in-cart { border: 1px solid var(--movi-red); color: var(--movi-red); background-color: var(--movi-white); padding: 6px; text-align: center; width: 100%; margin-bottom: 4px; font-size: 11px; cursor: default; border-radius: 0; }
+    .btn-in-cart { border: 1px solid var(--movi-red); color: var(--movi-red); background-color: var(--movi-white); padding: 6px; text-align: center; width: 100%; margin-bottom: 4px; font-size: 12px; cursor: default; border-radius: 0; }
     .action-row-split { display: flex; gap: 4px; width: 100%; }
-    .btn-supreme-delete { background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 6px; flex: 1; cursor: pointer; font-size: 11px; text-align: center; border-radius: 0; }
+    .btn-supreme-delete { background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 6px; flex: 1; cursor: pointer; font-size: 12px; text-align: center; border-radius: 0; }
     .btn-supreme-delete:hover { color: #ccc; }
-    .btn-supreme-continue { background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 6px; flex: 1.5; cursor: pointer; font-size: 11px; text-align: center; border-radius: 0; }
+    .btn-supreme-continue { background-color: var(--movi-black); color: var(--movi-white); border: none; padding: 6px; flex: 1.5; cursor: pointer; font-size: 12px; text-align: center; border-radius: 0; }
     .btn-supreme-continue:hover { color: #ccc; }
 
     /* Supreme Left Cart Widget */
@@ -207,7 +219,7 @@
         left: 40px;
         width: 170px;
         font-family: var(--font-main);
-        font-size: 11px;
+        font-size: 12px;
         z-index: 9000;
         background: var(--movi-white);
         display: none;
@@ -217,12 +229,12 @@
     
     .cart-widget-top { background-color: #d1d1d1; color: #000; text-align: center; padding: 6px 0; }
     .cart-widget-mid { border-left: 1px solid #d1d1d1; border-right: 1px solid #d1d1d1; border-bottom: 1px solid #d1d1d1; padding: 12px 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-    .cart-widget-mid .sub-label { font-size: 10px; line-height: 1.2; text-align: left;}
-    .cart-widget-mid .sub-tax { font-size: 9px; color: #666; }
-    .cart-widget-mid .sub-price { font-weight: bold; font-size: 11px; }
-    .cart-widget-link { background-color: var(--movi-black); color: var(--movi-white); text-align: center; padding: 8px 0; cursor: pointer; margin-bottom: 5px; font-weight: normal; font-size: 10px; }
+    .cart-widget-mid .sub-label { font-size: 11px; line-height: 1.2; text-align: left;}
+    .cart-widget-mid .sub-tax { font-size: 10px; color: #666; }
+    .cart-widget-mid .sub-price { font-weight: bold; font-size: 12px; }
+    .cart-widget-link { background-color: var(--movi-black); color: var(--movi-white); text-align: center; padding: 8px 0; cursor: pointer; margin-bottom: 5px; font-weight: normal; font-size: 11px; }
     .cart-widget-link:hover { background-color: #333; }
-    .cart-widget-checkout { background-color: var(--movi-red); color: var(--movi-white); text-align: center; padding: 8px 0; cursor: pointer; font-weight: normal; font-size: 10px; }
+    .cart-widget-checkout { background-color: var(--movi-red); color: var(--movi-white); text-align: center; padding: 8px 0; cursor: pointer; font-weight: normal; font-size: 11px; }
     .cart-widget-checkout:hover { background-color: #cc0000; }
 
     /* Simulated Social Proof Toast */
@@ -235,7 +247,7 @@
         border: 1px solid var(--movi-black);
         padding: 10px 15px;
         font-family: var(--font-main);
-        font-size: 10px;
+        font-size: 11px;
         z-index: 9999;
         opacity: 0;
         transform: translateY(10px);
@@ -263,7 +275,7 @@
         position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 18px; font-weight: bold;
     }
     .mailing-input {
-        width: 100%; padding: 10px; border: 1px solid var(--movi-black); outline: none; margin: 20px 0; font-family: inherit; font-size: 11px; text-align: center;
+        width: 100%; padding: 10px; border: 1px solid var(--movi-black); outline: none; margin: 20px 0; font-family: inherit; font-size: 12px; text-align: center;
     }
 
     /* Contact Modal System */
@@ -292,7 +304,7 @@
         font-family: 'Arial', sans-serif; font-size: 28px; font-style: italic; 
         font-weight: 900; letter-spacing: -1px; text-transform: uppercase; margin-bottom: 8px;
     }
-    .contact-subtitle { font-size: 11px; color: #666; line-height: 1.4; }
+    .contact-subtitle { font-size: 12px; color: #666; line-height: 1.4; }
     .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
     .contact-card {
         border: 1px solid var(--movi-gray); padding: 20px 15px; display: flex; 
@@ -313,8 +325,8 @@
     .contact-icon-wrapper { margin-bottom: 12px; color: var(--movi-black); transition: color 0.2s ease; }
     .contact-card.fb:hover .contact-icon-wrapper { color: #1877F2; }
     .contact-card.wa:hover .contact-icon-wrapper { color: #25D366; }
-    .contact-card-title { font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 6px; }
-    .contact-card-desc { font-size: 10px; color: #666; line-height: 1.4; }
+    .contact-card-title { font-size: 13px; font-weight: bold; text-transform: uppercase; margin-bottom: 6px; }
+    .contact-card-desc { font-size: 11px; color: #666; line-height: 1.4; }
 
     /* Checkout Elements */
     #page-cart { max-width: 800px; margin: 0 auto; padding: 0 20px; }
@@ -322,7 +334,7 @@
     .cart-img-preview { width: 60px; height: 60px; object-fit: cover; margin-right: 15px; border: 1px solid #eee; }
     .checkout-form-group { margin-bottom: 15px; }
     .checkout-form-group label { display: block; margin-bottom: 5px; text-transform: lowercase; font-weight: bold; }
-    .checkout-input { width: 100%; padding: 8px; border: 1px solid var(--movi-black); background: transparent; outline: none; font-size: 11px; }
+    .checkout-input { width: 100%; padding: 8px; border: 1px solid var(--movi-black); background: transparent; outline: none; font-size: 12px; }
 
     /* =========================================================
        CYBERPUNK ENGINE VISUAL SYSTEM (ADMIN VIEW)
@@ -423,7 +435,7 @@
             <div class="mailing-modal-content">
                 <span class="mailing-close" onclick="closeMailingList()">×</span>
                 <h3 style="text-transform:uppercase; margin-bottom:10px;">Premium Access</h3>
-                <p style="font-size:11px; color:#666; line-height:1.4;">Join the registry to receive priority alerts for upcoming premium drops and exclusive best-price offers.</p>
+                <p style="font-size:12px; color:#666; line-height:1.4;">Join the registry to receive priority alerts for upcoming premium drops and exclusive best-price offers.</p>
                 <form onsubmit="submitMailingList(event)">
                     <input type="email" id="mailing-email-input" class="mailing-input" placeholder="enter your email address" required>
                     <button type="submit" class="btn-action-red" id="mailing-submit-btn" style="width:100%; padding:10px;">JOIN REGISTRY</button>
@@ -623,7 +635,7 @@
                     <h3 style="text-transform:uppercase; margin-bottom:20px;">Order Confirmed</h3>
                 </div>
                 
-                <div id="success-receipt-content" style="font-family: var(--font-main); font-size: 11px; line-height: 1.6;">
+                <div id="success-receipt-content" style="font-family: var(--font-main); font-size: 12px; line-height: 1.6;">
                     <!-- JS Injects Order Data Here -->
                 </div>
                 
@@ -1000,6 +1012,14 @@
             }
         }
 
+        // Close modal when clicking the white overlay outside the card
+        function handleOutsideClick(event) {
+            const modal = document.getElementById('movi-contact-modal');
+            if (event.target === modal) {
+                closeContactModal();
+            }
+        }
+
         function scheduleNextNotification() {
             clearTimeout(socialProofEngineTimer);
             const nextDelay = Math.floor(Math.random() * (120000 - 45000 + 1)) + 45000; // 45s to 120s
@@ -1108,13 +1128,6 @@
                 modal.style.display = 'none';
                 isContactAnimating = false;
             }, 300);
-        }
-
-        function handleOutsideClick(event) {
-            const modal = document.getElementById('movi-contact-modal');
-            if (event.target === modal) {
-                closeContactModal();
-            }
         }
 
         document.addEventListener('keydown', function(event) {
@@ -1579,10 +1592,10 @@
                     <img src="${item.image || 'https://via.placeholder.com/100'}" class="cart-img-preview" loading="lazy">
                     <div style="flex:1;">
                         <div style="text-transform:uppercase; font-weight:bold;">${item.name}</div>
-                        <div style="color:#666; font-size:10px;">Color: ${item.color} | Size: ${item.size} <br>SKU: ${item.sku || 'N/A'}</div>
+                        <div style="color:#666; font-size:11px;">Color: ${item.color} | Size: ${item.size} <br>SKU: ${item.sku || 'N/A'}</div>
                     </div>
                     <div style="font-weight:bold; margin-right:20px;">৳${item.price}</div>
-                    <button class="btn-action-black" style="padding:4px 8px; font-size:10px; width:auto;" onclick="evictCartIndex(${idx})">delete</button>
+                    <button class="btn-action-black" style="padding:4px 8px; font-size:11px; width:auto;" onclick="evictCartIndex(${idx})">delete</button>
                 </div>
             `).join('');
 
