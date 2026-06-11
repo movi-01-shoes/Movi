@@ -567,11 +567,9 @@
 
         <div id="view-shop" class="page-view" style="padding-bottom: 0;">
             <div class="shop-layout">
-                <div class="cat-sidebar">
+                <div class="cat-sidebar" id="dynamic-cat-sidebar">
                     <a class="active" onclick="renderShopGrid('all')">look all</a>
-                    <a onclick="renderShopGrid('sneakers')">sneakers</a>
-                    <a onclick="renderShopGrid('slides')">slides</a>
-                    <a onclick="renderShopGrid('apparel')">apparel</a>
+                    <!-- Dynamic categories injected here by JS -->
                 </div>
                 <div class="product-grid-container">
                     <div class="product-grid" id="catalog-grid"></div>
@@ -742,6 +740,7 @@
                 <div class="admin-nav-item active" id="nav-orders" onclick="switchAdminTab('orders')">📋 Manifest Orders</div>
                 <div class="admin-nav-item" id="nav-products" onclick="switchAdminTab('products')">👟 Vault Products</div>
                 <div class="admin-nav-item" id="nav-add" onclick="switchAdminTab('add')">＋ Mint New Artifact</div>
+                <div class="admin-nav-item" id="nav-categories" onclick="switchAdminTab('categories')">🏷️ Category Zones</div>
                 <div class="admin-nav-item" id="nav-payments" onclick="switchAdminTab('payments')">💳 Payment Nodes</div>
                 <div class="admin-nav-item" id="nav-mailing" onclick="switchAdminTab('mailing')">✉️ Mailing List Registry</div>
                 
@@ -789,9 +788,7 @@
                                 <div style="flex:1;">
                                     <label style="font-size:11px; color:var(--admin-muted);">Category Group</label>
                                     <select class="admin-input-field" id="form-p-cat">
-                                        <option value="sneakers">sneakers</option>
-                                        <option value="slides">slides</option>
-                                        <option value="apparel">apparel</option>
+                                        <option value="">-- Load Categories --</option>
                                     </select>
                                 </div>
                                 <div style="flex:1;">
@@ -901,6 +898,25 @@
                         </div>
                     </div>
 
+                    <!-- Tab: Categories -->
+                    <div id="tab-categories" class="admin-tab-view" style="display:none;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 20px;">
+                            <h3 style="font-family:var(--admin-font-mono); font-size:11px; color:var(--admin-muted); text-transform:uppercase;">Registered Categories</h3>
+                        </div>
+                        
+                        <div style="display:flex; gap:10px; margin-bottom: 20px; max-width: 500px;">
+                            <input type="text" class="admin-input-field" id="new-category-name" placeholder="New Zone Name (e.g. accessories)" style="margin-bottom:0;">
+                            <button class="login-btn" style="padding:8px 16px; background:var(--movi-red); color:#fff; border:none; cursor:pointer;" onclick="commitNewCategory()">ADD ZONE</button>
+                        </div>
+
+                        <table class="admin-table" style="max-width: 500px;">
+                            <thead>
+                                <tr><th>Category Zone Name</th><th>Actions</th></tr>
+                            </thead>
+                            <tbody id="admin-categories-rows"></tbody>
+                        </table>
+                    </div>
+
                     <!-- Tab: Mailing List Registry -->
                     <div id="tab-mailing" class="admin-tab-view" style="display:none;">
                         <table class="admin-table">
@@ -932,6 +948,7 @@
         // Core App Runtime Arrays
         let databaseCacheProducts = [];
         let databaseCachePaymentMethods = [];
+        let databaseCacheCategories = [];
         let shoppingBagArray = [];
         let selectedProductPointer = null;
         let activeEditingProductId = null;
@@ -958,6 +975,7 @@
             initSocialProofEngine(); // Start simulated activity
             updateStorefrontClocks();
             updateCartWidgetState(); 
+            await fetchActiveCategories(); // Initialize category pipeline
             await fetchActivePaymentMethods(); // Initialize active payment nodes
             checkRoute();
         }
@@ -1880,6 +1898,7 @@
                 headerTitle.textContent = "SCHEMA COMPONENT MINT"; 
                 if(!skipReset) resetProductConfiguratorForm(); 
             }
+            if(targetTabId === 'categories') { headerTitle.textContent = "CATEGORY ZONING"; fetchAdminCategoriesPipeline(); }
             if(targetTabId === 'payments') { headerTitle.textContent = "PAYMENT SYSTEM NODES"; fetchAdminPaymentMethodsPipeline(); }
             if(targetTabId === 'mailing') { headerTitle.textContent = "MAILING LIST REGISTRY"; fetchAdminMailingPipeline(); }
         }
@@ -1896,6 +1915,7 @@
             fetchAdminProductsPipeline();
             fetchAdminPaymentMethodsPipeline();
             fetchAdminMailingPipeline();
+            fetchAdminCategoriesPipeline();
         }
 
         async function fetchAdminOrdersPipeline() {
@@ -2403,6 +2423,94 @@
                         <td style="font-family:var(--admin-font-mono); font-size:10px; color:var(--admin-muted);">${new Date(sub.created_at).toLocaleString()}</td>
                     </tr>
                 `).join('');
+            }
+        }
+
+        // ==========================================
+        // DYNAMIC CATEGORY ZONING PIPELINE
+        // ==========================================
+        async function fetchActiveCategories() {
+            const { data, error } = await supabaseClient.from('categories').select('*').order('created_at', { ascending: true });
+            if (!error && data) {
+                databaseCacheCategories = data;
+                renderStorefrontCategories();
+                populateAdminCategoryDropdown();
+            }
+        }
+
+        function renderStorefrontCategories() {
+            const sidebar = document.getElementById('dynamic-cat-sidebar');
+            if(!sidebar) return;
+            
+            // Preserve the currently active category visually when re-rendering
+            let currentActive = 'look all';
+            const activeNode = sidebar.querySelector('.active');
+            if(activeNode) currentActive = activeNode.textContent.trim();
+            
+            let html = `<a class="${currentActive === 'look all' ? 'active' : ''}" onclick="renderShopGrid('all')">look all</a>`;
+            databaseCacheCategories.forEach(cat => {
+                html += `<a class="${currentActive === cat.name ? 'active' : ''}" onclick="renderShopGrid('${cat.name}')">${cat.name}</a>`;
+            });
+            sidebar.innerHTML = html;
+        }
+
+        function populateAdminCategoryDropdown() {
+            const select = document.getElementById('form-p-cat');
+            if(!select) return;
+            
+            // Save currently selected if editing
+            const currentSelection = select.value;
+            
+            select.innerHTML = databaseCacheCategories.map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('');
+            
+            if(currentSelection && databaseCacheCategories.some(c => c.name === currentSelection)) {
+                select.value = currentSelection;
+            }
+        }
+
+        async function fetchAdminCategoriesPipeline() {
+            const { data, error } = await supabaseClient.from('categories').select('*').order('created_at', { ascending: true });
+            if(!error && data) {
+                databaseCacheCategories = data;
+                const tbody = document.getElementById('admin-categories-rows');
+                tbody.innerHTML = data.map(cat => `
+                    <tr>
+                        <td style="text-transform:lowercase;"><strong>${cat.name}</strong></td>
+                        <td>
+                            <button style="background:red; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer;" onclick="purgeCategory('${cat.id}')">PURGE</button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                renderStorefrontCategories();
+                populateAdminCategoryDropdown();
+            }
+        }
+
+        async function commitNewCategory() {
+            const input = document.getElementById('new-category-name');
+            const name = input.value.trim().toLowerCase();
+            if(!name) return;
+            
+            const { error } = await supabaseClient.from('categories').insert([{ name }]);
+            if(error) {
+                alert("Error Adding Category. Did you create the 'categories' table in Supabase SQL editor?\n\n" + error.message);
+                return;
+            }
+            
+            input.value = '';
+            triggerAdminAlertNotification("CATEGORY ZONE ADDED");
+            fetchAdminCategoriesPipeline();
+            fetchActiveCategories(); // Sync to storefront instantly
+        }
+
+        async function purgeCategory(id) {
+            if(!confirm("Purge this category zone? Note: Existing products in this category will not be deleted but may be hidden from the sidebar.")) return;
+            const { error } = await supabaseClient.from('categories').delete().eq('id', id);
+            if(!error) {
+                triggerAdminAlertNotification("CATEGORY ZONE PURGED");
+                fetchAdminCategoriesPipeline();
+                fetchActiveCategories(); // Sync to storefront instantly
             }
         }
 
