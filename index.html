@@ -1,535 +1,565 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Search, ShoppingBag, User, Menu, X, ArrowRight, Play, ArrowUpRight } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MOVI Storefront | Move Different</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Babel for in-browser JSX compilation -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-// --- MOCK DATA ---
-const NEW_ARRIVALS = [
-  { id: 1, name: "MOVI KAI 2 Mules", category: "Slides", colors: "2 Colors", price: "$155.00", rating: "5.0", reviews: 2, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop" },
-  { id: 2, name: "MOVI KT 10", category: "Basketball Shoes", colors: "6 Colors", price: "$104.00", originalPrice: "$130.00", discount: "20%", rating: "4.6", reviews: 106, image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=800&auto=format&fit=crop" },
-  { id: 3, name: "Men's MOVI KAI 1 'Yin'", category: "Basketball Shoes", colors: "1 Color", price: "$125.00", rating: "4.7", reviews: 110, image: "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?q=80&w=800&auto=format&fit=crop" },
-  { id: 4, name: "MOVI KAI 2 TEAM", category: "Basketball Shoes", colors: "6 Colors", price: "$100.00", rating: "5.0", reviews: 3, image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=800&auto=format&fit=crop" },
-];
+  <!-- Import Map to resolve React and package dependencies from esm.sh -->
+  <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "framer-motion": "https://esm.sh/framer-motion@10.16.4?deps=react@18.2.0,react-dom@18.2.0",
+        "lucide-react": "https://esm.sh/lucide-react@0.292.0?deps=react@18.2.0"
+      }
+    }
+  </script>
+</head>
+<body class="bg-white">
+  <div id="root"></div>
 
-const BEST_SELLERS = [
-  { id: 5, name: "Men's MOVI KAI Tee", category: "Apparel", colors: "3 Colors", price: "$40.00", image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=800&auto=format&fit=crop" },
-  { id: 6, name: "MOVI Logo Game Shorts", category: "Apparel", colors: "2 Colors", price: "$55.00", image: "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?q=80&w=800&auto=format&fit=crop" },
-  { id: 7, name: "MOVI Roots Hoodie", category: "Apparel", colors: "1 Color", price: "$85.00", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=800&auto=format&fit=crop" },
-  { id: 8, name: "MOVI Running Visor", category: "Accessories", colors: "1 Color", price: "$22.00", image: "https://images.unsplash.com/photo-1628134707018-8f831f28b4c2?q=80&w=800&auto=format&fit=crop" },
-];
+  <!-- The main React application script -->
+  <script type="text/babel" data-type="module">
+    import React, { useState, useEffect, useRef } from 'react';
+    import { createRoot } from 'react-dom/client';
+    import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+    import { Search, ShoppingBag, User, Menu, X, ArrowRight, Play, ArrowUpRight } from 'lucide-react';
 
-const RUNNING_SHOES = [
-  { id: 101, name: "Men's MOVI C202 T", category: "Running Shoes", colors: "5 Colors", price: "$150.00", rating: "4.7", reviews: 29, image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=800&auto=format&fit=crop" },
-  { id: 102, name: "Men's MOVI C202 6", category: "Running Shoes", colors: "5 Colors", price: "$91.00", originalPrice: "$130.00", discount: "30%", rating: "4.0", reviews: 55, image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=800&auto=format&fit=crop" },
-  { id: 103, name: "MOVI C202 ER 2", category: "Running Shoes", colors: "1 Color", price: "$208.00", rating: "5.0", reviews: 12, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop" },
-  { id: 104, name: "Men's MOVI C202 5 GT", category: "Running Shoes", colors: "5 Colors", price: "$240.00", rating: "4.7", reviews: 29, image: "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?q=80&w=800&auto=format&fit=crop" },
-];
+    // --- MOCK DATA ---
+    const NEW_ARRIVALS = [
+      { id: 1, name: "MOVI KAI 2 Mules", category: "Slides", colors: "2 Colors", price: "$155.00", rating: "5.0", reviews: 2, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop" },
+      { id: 2, name: "MOVI KT 10", category: "Basketball Shoes", colors: "6 Colors", price: "$104.00", originalPrice: "$130.00", discount: "20%", rating: "4.6", reviews: 106, image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=800&auto=format&fit=crop" },
+      { id: 3, name: "Men's MOVI KAI 1 'Yin'", category: "Basketball Shoes", colors: "1 Color", price: "$125.00", rating: "4.7", reviews: 110, image: "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?q=80&w=800&auto=format&fit=crop" },
+      { id: 4, name: "MOVI KAI 2 TEAM", category: "Basketball Shoes", colors: "6 Colors", price: "$100.00", rating: "5.0", reviews: 3, image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=800&auto=format&fit=crop" },
+    ];
 
-// --- ANIMATION VARIANTS ---
-const fadeUpVariant = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
-};
+    const RUNNING_SHOES = [
+      { id: 101, name: "Men's MOVI C202 T", category: "Running Shoes", colors: "5 Colors", price: "$150.00", rating: "4.7", reviews: 29, image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=800&auto=format&fit=crop" },
+      { id: 102, name: "Men's MOVI C202 6", category: "Running Shoes", colors: "5 Colors", price: "$91.00", originalPrice: "$130.00", discount: "30%", rating: "4.0", reviews: 55, image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=800&auto=format&fit=crop" },
+      { id: 103, name: "MOVI C202 ER 2", category: "Running Shoes", colors: "1 Color", price: "$208.00", rating: "5.0", reviews: 12, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop" },
+      { id: 104, name: "Men's MOVI C202 5 GT", category: "Running Shoes", colors: "5 Colors", price: "$240.00", rating: "4.7", reviews: 29, image: "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?q=80&w=800&auto=format&fit=crop" },
+    ];
 
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 }
-  }
-};
+    // --- ANIMATION VARIANTS ---
+    const fadeUpVariant = {
+      hidden: { opacity: 0, y: 40 },
+      visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+    };
 
-// --- COMPONENTS ---
+    const staggerContainer = {
+      hidden: { opacity: 0 },
+      visible: {
+        opacity: 1,
+        transition: { staggerChildren: 0.1 }
+      }
+    };
 
-const AnnouncementBar = () => (
-  <div className="bg-black text-white text-xs font-medium py-2 px-4 text-center tracking-widest uppercase relative z-50">
-    <p>Free Shipping on orders over $150 &middot; Move Different</p>
-  </div>
-);
+    // --- COMPONENTS ---
+    const AnnouncementBar = () => (
+      <div className="bg-black text-white text-xs font-medium py-2 px-4 text-center tracking-widest uppercase relative z-50">
+        <p>Free Shipping on orders over $150 &middot; Move Different</p>
+      </div>
+    );
 
-const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const Navbar = () => {
+      const [isScrolled, setIsScrolled] = useState(false);
+      const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+      useEffect(() => {
+        const handleScroll = () => setIsScrolled(window.scrollY > 50);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
 
-  return (
-    <>
-      <motion.nav
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className={`fixed top-0 w-full z-40 transition-all duration-300 ${
-          isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6'
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-          {/* Logo */}
-          <div className="flex items-center gap-4">
-            <button className="lg:hidden" onClick={() => setMobileMenuOpen(true)}>
-              <Menu size={24} color={isScrolled ? 'black' : 'white'} />
-            </button>
-            <h1 className={`text-3xl font-black tracking-tighter uppercase ${isScrolled ? 'text-black' : 'text-white'}`}>
-              MOVI
-            </h1>
+      return (
+        <React.Fragment>
+          <motion.nav
+            initial={{ y: -100 }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className={`fixed top-0 w-full z-40 transition-all duration-300 ${
+              isScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6'
+            }`}
+          >
+            <div className="max-w-[1400px] mx-auto px-6 flex justify-between items-center">
+              {/* Logo */}
+              <div className="flex items-center gap-4">
+                <button className="lg:hidden" onClick={() => setMobileMenuOpen(true)}>
+                  <Menu size={24} color={isScrolled ? 'black' : 'white'} />
+                </button>
+                <h1 className={`text-3xl font-black tracking-tighter uppercase ${isScrolled ? 'text-black' : 'text-white'}`}>
+                  MOVI
+                </h1>
+              </div>
+
+              {/* Desktop Links */}
+              <div className={`hidden lg:flex gap-8 font-semibold text-sm tracking-wide uppercase ${isScrolled ? 'text-black' : 'text-white'}`}>
+                {['Men', 'Women', 'Kids', 'Collections', 'Sports'].map((item) => (
+                  <a key={item} href={`#${item.toLowerCase()}`} className="relative group overflow-hidden">
+                    {item}
+                    <span className="absolute bottom-0 left-0 w-full h-[2px] bg-current transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" />
+                  </a>
+                ))}
+              </div>
+
+              {/* Icons */}
+              <div className={`flex gap-6 items-center ${isScrolled ? 'text-black' : 'text-white'}`}>
+                <button className="hover:opacity-70 transition-opacity"><Search size={20} /></button>
+                <button className="hover:opacity-70 transition-opacity"><User size={20} /></button>
+                <button className="hover:opacity-70 transition-opacity relative">
+                  <ShoppingBag size={20} />
+                  <span className="absolute -top-2 -right-2 bg-[#e02b20] text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">2</span>
+                </button>
+              </div>
+            </div>
+          </motion.nav>
+
+          {/* Mobile Menu Overlay */}
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <motion.div
+                initial={{ x: '-100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '-100%' }}
+                transition={{ type: "tween", duration: 0.4 }}
+                className="fixed inset-0 z-50 bg-black text-white p-6 flex flex-col"
+              >
+                <div className="flex justify-between items-center mb-12">
+                  <h1 className="text-3xl font-black tracking-tighter uppercase">MOVI</h1>
+                  <button onClick={() => setMobileMenuOpen(false)}><X size={32} /></button>
+                </div>
+                <div className="flex flex-col gap-6 text-3xl font-bold uppercase tracking-tight">
+                  {['Men', 'Women', 'Kids', 'Collections', 'Sports'].map((item) => (
+                    <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMobileMenuOpen(false)} className="border-b border-zinc-800 pb-4">
+                      {item}
+                    </a>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </React.Fragment>
+      );
+    };
+
+    const Hero = () => {
+      return (
+        <div className="relative h-[100dvh] w-full overflow-hidden bg-black flex items-center justify-center">
+          {/* Background Image with overlay */}
+          <motion.div 
+            initial={{ scale: 1.1 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            className="absolute inset-0 z-0"
+          >
+            <div className="absolute inset-0 bg-black/40 z-10" />
+            <img 
+              src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=2000&auto=format&fit=crop" 
+              alt="Athletes running" 
+              className="w-full h-full object-cover object-center"
+            />
+          </motion.div>
+
+          {/* Content */}
+          <div className="relative z-10 text-center px-4 max-w-5xl mx-auto mt-20 w-full">
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+              className="flex flex-col items-center w-full"
+            >
+              <motion.p variants={fadeUpVariant} className="text-white/90 text-[clamp(0.75rem,2vw,1.125rem)] font-semibold tracking-[0.2em] uppercase mb-4">
+                Move Together This Season
+              </motion.p>
+              <motion.h1 
+                variants={fadeUpVariant}
+                className="text-[clamp(4rem,15vw,10rem)] font-black text-white tracking-tighter uppercase leading-[0.85]"
+              >
+                MASTERY
+              </motion.h1>
+              <motion.div variants={fadeUpVariant} className="mt-10 flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-4">
+                <button className="bg-white w-full sm:w-auto justify-center text-black px-8 py-4 rounded-full font-bold uppercase tracking-wide hover:bg-gray-200 transition-colors flex items-center gap-2">
+                  Shop Now <ArrowRight size={18} />
+                </button>
+                <button className="bg-transparent w-full sm:w-auto justify-center border border-white text-white px-8 py-4 rounded-full font-bold uppercase tracking-wide hover:bg-white/10 transition-colors flex items-center gap-2">
+                  Watch Film <Play size={18} fill="currentColor" />
+                </button>
+              </motion.div>
+            </motion.div>
           </div>
+        </div>
+      );
+    };
 
-          {/* Desktop Links */}
-          <div className={`hidden lg:flex gap-8 font-semibold text-sm tracking-wide uppercase ${isScrolled ? 'text-black' : 'text-white'}`}>
-            {['Men', 'Women', 'Kids', 'Collections', 'Sports'].map((item) => (
-              <a key={item} href={`#${item.toLowerCase()}`} className="relative group overflow-hidden">
-                {item}
-                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-current transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" />
-              </a>
+    const BentoGrid = () => {
+      return (
+        <section className="py-16 md:py-24 px-4 md:px-6 max-w-[1400px] mx-auto bg-white">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 lg:h-[600px] auto-rows-fr">
+            {/* Box 1 */}
+            <motion.div 
+              initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUpVariant}
+              className="relative col-span-1 lg:col-span-2 bg-zinc-100 rounded-3xl overflow-hidden group min-h-[400px] lg:min-h-full h-full"
+            >
+              <img src="https://images.unsplash.com/photo-1552346154-21d32810baa3?q=80&w=1000&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Halo Code" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-6 md:p-12 flex flex-col justify-end">
+                <p className="text-white/80 uppercase tracking-widest text-sm font-semibold mb-2">Innovation</p>
+                <h2 className="text-white text-[clamp(2rem,5vw,3rem)] leading-none font-black uppercase tracking-tight mb-6">MOVI Halo Code</h2>
+                <button className="w-fit bg-white text-black px-6 py-3 rounded-full font-bold text-sm hover:bg-zinc-200 transition-colors">Explore Tech</button>
+              </div>
+            </motion.div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 md:gap-6 h-full">
+              {/* Box 2 */}
+              <motion.div 
+                initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUpVariant}
+                className="relative bg-zinc-100 rounded-3xl overflow-hidden group min-h-[300px] lg:min-h-0 h-full"
+              >
+                 <img src="https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?q=80&w=800&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Roots" />
+                 <div className="absolute inset-0 bg-black/30 p-6 md:p-8 flex flex-col justify-end">
+                    <h3 className="text-white text-2xl md:text-3xl font-black uppercase tracking-tight mb-4">MOVI Roots</h3>
+                    <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:scale-110 transition-transform"><ArrowUpRight size={20} /></button>
+                 </div>
+              </motion.div>
+              {/* Box 3 */}
+              <motion.div 
+                initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUpVariant}
+                className="relative bg-black rounded-3xl overflow-hidden group min-h-[300px] lg:min-h-0 h-full flex flex-col justify-center items-center text-center p-6 md:p-8"
+              >
+                 <div className="z-10 relative">
+                    <h3 className="text-white text-2xl md:text-3xl font-black uppercase tracking-tight mb-4">Move Different</h3>
+                    <p className="text-zinc-400 text-sm mb-6">Redefining athletic performance for the modern era.</p>
+                    <button className="text-white border-b border-white pb-1 font-bold uppercase text-sm hover:text-zinc-300 transition-colors">Discover Our Story</button>
+                 </div>
+                 {/* Decorative graphic */}
+                 <div className="absolute -bottom-10 -right-4 md:-right-10 text-[10rem] md:text-[12rem] font-black text-white/5 select-none pointer-events-none leading-none">M</div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    const ProductCard = ({ product }) => {
+      return (
+        <motion.div 
+          className="flex-none w-[280px] md:w-[310px] group cursor-pointer"
+          whileHover={{ y: -5 }}
+          transition={{ duration: 0.2 }}
+        >
+          <div className="relative aspect-square bg-[#f4f4f4] overflow-hidden mb-3">
+            <img 
+              src={product.image} 
+              alt={product.name} 
+              className="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-500" 
+            />
+            {product.discount && (
+              <div className="absolute top-0 left-0 bg-[#e02b20] text-white text-[10px] font-bold py-1 px-2 z-10 tracking-wider">
+                {product.discount}
+              </div>
+            )}
+            {product.tag && (
+              <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-black text-[10px] font-bold uppercase tracking-wider py-1 px-3 rounded-full z-10">
+                {product.tag}
+              </div>
+            )}
+            <div className="absolute bottom-4 left-0 w-full px-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-10">
+              <button className="w-full bg-black text-white py-3 rounded-full font-bold text-sm hover:bg-zinc-800 transition-colors shadow-lg">
+                Quick Add
+              </button>
+            </div>
+          </div>
+          <div className="flex flex-col items-start pr-2 text-left">
+            {product.rating && (
+              <div className="flex items-center text-[10px] text-zinc-500 mb-1.5 mt-1">
+                <span className="mr-1 font-semibold text-zinc-700">{product.rating}</span>
+                <span className="text-black tracking-tighter text-[10px]">★★★★★</span>
+                <span className="ml-1 text-zinc-500">({product.reviews})</span>
+              </div>
+            )}
+            <h3 className="font-semibold text-[14px] leading-tight mb-1 text-black">{product.name}</h3>
+            {product.category && <p className="text-zinc-500 text-[11px] mb-0.5">{product.category}</p>}
+            {product.colors && <p className="text-zinc-500 text-[11px] mb-2">{product.colors}</p>}
+            <div className="flex items-center gap-2">
+              <p className="font-bold text-[13px]">{product.price}</p>
+              {product.originalPrice && (
+                <p className="text-zinc-400 text-[12px] line-through">{product.originalPrice}</p>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      );
+    };
+
+    const ProductCarousel = ({ title, products }) => {
+      return (
+        <section className="pt-8 pb-20 overflow-hidden bg-white">
+          <div className="max-w-[1400px] mx-auto px-6 mb-8 flex justify-between items-end">
+            <motion.h2 
+              initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+              className="text-3xl md:text-4xl font-black uppercase tracking-tight"
+            >
+              {title}
+            </motion.h2>
+            <button className="hidden md:flex items-center gap-2 font-bold uppercase text-xs border-b-[1.5px] border-black pb-0.5 hover:text-zinc-600 transition-colors">
+              View All <ArrowRight size={14} />
+            </button>
+          </div>
+          
+          {/* Hide scrollbar, allow horizontal scrolling */}
+          <div className="flex overflow-x-auto gap-4 md:gap-6 px-6 lg:px-0 max-w-[1400px] mx-auto pb-4 snap-x snap-mandatory hide-scrollbar">
+            {products.map((product, idx) => (
+              <motion.div 
+                key={product.id}
+                initial={{ opacity: 0, x: 50 }} 
+                whileInView={{ opacity: 1, x: 0 }} 
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="snap-start"
+              >
+                <ProductCard product={product} />
+              </motion.div>
             ))}
           </div>
+        </section>
+      );
+    };
 
-          {/* Icons */}
-          <div className={`flex gap-6 items-center ${isScrolled ? 'text-black' : 'text-white'}`}>
-            <button className="hover:opacity-70 transition-opacity"><Search size={20} /></button>
-            <button className="hover:opacity-70 transition-opacity"><User size={20} /></button>
-            <button className="hover:opacity-70 transition-opacity relative">
-              <ShoppingBag size={20} />
-              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">2</span>
-            </button>
+    const KeepMovingHeader = () => (
+      <section className="pt-20 pb-10 text-center px-4 bg-white">
+        <motion.h2 
+          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUpVariant}
+          className="text-[clamp(3.5rem,8vw,5.5rem)] font-black uppercase tracking-tighter leading-none mb-3"
+        >
+          KEEP MOVING
+        </motion.h2>
+        <motion.p 
+          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUpVariant}
+          className="text-xs md:text-sm text-zinc-600 font-medium tracking-wide"
+        >
+          Transcending the spirit of sport into your daily life.
+        </motion.p>
+      </section>
+    );
+
+    const FullWidthBanner = () => {
+      const ref = useRef(null);
+      const { scrollYProgress } = useScroll({
+        target: ref,
+        offset: ["start end", "end start"]
+      });
+      
+      // Parallax effect on the background image
+      const y = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
+
+      return (
+        <section ref={ref} className="relative h-[65dvh] min-h-[500px] w-full overflow-hidden flex items-end justify-center pb-12 md:pb-16 bg-black">
+          <motion.div style={{ y }} className="absolute inset-0 z-0 scale-110">
+            <div className="absolute inset-0 bg-black/40 z-10" />
+            <img 
+              src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=2000&auto=format&fit=crop" 
+              alt="Running Banner" 
+              className="w-full h-full object-cover object-bottom"
+            />
+          </motion.div>
+
+          {/* Large Background Text */}
+          <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none overflow-hidden">
+             <h2 className="text-white/90 font-black text-[clamp(5rem,18vw,16rem)] tracking-widest uppercase whitespace-nowrap px-4 text-center leading-none scale-x-[1.2] md:scale-x-[1.4] origin-center opacity-90">
+               MOVI RUNNING
+             </h2>
           </div>
-        </div>
-      </motion.nav>
-
-      {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
-            transition={{ type: "tween", duration: 0.4 }}
-            className="fixed inset-0 z-50 bg-black text-white p-6 flex flex-col"
+          
+          <motion.div 
+            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
+            className="relative z-20 text-center px-4 w-full"
           >
-            <div className="flex justify-between items-center mb-12">
-              <h1 className="text-3xl font-black tracking-tighter uppercase">MOVI</h1>
-              <button onClick={() => setMobileMenuOpen(false)}><X size={32} /></button>
-            </div>
-            <div className="flex flex-col gap-6 text-3xl font-bold uppercase tracking-tight">
-              {['Men', 'Women', 'Kids', 'Collections', 'Sports'].map((item) => (
-                <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMobileMenuOpen(false)} className="border-b border-zinc-800 pb-4">
-                  {item}
-                </a>
+            <motion.h3 variants={fadeUpVariant} className="text-white text-3xl md:text-5xl font-black mb-3 tracking-tighter">
+              Run With Our Best
+            </motion.h3>
+            <motion.p variants={fadeUpVariant} className="text-white/90 text-[11px] md:text-[13px] mb-8 max-w-sm mx-auto leading-relaxed">
+              Explore MOVI running shoes.<br/>Designed for marathoners, pros, and runners who demand more!
+            </motion.p>
+            <motion.button variants={fadeUpVariant} className="bg-white text-black px-8 py-3 rounded-full font-bold uppercase text-[11px] tracking-wider hover:bg-zinc-200 transition-colors shadow-xl">
+              Explore More
+            </motion.button>
+          </motion.div>
+        </section>
+      );
+    };
+
+    const RunningCollectionTabs = () => {
+      const [activeTab, setActiveTab] = useState('C202');
+      const tabs = ['C202', 'PG7', 'ZONE', 'Belief'];
+
+      return (
+        <section className="pt-10 pb-24 bg-white overflow-hidden">
+          <div className="max-w-[1400px] mx-auto px-6">
+            <div className="flex gap-8 border-b border-zinc-200 mb-10 overflow-x-auto hide-scrollbar">
+              {tabs.map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`pb-3 text-xs md:text-sm font-bold uppercase whitespace-nowrap transition-colors relative ${activeTab === tab ? 'text-black' : 'text-zinc-400 hover:text-black'}`}
+                >
+                  {tab}
+                  {activeTab === tab && (
+                    <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-black" />
+                  )}
+                </button>
               ))}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
-  );
-};
 
-const Hero = () => {
-  return (
-    <div className="relative h-[100dvh] w-full overflow-hidden bg-black flex items-center justify-center">
-      {/* Background Image with overlay */}
-      <motion.div 
-        initial={{ scale: 1.1 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
-        className="absolute inset-0 z-0"
-      >
-        <div className="absolute inset-0 bg-black/40 z-10" />
-        <img 
-          src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=2000&auto=format&fit=crop" 
-          alt="Athletes running" 
-          className="w-full h-full object-cover object-center"
-        />
-      </motion.div>
+            <div className="flex overflow-x-auto gap-4 md:gap-6 pb-4 snap-x snap-mandatory hide-scrollbar">
+              {RUNNING_SHOES.map((product, idx) => (
+                <motion.div 
+                  key={product.id}
+                  initial={{ opacity: 0, x: 50 }} 
+                  whileInView={{ opacity: 1, x: 0 }} 
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="snap-start"
+                >
+                  <ProductCard product={product} />
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    };
 
-      {/* Content */}
-      <div className="relative z-10 text-center px-4 max-w-5xl mx-auto mt-20 w-full">
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate="visible"
-          className="flex flex-col items-center w-full"
-        >
-          <motion.p variants={fadeUpVariant} className="text-white/90 text-[clamp(0.75rem,2vw,1.125rem)] font-semibold tracking-[0.2em] uppercase mb-4">
-            Move Together This Season
-          </motion.p>
-          <motion.h1 
-            variants={fadeUpVariant}
-            className="text-[clamp(4rem,15vw,10rem)] font-black text-white tracking-tighter uppercase leading-[0.85]"
-          >
-            MASTERY
-          </motion.h1>
-          <motion.div variants={fadeUpVariant} className="mt-10 flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-4">
-            <button className="bg-white w-full sm:w-auto justify-center text-black px-8 py-4 rounded-full font-bold uppercase tracking-wide hover:bg-gray-200 transition-colors flex items-center gap-2">
-              Shop Now <ArrowRight size={18} />
-            </button>
-            <button className="bg-transparent w-full sm:w-auto justify-center border border-white text-white px-8 py-4 rounded-full font-bold uppercase tracking-wide hover:bg-white/10 transition-colors flex items-center gap-2">
-              Watch Film <Play size={18} fill="currentColor" />
-            </button>
-          </motion.div>
-        </motion.div>
-      </div>
-    </div>
-  );
-};
-
-const BentoGrid = () => {
-  return (
-    <section className="py-16 md:py-24 px-4 md:px-6 max-w-[1400px] mx-auto bg-white">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 lg:h-[600px] auto-rows-fr">
-        {/* Box 1 */}
+    const CommunityBanner = () => (
+      <section className="bg-zinc-900 py-24 md:py-32 text-center px-4">
         <motion.div 
-          initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUpVariant}
-          className="relative col-span-1 lg:col-span-2 bg-zinc-100 rounded-3xl overflow-hidden group min-h-[400px] lg:min-h-full h-full"
+          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
+          className="max-w-3xl mx-auto"
         >
-          <img src="https://images.unsplash.com/photo-1552346154-21d32810baa3?q=80&w=1000&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Halo Code" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-6 md:p-12 flex flex-col justify-end">
-            <p className="text-white/80 uppercase tracking-widest text-sm font-semibold mb-2">Innovation</p>
-            <h2 className="text-white text-[clamp(2rem,5vw,3rem)] leading-none font-black uppercase tracking-tight mb-6">MOVI Halo Code</h2>
-            <button className="w-fit bg-white text-black px-6 py-3 rounded-full font-bold text-sm hover:bg-zinc-200 transition-colors">Explore Tech</button>
-          </div>
-        </motion.div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 md:gap-6 h-full">
-          {/* Box 2 */}
-          <motion.div 
-            initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUpVariant}
-            className="relative bg-zinc-100 rounded-3xl overflow-hidden group min-h-[300px] lg:min-h-0 h-full"
-          >
-             <img src="https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?q=80&w=800&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Roots" />
-             <div className="absolute inset-0 bg-black/30 p-6 md:p-8 flex flex-col justify-end">
-                <h3 className="text-white text-2xl md:text-3xl font-black uppercase tracking-tight mb-4">MOVI Roots</h3>
-                <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:scale-110 transition-transform"><ArrowUpRight size={20} /></button>
-             </div>
-          </motion.div>
-          {/* Box 3 */}
-          <motion.div 
-            initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUpVariant}
-            className="relative bg-black rounded-3xl overflow-hidden group min-h-[300px] lg:min-h-0 h-full flex flex-col justify-center items-center text-center p-6 md:p-8"
-          >
-             <div className="z-10 relative">
-                <h3 className="text-white text-2xl md:text-3xl font-black uppercase tracking-tight mb-4">Move Different</h3>
-                <p className="text-zinc-400 text-sm mb-6">Redefining athletic performance for the modern era.</p>
-                <button className="text-white border-b border-white pb-1 font-bold uppercase text-sm hover:text-zinc-300 transition-colors">Discover Our Story</button>
-             </div>
-             {/* Decorative graphic */}
-             <div className="absolute -bottom-10 -right-4 md:-right-10 text-[10rem] md:text-[12rem] font-black text-white/5 select-none pointer-events-none leading-none">M</div>
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const ProductCard = ({ product }) => {
-  return (
-    <motion.div 
-      className="flex-none w-[280px] md:w-[320px] group cursor-pointer"
-      whileHover={{ y: -5 }}
-      transition={{ duration: 0.2 }}
-    >
-      <div className="relative aspect-[4/5] bg-[#f4f4f4] overflow-hidden mb-4">
-        <img 
-          src={product.image} 
-          alt={product.name} 
-          className="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-500" 
-        />
-        {product.discount && (
-          <div className="absolute top-0 left-0 bg-red-600 text-white text-[10px] font-bold py-1 px-2 z-10">
-            {product.discount}
-          </div>
-        )}
-        {product.tag && (
-          <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-black text-[10px] font-bold uppercase tracking-wider py-1 px-3 rounded-full z-10">
-            {product.tag}
-          </div>
-        )}
-        <div className="absolute bottom-4 left-0 w-full px-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-10">
-          <button className="w-full bg-black text-white py-3 rounded-full font-bold text-sm hover:bg-zinc-800 transition-colors">
-            Quick Add
-          </button>
-        </div>
-      </div>
-      <div className="flex flex-col items-start pr-2 text-left">
-        {product.rating && (
-          <div className="flex items-center text-[10px] text-zinc-500 mb-1">
-            <span className="mr-1 font-medium">{product.rating}</span>
-            <span className="text-black tracking-tighter text-[9px]">★★★★★</span>
-            <span className="ml-1">({product.reviews})</span>
-          </div>
-        )}
-        <h3 className="font-semibold text-sm leading-tight mb-0.5">{product.name}</h3>
-        {product.category && <p className="text-zinc-500 text-[11px] mb-0.5">{product.category}</p>}
-        {product.colors && <p className="text-zinc-500 text-[11px] mb-2">{product.colors}</p>}
-        <div className="flex items-center gap-2">
-          <p className="font-bold text-sm">{product.price}</p>
-          {product.originalPrice && (
-            <p className="text-zinc-400 text-xs line-through">{product.originalPrice}</p>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-const ProductCarousel = ({ title, products }) => {
-  return (
-    <section className="py-24 overflow-hidden bg-white">
-      <div className="max-w-[1400px] mx-auto px-6 mb-10 flex justify-between items-end">
-        <motion.h2 
-          initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
-          className="text-4xl md:text-5xl font-black uppercase tracking-tight"
-        >
-          {title}
-        </motion.h2>
-        <button className="hidden md:flex items-center gap-2 font-bold uppercase text-sm border-b-2 border-black pb-1 hover:text-zinc-600 transition-colors">
-          View All <ArrowRight size={16} />
-        </button>
-      </div>
-      
-      {/* Hide scrollbar, allow horizontal scrolling */}
-      <div className="flex overflow-x-auto gap-6 px-6 md:px-12 pb-10 snap-x snap-mandatory hide-scrollbar">
-        {products.map((product, idx) => (
-          <motion.div 
-            key={product.id}
-            initial={{ opacity: 0, x: 50 }} 
-            whileInView={{ opacity: 1, x: 0 }} 
-            viewport={{ once: true }}
-            transition={{ delay: idx * 0.1 }}
-            className="snap-start"
-          >
-            <ProductCard product={product} />
-          </motion.div>
-        ))}
-      </div>
-    </section>
-  );
-};
-
-const KeepMovingHeader = () => (
-  <section className="pt-24 pb-12 text-center px-4 bg-white">
-    <motion.h2 
-      initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUpVariant}
-      className="text-[clamp(3rem,8vw,5rem)] font-black uppercase tracking-tighter leading-none mb-4"
-    >
-      KEEP MOVING
-    </motion.h2>
-    <motion.p 
-      initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUpVariant}
-      className="text-sm md:text-base text-zinc-600"
-    >
-      Transcending the spirit of sport into your daily life.
-    </motion.p>
-  </section>
-);
-
-const FullWidthBanner = () => {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-  
-  // Parallax effect on the background image
-  const y = useTransform(scrollYProgress, [0, 1], ["-20%", "20%"]);
-
-  return (
-    <section ref={ref} className="relative h-[60dvh] min-h-[450px] w-full overflow-hidden flex items-end justify-center pb-12 md:pb-20">
-      <motion.div style={{ y }} className="absolute inset-0 z-0 scale-110">
-        <div className="absolute inset-0 bg-black/30 z-10" />
-        <img 
-          src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=2000&auto=format&fit=crop" 
-          alt="Running Banner" 
-          className="w-full h-full object-cover"
-        />
-      </motion.div>
-
-      {/* Large Background Text */}
-      <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none overflow-hidden">
-         <h2 className="text-white/90 font-black text-[clamp(4rem,15vw,12rem)] tracking-[0.15em] uppercase whitespace-nowrap px-4 text-center leading-none scale-x-110 origin-center">
-           MOVI RUNNING
-         </h2>
-      </div>
-      
-      <motion.div 
-        initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
-        className="relative z-20 text-center px-4 w-full"
-      >
-        <motion.h3 variants={fadeUpVariant} className="text-white text-3xl md:text-4xl font-black mb-4 tracking-tight">
-          Run With Our Best
-        </motion.h3>
-        <motion.p variants={fadeUpVariant} className="text-white/90 text-xs md:text-sm mb-8 max-w-sm mx-auto">
-          Explore MOVI running shoes.<br/>Designed for marathoners, pros, and runners who demand more!
-        </motion.p>
-        <motion.button variants={fadeUpVariant} className="bg-white text-black px-8 py-3 rounded-full font-bold uppercase text-xs hover:bg-zinc-200 transition-colors">
-          Explore More
-        </motion.button>
-      </motion.div>
-    </section>
-  );
-};
-
-const RunningCollectionTabs = () => {
-  const [activeTab, setActiveTab] = useState('C202');
-  const tabs = ['C202', 'PG7', 'ZONE', 'Belief'];
-
-  return (
-    <section className="pt-8 pb-24 bg-white overflow-hidden">
-      <div className="max-w-[1400px] mx-auto px-6">
-        <div className="flex gap-8 border-b border-zinc-200 mb-8 overflow-x-auto hide-scrollbar">
-          {tabs.map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`pb-4 text-sm font-bold uppercase whitespace-nowrap transition-colors relative ${activeTab === tab ? 'text-black' : 'text-zinc-400 hover:text-black'}`}
-            >
-              {tab}
-              {activeTab === tab && (
-                <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-black" />
-              )}
+          <motion.h2 variants={fadeUpVariant} className="text-[clamp(2.5rem,6vw,4rem)] leading-none font-black text-white uppercase tracking-tighter mb-6">
+            Become a MOVI Member
+          </motion.h2>
+          <motion.p variants={fadeUpVariant} className="text-zinc-400 mb-10 text-base md:text-lg px-4">
+            Join the MOVI Tribe. Get early access to drops, exclusive gear, and community events tailored for those who move different.
+          </motion.p>
+          <motion.div variants={fadeUpVariant} className="flex flex-col sm:flex-row gap-4 justify-center w-full px-4">
+            <button className="bg-white text-black px-8 py-4 w-full sm:w-auto rounded-full font-bold uppercase tracking-wider text-sm hover:bg-zinc-200 transition-colors">
+              Join For Free
             </button>
-          ))}
+            <button className="border border-zinc-700 text-white px-8 py-4 w-full sm:w-auto rounded-full font-bold uppercase tracking-wider text-sm hover:bg-zinc-800 transition-colors">
+              Sign In
+            </button>
+          </motion.div>
+        </motion.div>
+      </section>
+    );
+
+    const Footer = () => (
+      <footer className="bg-black text-white pt-24 pb-10 px-6 border-t border-zinc-900">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-10 mb-20">
+          <div className="col-span-2 lg:col-span-2">
+            <h3 className="text-3xl font-black uppercase tracking-tighter mb-6">MOVI</h3>
+            <p className="text-zinc-400 text-sm mb-6 max-w-sm">
+              Stay in the loop. Sign up for our newsletter to get updates on new drops, exclusive collections, and community stories.
+            </p>
+            <div className="flex">
+              <input 
+                type="email" 
+                placeholder="ENTER EMAIL" 
+                className="bg-zinc-900 text-white px-4 py-3 w-full max-w-[250px] outline-none border border-zinc-800 focus:border-white transition-colors"
+              />
+              <button className="bg-white text-black px-6 font-bold uppercase text-xs tracking-wider hover:bg-zinc-200 transition-colors">
+                Subscribe
+              </button>
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="font-bold uppercase tracking-wider mb-6 text-xs text-zinc-200">Products</h4>
+            <ul className="flex flex-col gap-3 text-zinc-400 text-sm">
+              <li><a href="#" className="hover:text-white transition-colors">Shoes</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Clothing</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Accessories</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">New Arrivals</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 className="font-bold uppercase tracking-wider mb-6 text-xs text-zinc-200">Athletes</h4>
+            <ul className="flex flex-col gap-3 text-zinc-400 text-sm">
+              <li><a href="#" className="hover:text-white transition-colors">Team MOVI</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Mastery</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Partnerships</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 className="font-bold uppercase tracking-wider mb-6 text-xs text-zinc-200">Support</h4>
+            <ul className="flex flex-col gap-3 text-zinc-400 text-sm">
+              <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Shipping</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Returns</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Size Guide</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-bold uppercase tracking-wider mb-6 text-xs text-zinc-200">Company</h4>
+            <ul className="flex flex-col gap-3 text-zinc-400 text-sm">
+              <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Store Locator</a></li>
+            </ul>
+          </div>
         </div>
-
-        <div className="flex overflow-x-auto gap-6 pb-10 snap-x snap-mandatory hide-scrollbar">
-          {RUNNING_SHOES.map((product, idx) => (
-            <motion.div 
-              key={product.id}
-              initial={{ opacity: 0, x: 50 }} 
-              whileInView={{ opacity: 1, x: 0 }} 
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              className="snap-start"
-            >
-              <ProductCard product={product} />
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const CommunityBanner = () => (
-  <section className="bg-zinc-900 py-24 md:py-32 text-center px-4">
-    <motion.div 
-      initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
-      className="max-w-3xl mx-auto"
-    >
-      <motion.h2 variants={fadeUpVariant} className="text-[clamp(2.5rem,6vw,4rem)] leading-none font-black text-white uppercase tracking-tighter mb-6">
-        Become a MOVI Member
-      </motion.h2>
-      <motion.p variants={fadeUpVariant} className="text-zinc-400 mb-10 text-base md:text-lg px-4">
-        Join the MOVI Tribe. Get early access to drops, exclusive gear, and community events tailored for those who move different.
-      </motion.p>
-      <motion.div variants={fadeUpVariant} className="flex flex-col sm:flex-row gap-4 justify-center w-full px-4">
-        <button className="bg-white text-black px-8 py-4 w-full sm:w-auto rounded-full font-bold uppercase hover:bg-zinc-200 transition-colors">
-          Join For Free
-        </button>
-        <button className="border border-zinc-700 text-white px-8 py-4 w-full sm:w-auto rounded-full font-bold uppercase hover:bg-zinc-800 transition-colors">
-          Sign In
-        </button>
-      </motion.div>
-    </motion.div>
-  </section>
-);
-
-const Footer = () => (
-  <footer className="bg-black text-white pt-24 pb-10 px-6 border-t border-zinc-900">
-    <div className="max-w-[1400px] mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-10 mb-20">
-      <div className="col-span-2 lg:col-span-2">
-        <h3 className="text-3xl font-black uppercase tracking-tighter mb-6">MOVI</h3>
-        <p className="text-zinc-400 text-sm mb-6 max-w-sm">
-          Stay in the loop. Sign up for our newsletter to get updates on new drops, exclusive collections, and community stories.
-        </p>
-        <div className="flex">
-          <input 
-            type="email" 
-            placeholder="ENTER EMAIL" 
-            className="bg-zinc-900 text-white px-4 py-3 w-full max-w-[250px] outline-none border border-zinc-800 focus:border-white transition-colors"
-          />
-          <button className="bg-white text-black px-6 font-bold uppercase hover:bg-zinc-200 transition-colors">
-            Subscribe
-          </button>
-        </div>
-      </div>
-      
-      <div>
-        <h4 className="font-bold uppercase tracking-wider mb-6 text-sm">Products</h4>
-        <ul className="flex flex-col gap-3 text-zinc-400 text-sm">
-          <li><a href="#" className="hover:text-white transition-colors">Shoes</a></li>
-          <li><a href="#" className="hover:text-white transition-colors">Clothing</a></li>
-          <li><a href="#" className="hover:text-white transition-colors">Accessories</a></li>
-          <li><a href="#" className="hover:text-white transition-colors">New Arrivals</a></li>
-        </ul>
-      </div>
-      
-      <div>
-        <h4 className="font-bold uppercase tracking-wider mb-6 text-sm">Athletes</h4>
-        <ul className="flex flex-col gap-3 text-zinc-400 text-sm">
-          <li><a href="#" className="hover:text-white transition-colors">Team MOVI</a></li>
-          <li><a href="#" className="hover:text-white transition-colors">Mastery</a></li>
-          <li><a href="#" className="hover:text-white transition-colors">Partnerships</a></li>
-        </ul>
-      </div>
-      
-      <div>
-        <h4 className="font-bold uppercase tracking-wider mb-6 text-sm">Support</h4>
-        <ul className="flex flex-col gap-3 text-zinc-400 text-sm">
-          <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
-          <li><a href="#" className="hover:text-white transition-colors">Shipping</a></li>
-          <li><a href="#" className="hover:text-white transition-colors">Returns</a></li>
-          <li><a href="#" className="hover:text-white transition-colors">Size Guide</a></li>
-        </ul>
-      </div>
-
-      <div>
-        <h4 className="font-bold uppercase tracking-wider mb-6 text-sm">Company</h4>
-        <ul className="flex flex-col gap-3 text-zinc-400 text-sm">
-          <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-          <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-          <li><a href="#" className="hover:text-white transition-colors">Store Locator</a></li>
-        </ul>
-      </div>
-    </div>
-    
-    <div className="max-w-[1400px] mx-auto pt-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-600 uppercase tracking-widest">
-      <p>&copy; {new Date().getFullYear()} MOVI Corporation. All Rights Reserved.</p>
-      <div className="flex gap-6">
-        <a href="#" className="hover:text-white transition-colors">Privacy</a>
-        <a href="#" className="hover:text-white transition-colors">Terms</a>
-      </div>
-    </div>
-  </footer>
-);
-
-export default function App() {
-  return (
-    <div className="min-h-screen bg-white font-sans text-black antialiased selection:bg-black selection:text-white">
-      <style dangerouslySetInnerHTML={{__html: `
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      `}} />
-      
-      <AnnouncementBar />
-      <Navbar />
-      
-      <main>
-        <Hero />
-        <BentoGrid />
-        <ProductCarousel title="Newest in the Game" products={NEW_ARRIVALS} />
         
-        <KeepMovingHeader />
-        <FullWidthBanner />
-        <RunningCollectionTabs />
-        
-        <CommunityBanner />
-      </main>
+        <div className="max-w-[1400px] mx-auto pt-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-zinc-600 uppercase tracking-widest font-semibold">
+          <p>&copy; {new Date().getFullYear()} MOVI Corporation. All Rights Reserved.</p>
+          <div className="flex gap-6">
+            <a href="#" className="hover:text-zinc-400 transition-colors">Privacy</a>
+            <a href="#" className="hover:text-zinc-400 transition-colors">Terms</a>
+          </div>
+        </div>
+      </footer>
+    );
 
-      <Footer />
-    </div>
-  );
-}
+    function App() {
+      return (
+        <div className="min-h-screen font-sans text-black antialiased selection:bg-black selection:text-white overflow-x-hidden">
+          <style dangerouslySetInnerHTML={{__html: `
+            .hide-scrollbar::-webkit-scrollbar { display: none; }
+            .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+          `}} />
+          
+          <AnnouncementBar />
+          <Navbar />
+          
+          <main>
+            <Hero />
+            <BentoGrid />
+            <ProductCarousel title="Newest in the Game" products={NEW_ARRIVALS} />
+            
+            <KeepMovingHeader />
+            <FullWidthBanner />
+            <RunningCollectionTabs />
+            
+            <CommunityBanner />
+          </main>
+
+          <Footer />
+        </div>
+      );
+    }
+
+    // Render the App
+    const root = createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
