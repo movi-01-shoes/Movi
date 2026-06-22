@@ -20,430 +20,1000 @@
 </head>
 <body class="bg-white font-sans text-black antialiased selection:bg-black selection:text-white overflow-x-hidden">
 
-  <!-- Announcement Bar -->
-  <div class="bg-black text-white text-xs font-medium py-2 px-4 text-center tracking-widest uppercase relative z-50">
-    <p>Free Shipping on orders over $150 &middot; Move Different</p>
+  <!-- Announcement Bar (Static with Navigation) -->
+  <div id="announcement" class="absolute top-0 w-full bg-black text-white text-[11px] md:text-sm font-semibold py-2.5 px-4 md:px-8 z-50 flex items-center justify-between tracking-wide">
+    <button class="hover:opacity-70 transition-opacity p-1">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <p class="cursor-pointer hover:underline underline-offset-4 flex items-center gap-2">
+      <span class="text-base">🛍️</span> Bundle up and Save on MOVI Apparel.
+    </p>
+    <button class="hover:opacity-70 transition-opacity p-1">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
   </div>
 
-  <!-- Navbar -->
-  <nav id="navbar" class="fixed top-0 w-full z-40 transition-all duration-300 bg-transparent py-6">
-    <div class="max-w-[1400px] mx-auto px-6 flex justify-between items-center">
+  <!-- Navbar (Sticky with smooth transition & Mega Menu) -->
+  <nav id="navbar" class="fixed top-[40px] w-full z-40 transition-all duration-300 bg-transparent border-b border-white/10">
+    <div id="nav-inner" class="max-w-[1500px] mx-auto px-6 flex justify-between items-center h-[88px] transition-all duration-300">
       
       <!-- Logo & Mobile Menu Toggle -->
       <div class="flex items-center gap-4">
-        <button id="open-menu" class="lg:hidden text-white transition-colors duration-300">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+        <button id="open-menu" class="lg:hidden text-white transition-colors duration-300 hover:opacity-70">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
         </button>
-        <h1 id="logo" class="text-3xl font-black tracking-tighter uppercase text-white transition-colors duration-300">
+        <h1 id="logo" class="btn-home cursor-pointer text-2xl md:text-3xl font-black tracking-[0.15em] uppercase text-white transition-colors duration-300">
           MOVI
         </h1>
       </div>
 
       <!-- Desktop Links -->
-      <div id="nav-links" class="hidden lg:flex gap-8 font-semibold text-sm tracking-wide uppercase text-white transition-colors duration-300">
-        <a href="#men" class="relative group overflow-hidden">Men<span class="absolute bottom-0 left-0 w-full h-[2px] bg-current transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span></a>
-        <a href="#women" class="relative group overflow-hidden">Women<span class="absolute bottom-0 left-0 w-full h-[2px] bg-current transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span></a>
-        <a href="#kids" class="relative group overflow-hidden">Kids<span class="absolute bottom-0 left-0 w-full h-[2px] bg-current transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span></a>
-        <a href="#collections" class="relative group overflow-hidden">Collections<span class="absolute bottom-0 left-0 w-full h-[2px] bg-current transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span></a>
-        <a href="#sports" class="relative group overflow-hidden">Sports<span class="absolute bottom-0 left-0 w-full h-[2px] bg-current transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span></a>
+      <div id="nav-links" class="hidden lg:flex h-full items-stretch gap-10 font-semibold text-[13px] tracking-widest uppercase text-white transition-colors duration-300">
+        
+        <!-- New Arrivals (Mega Menu) -->
+        <div class="group flex items-center h-full cursor-pointer">
+          <a href="#new-arrivals" class="relative overflow-hidden py-1 hover:opacity-70 transition-opacity">
+            New Arrivals<span class="absolute bottom-0 left-0 w-full h-[1.5px] bg-current transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
+          </a>
+          
+          <!-- Dropdown -->
+          <div class="absolute left-0 top-full w-full bg-white text-black shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 border-t border-zinc-100 cursor-default pointer-events-none group-hover:pointer-events-auto">
+            <div class="max-w-[1500px] mx-auto px-6 py-12 flex flex-wrap gap-12 lg:gap-16 xl:gap-24">
+              
+              <div class="w-[120px]">
+                <h4 class="font-bold text-[13px] tracking-widest uppercase mb-6 text-black"><a href="#" class="hover:underline underline-offset-4">Shop All</a></h4>
+              </div>
+              
+              <div class="w-[120px]">
+                <h4 class="font-bold text-[13px] tracking-widest uppercase mb-6 text-black">Gender</h4>
+                <ul class="flex flex-col gap-3.5 text-[15px] text-zinc-500 font-medium normal-case tracking-normal">
+                  <li><a href="#" class="hover:text-black transition-colors">Men's</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">Women's</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">Kids'</a></li>
+                </ul>
+              </div>
+              
+              <div class="w-[200px]">
+                <h4 class="font-bold text-[13px] tracking-widest uppercase mb-6 text-black">Trending</h4>
+                <ul class="flex flex-col gap-3.5 text-[15px] text-zinc-500 font-medium normal-case tracking-normal">
+                  <li><a href="#" class="hover:text-black transition-colors">MOVI KAI 2 Mules</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">MOVI Halo Style "Roots"</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">MOVI KAI 3 "Mastery"</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">MOVI KAI 3 "432HZ"</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">MOVI KAI 2 TEAM</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">MOVI KAI 2 SPEED</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">MOVI KAI 1 "Yin"</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">MOVI KAI 1 "Yang"</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">MOVI KT 10</a></li>
+                </ul>
+              </div>
+              
+              <div class="w-[180px]">
+                <h4 class="font-bold text-[13px] tracking-widest uppercase mb-6 text-black">Athletes</h4>
+                <ul class="flex flex-col gap-3.5 text-[15px] text-zinc-500 font-medium normal-case tracking-normal">
+                  <li><a href="#" class="hover:text-black transition-colors">Kyrie Irving</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">Donte DiVincenzo</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">Gordon Hayward</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">Kenenisa Bekele</a></li>
+                </ul>
+              </div>
+              
+              <div class="w-[150px]">
+                <h4 class="font-bold text-[13px] tracking-widest uppercase mb-6 text-black">Product Type</h4>
+                <ul class="flex flex-col gap-3.5 text-[15px] text-zinc-500 font-medium normal-case tracking-normal">
+                  <li><a href="#" class="hover:text-black transition-colors">Footwear</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">Apparel</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">Accessories</a></li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Authentic -->
+        <div class="group flex items-center h-full cursor-pointer">
+          <a href="#authentic" class="relative overflow-hidden py-1 hover:opacity-70 transition-opacity">
+            Authentic<span class="absolute bottom-0 left-0 w-full h-[1.5px] bg-current transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
+          </a>
+        </div>
+
+        <!-- Running (Mega Menu) -->
+        <div class="group flex items-center h-full cursor-pointer">
+          <a href="#running" class="relative overflow-hidden py-1 hover:opacity-70 transition-opacity">
+            Running<span class="absolute bottom-0 left-0 w-full h-[1.5px] bg-current transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
+          </a>
+          
+          <!-- Dropdown -->
+          <div class="absolute left-0 top-full w-full bg-white text-black shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 border-t border-zinc-100 cursor-default pointer-events-none group-hover:pointer-events-auto">
+            <div class="max-w-[1500px] mx-auto px-6 py-12 flex flex-wrap gap-12 lg:gap-16 xl:gap-24 lg:pl-[15%]">
+              
+              <div class="w-[120px]">
+                <h4 class="font-bold text-[13px] tracking-widest uppercase mb-6 text-black">Gender</h4>
+                <ul class="flex flex-col gap-3.5 text-[15px] text-zinc-500 font-medium normal-case tracking-normal">
+                  <li><a href="#" id="link-mens-running" class="hover:text-black transition-colors">Men's</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">Women's</a></li>
+                </ul>
+              </div>
+              
+              <div class="w-[200px]">
+                <h4 class="font-bold text-[13px] tracking-widest uppercase mb-6 text-black">Performance Running</h4>
+                <ul class="flex flex-col gap-3.5 text-[15px] text-zinc-500 font-medium normal-case tracking-normal">
+                  <li><a href="#" class="hover:text-black transition-colors">MOVI ZONE 2 90</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">MOVI C202 7</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">MOVI C202 6</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">MOVI C202 5 GT</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">MOVI C202 6 Pro</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">MOVI C202 G9 2</a></li>
+                </ul>
+              </div>
+              
+              <div class="w-[200px]">
+                <h4 class="font-bold text-[13px] tracking-widest uppercase mb-6 text-black">Everyday Running</h4>
+                <ul class="flex flex-col gap-3.5 text-[15px] text-zinc-500 font-medium normal-case tracking-normal">
+                  <li><a href="#" class="hover:text-black transition-colors">MOVI PG7 3</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">MOVI Bellero 4 PLUS</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">MOVI PG7</a></li>
+                </ul>
+              </div>
+              
+              <div class="w-[250px]">
+                <h4 class="font-bold text-[13px] tracking-widest uppercase mb-6 text-black">Apparel</h4>
+                <ul class="flex flex-col gap-3.5 text-[15px] text-zinc-500 font-medium normal-case tracking-normal">
+                  <li><a href="#" class="hover:text-black transition-colors">Men's Run Short Sleeve Tee</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">Men's Run Woven Shorts</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">Men's Run Long Sleeve Top</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">Men's Run Long Sleeve Hoodie</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">Men's Run Woven Track Pants</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">Women's Run Short Sleeve Tee</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">Women's Run Knit Tank</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">Women's Run Woven Shorts</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">Women's Run Long Sleeve Top</a></li>
+                  <li><a href="#" class="hover:text-black transition-colors">Women's Full-length leggings</a></li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- 1:1 -->
+        <div class="group flex items-center h-full cursor-pointer">
+          <a href="#1-1" class="relative overflow-hidden py-1 hover:opacity-70 transition-opacity">
+            1:1<span class="absolute bottom-0 left-0 w-full h-[1.5px] bg-current transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
+          </a>
+        </div>
+
       </div>
 
       <!-- Icons -->
       <div id="nav-icons" class="flex gap-6 items-center text-white transition-colors duration-300">
-        <button class="hover:opacity-70 transition-opacity">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <button class="hover:opacity-60 transition-opacity">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         </button>
-        <button class="hover:opacity-70 transition-opacity">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <button class="hover:opacity-60 transition-opacity hidden sm:block">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </button>
-        <button class="hover:opacity-70 transition-opacity relative">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-          <span class="absolute -top-2 -right-2 bg-[#e02b20] text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">2</span>
+        <button class="hover:opacity-60 transition-opacity relative">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="absolute -top-1.5 -right-2 bg-[#e02b20] text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-bold">2</span>
         </button>
       </div>
     </div>
   </nav>
 
   <!-- Mobile Menu Overlay -->
-  <div id="mobile-menu" class="fixed inset-0 z-50 bg-black text-white p-6 flex flex-col transform -translate-x-full transition-transform duration-300">
+  <div id="mobile-menu" class="fixed inset-0 z-50 bg-white text-black p-6 flex flex-col transform -translate-x-full transition-transform duration-500 ease-in-out">
     <div class="flex justify-between items-center mb-12">
-      <h1 class="text-3xl font-black tracking-tighter uppercase">MOVI</h1>
-      <button id="close-menu">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      <h1 class="text-3xl font-black tracking-[0.15em] uppercase">MOVI</h1>
+      <button id="close-menu" class="hover:opacity-60 transition-opacity">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
-    <div class="flex flex-col gap-6 text-3xl font-bold uppercase tracking-tight">
-      <a href="#men" class="border-b border-zinc-800 pb-4 mobile-link">Men</a>
-      <a href="#women" class="border-b border-zinc-800 pb-4 mobile-link">Women</a>
-      <a href="#kids" class="border-b border-zinc-800 pb-4 mobile-link">Kids</a>
-      <a href="#collections" class="border-b border-zinc-800 pb-4 mobile-link">Collections</a>
-      <a href="#sports" class="border-b border-zinc-800 pb-4 mobile-link">Sports</a>
+    <div class="flex flex-col gap-6 text-3xl font-black uppercase tracking-tight">
+      <a href="#new-arrivals" class="border-b border-zinc-200 pb-4 mobile-link hover:text-zinc-500 transition-colors">New Arrivals</a>
+      <a href="#authentic" class="border-b border-zinc-200 pb-4 mobile-link hover:text-zinc-500 transition-colors">Authentic</a>
+      <a href="#running" class="border-b border-zinc-200 pb-4 mobile-link hover:text-zinc-500 transition-colors">Running</a>
+      <a href="#1-1" class="border-b border-zinc-200 pb-4 mobile-link hover:text-zinc-500 transition-colors">1:1</a>
     </div>
   </div>
 
   <main>
-    <!-- Hero Section -->
-    <section class="relative h-[100dvh] w-full overflow-hidden bg-black flex items-center justify-center">
-      <div id="hero-bg" class="absolute inset-0 z-0 scale-110">
-        <div class="absolute inset-0 bg-black/40 z-10"></div>
-        <img src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=2000&auto=format&fit=crop" alt="Athletes running" class="w-full h-full object-cover object-center"/>
-      </div>
-      <div id="hero-content" class="relative z-10 text-center px-4 max-w-5xl mx-auto mt-20 w-full flex flex-col items-center">
-        <p class="text-white/90 text-[clamp(0.75rem,2vw,1.125rem)] font-semibold tracking-[0.2em] uppercase mb-4 opacity-0 translate-y-10 hero-elem">
-          Move Together This Season
-        </p>
-        <h1 class="text-[clamp(4rem,15vw,10rem)] font-black text-white tracking-tighter uppercase leading-[0.85] opacity-0 translate-y-10 hero-elem">
-          MASTERY
-        </h1>
-        <div class="mt-10 flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-4 opacity-0 translate-y-10 hero-elem">
-          <button class="bg-white w-full sm:w-auto justify-center text-black px-8 py-4 rounded-full font-bold uppercase tracking-wide hover:bg-gray-200 transition-colors flex items-center gap-2">
-            Shop Now <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-          </button>
-          <button class="bg-transparent w-full sm:w-auto justify-center border border-white text-white px-8 py-4 rounded-full font-bold uppercase tracking-wide hover:bg-white/10 transition-colors flex items-center gap-2">
-            Watch Film <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
-          </button>
+    <!-- Home View -->
+    <div id="view-home">
+      <!-- Hero Section -->
+      <section class="relative h-[100dvh] w-full overflow-hidden bg-black flex items-center justify-center">
+        <div id="hero-bg" class="absolute inset-0 z-0 scale-110">
+          <div class="absolute inset-0 bg-black/60 z-10"></div>
+          <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=2000&auto=format&fit=crop" alt="Emotional footwear shot representing journey and heritage" class="w-full h-full object-cover object-center"/>
         </div>
-      </div>
-    </section>
-
-    <!-- Bento Grid -->
-    <section class="py-16 md:py-24 px-4 md:px-6 max-w-[1400px] mx-auto bg-white">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 lg:h-[600px] auto-rows-fr">
-        <!-- Box 1 -->
-        <div class="relative col-span-1 lg:col-span-2 bg-zinc-100 rounded-3xl overflow-hidden group min-h-[400px] lg:min-h-full h-full gsap-fade-up opacity-0 translate-y-10">
-          <img src="https://images.unsplash.com/photo-1552346154-21d32810baa3?q=80&w=1000&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Halo Code" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-6 md:p-12 flex flex-col justify-end">
-            <p class="text-white/80 uppercase tracking-widest text-sm font-semibold mb-2">Innovation</p>
-            <h2 class="text-white text-[clamp(2rem,5vw,3rem)] leading-none font-black uppercase tracking-tight mb-6">MOVI Halo Code</h2>
-            <button class="w-fit bg-white text-black px-6 py-3 rounded-full font-bold text-sm hover:bg-zinc-200 transition-colors">Explore Tech</button>
+        <div id="hero-content" class="relative z-10 text-center px-4 max-w-5xl mx-auto mt-20 w-full flex flex-col items-center">
+          <p class="text-white/90 text-[clamp(0.75rem,2vw,1.125rem)] font-bold tracking-[0.25em] uppercase mb-4 opacity-0 translate-y-10 hero-elem">
+            Rooted in Bangladeshi Soil
+          </p>
+          <h1 class="text-[clamp(3.5rem,10vw,8rem)] font-black text-white tracking-tighter uppercase leading-[0.9] opacity-0 translate-y-10 hero-elem">
+            EVERY STEP<br/>A STORY
+          </h1>
+          <p class="text-white/80 max-w-2xl text-sm md:text-base font-medium mt-6 mb-8 opacity-0 translate-y-10 hero-elem leading-relaxed">
+            Crafted with the resilience and spirit of our culture. Shoes designed not just to move you forward, but to carry forward a legacy.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-4 opacity-0 translate-y-10 hero-elem">
+            <button class="bg-white w-full sm:w-auto justify-center text-black px-10 py-4 rounded-full font-bold uppercase tracking-wider text-sm hover:bg-gray-200 transition-colors flex items-center gap-2">
+              Walk With Us <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+            <button class="bg-transparent w-full sm:w-auto justify-center border border-white text-white px-10 py-4 rounded-full font-bold uppercase tracking-wider text-sm hover:bg-white/10 transition-colors flex items-center gap-2">
+              Discover Our Roots <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </button>
           </div>
         </div>
+      </section>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 md:gap-6 h-full">
-          <!-- Box 2 -->
-          <div class="relative bg-zinc-100 rounded-3xl overflow-hidden group min-h-[300px] lg:min-h-0 h-full gsap-fade-up opacity-0 translate-y-10">
-             <img src="https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?q=80&w=800&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Roots" />
-             <div class="absolute inset-0 bg-black/30 p-6 md:p-8 flex flex-col justify-end">
-                <h3 class="text-white text-2xl md:text-3xl font-black uppercase tracking-tight mb-4">MOVI Roots</h3>
-                <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:scale-110 transition-transform">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
-                </button>
-             </div>
-          </div>
-          <!-- Box 3 -->
-          <div class="relative bg-black rounded-3xl overflow-hidden group min-h-[300px] lg:min-h-0 h-full flex flex-col justify-center items-center text-center p-6 md:p-8 gsap-fade-up opacity-0 translate-y-10">
-             <div class="z-10 relative">
-                <h3 class="text-white text-2xl md:text-3xl font-black uppercase tracking-tight mb-4">Move Different</h3>
-                <p class="text-zinc-400 text-sm mb-6">Redefining athletic performance for the modern era.</p>
-                <button class="text-white border-b border-white pb-1 font-bold uppercase text-sm hover:text-zinc-300 transition-colors">Discover Our Story</button>
-             </div>
-             <div class="absolute -bottom-10 -right-4 md:-right-10 text-[10rem] md:text-[12rem] font-black text-white/5 select-none pointer-events-none leading-none">M</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- New Arrivals Carousel -->
-    <section class="pt-8 pb-20 overflow-hidden bg-white">
-      <div class="max-w-[1400px] mx-auto px-6 mb-8 flex justify-between items-end gsap-fade-up opacity-0 translate-y-10">
-        <h2 class="text-3xl md:text-4xl font-black uppercase tracking-tight">Newest in the Game</h2>
-        <button class="hidden md:flex items-center gap-2 font-bold uppercase text-xs border-b-[1.5px] border-black pb-0.5 hover:text-zinc-600 transition-colors">
-          View All <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-        </button>
-      </div>
-      
-      <div class="flex overflow-x-auto gap-4 md:gap-6 px-6 lg:px-0 max-w-[1400px] mx-auto pb-4 snap-x snap-mandatory hide-scrollbar">
-        <!-- Item 1 -->
-        <div class="flex-none w-[280px] md:w-[310px] group cursor-pointer snap-start gsap-fade-up opacity-0 translate-y-10">
-          <div class="relative aspect-square bg-[#f4f4f4] overflow-hidden mb-3 rounded-2xl">
-            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-500" />
-            <div class="absolute bottom-4 left-0 w-full px-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-10">
-              <button class="w-full bg-black text-white py-3 rounded-full font-bold text-sm hover:bg-zinc-800 transition-colors shadow-lg">Quick Add</button>
+      <!-- Bento Grid -->
+      <section class="py-20 md:py-32 px-4 md:px-6 max-w-[1500px] mx-auto bg-white">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 lg:h-[650px] auto-rows-fr">
+          <!-- Box 1 -->
+          <div class="relative col-span-1 lg:col-span-2 bg-zinc-100 overflow-hidden group min-h-[450px] lg:min-h-full h-full gsap-fade-up opacity-0 translate-y-10">
+            <img src="https://images.unsplash.com/photo-1552346154-21d32810baa3?q=80&w=1000&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Halo Code" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-8 md:p-14 flex flex-col justify-end">
+              <p class="text-white/80 uppercase tracking-[0.2em] text-xs font-bold mb-3">Innovation</p>
+              <h2 class="text-white text-[clamp(2.5rem,5vw,4rem)] leading-none font-black uppercase tracking-tight mb-8">MOVI Halo Code</h2>
+              <button class="w-fit bg-white text-black px-8 py-3.5 rounded-full font-bold text-sm tracking-wide hover:bg-zinc-200 transition-colors">Explore Tech</button>
             </div>
           </div>
-          <div class="flex flex-col items-start pr-2 text-left">
-            <div class="flex items-center text-[10px] text-zinc-500 mb-1.5 mt-1">
-              <span class="mr-1 font-semibold text-zinc-700">5.0</span>
-              <span class="text-black tracking-tighter text-[10px]">★★★★★</span>
-              <span class="ml-1 text-zinc-500">(2)</span>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 md:gap-6 h-full">
+            <!-- Box 2 -->
+            <div class="relative bg-zinc-100 overflow-hidden group min-h-[350px] lg:min-h-0 h-full gsap-fade-up opacity-0 translate-y-10">
+               <img src="https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?q=80&w=800&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Roots" />
+               <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent p-6 md:p-10 flex flex-col justify-end">
+                  <h3 class="text-white text-2xl md:text-3xl font-black uppercase tracking-tight mb-5">MOVI Roots</h3>
+                  <button class="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:scale-105 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+                  </button>
+               </div>
             </div>
-            <h3 class="font-semibold text-[14px] leading-tight mb-1 text-black">MOVI KAI 2 Mules</h3>
-            <p class="text-zinc-500 text-[11px] mb-0.5">Slides</p>
-            <p class="text-zinc-500 text-[11px] mb-2">2 Colors</p>
-            <div class="flex items-center gap-2">
-              <p class="font-bold text-[13px]">$155.00</p>
+            <!-- Box 3 -->
+            <div class="relative bg-black overflow-hidden group min-h-[350px] lg:min-h-0 h-full flex flex-col justify-center items-center text-center p-8 md:p-10 gsap-fade-up opacity-0 translate-y-10">
+               <div class="z-10 relative">
+                  <h3 class="text-white text-2xl md:text-3xl font-black uppercase tracking-tight mb-4">Move Different</h3>
+                  <p class="text-zinc-400 text-sm md:text-base leading-relaxed mb-8 max-w-[250px]">Redefining athletic performance for the modern era.</p>
+                  <button class="text-white border-b border-white pb-1 font-bold uppercase tracking-wide text-xs hover:text-zinc-300 transition-colors">Discover Our Story</button>
+               </div>
+               <div class="absolute -bottom-10 -right-4 md:-right-10 text-[12rem] md:text-[14rem] font-black text-white/5 select-none pointer-events-none leading-none">M</div>
             </div>
           </div>
         </div>
+      </section>
 
-        <!-- Item 2 -->
-        <div class="flex-none w-[280px] md:w-[310px] group cursor-pointer snap-start gsap-fade-up opacity-0 translate-y-10">
-          <div class="relative aspect-square bg-[#f4f4f4] overflow-hidden mb-3 rounded-2xl">
-            <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-500" />
-            <div class="absolute top-0 left-0 bg-[#e02b20] text-white text-[10px] font-bold py-1 px-3 z-10 tracking-wider rounded-br-xl">20%</div>
-            <div class="absolute bottom-4 left-0 w-full px-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-10">
-              <button class="w-full bg-black text-white py-3 rounded-full font-bold text-sm hover:bg-zinc-800 transition-colors shadow-lg">Quick Add</button>
-            </div>
-          </div>
-          <div class="flex flex-col items-start pr-2 text-left">
-            <div class="flex items-center text-[10px] text-zinc-500 mb-1.5 mt-1">
-              <span class="mr-1 font-semibold text-zinc-700">4.6</span>
-              <span class="text-black tracking-tighter text-[10px]">★★★★★</span>
-              <span class="ml-1 text-zinc-500">(106)</span>
-            </div>
-            <h3 class="font-semibold text-[14px] leading-tight mb-1 text-black">MOVI KT 10</h3>
-            <p class="text-zinc-500 text-[11px] mb-0.5">Basketball Shoes</p>
-            <p class="text-zinc-500 text-[11px] mb-2">6 Colors</p>
-            <div class="flex items-center gap-2">
-              <p class="font-bold text-[13px]">$104.00</p>
-              <p class="text-zinc-400 text-[12px] line-through">$130.00</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Item 3 -->
-        <div class="flex-none w-[280px] md:w-[310px] group cursor-pointer snap-start gsap-fade-up opacity-0 translate-y-10">
-          <div class="relative aspect-square bg-[#f4f4f4] overflow-hidden mb-3 rounded-2xl">
-            <img src="https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-500" />
-            <div class="absolute bottom-4 left-0 w-full px-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-10">
-              <button class="w-full bg-black text-white py-3 rounded-full font-bold text-sm hover:bg-zinc-800 transition-colors shadow-lg">Quick Add</button>
-            </div>
-          </div>
-          <div class="flex flex-col items-start pr-2 text-left">
-            <div class="flex items-center text-[10px] text-zinc-500 mb-1.5 mt-1">
-              <span class="mr-1 font-semibold text-zinc-700">4.7</span>
-              <span class="text-black tracking-tighter text-[10px]">★★★★★</span>
-              <span class="ml-1 text-zinc-500">(110)</span>
-            </div>
-            <h3 class="font-semibold text-[14px] leading-tight mb-1 text-black">Men's MOVI KAI 1 'Yin'</h3>
-            <p class="text-zinc-500 text-[11px] mb-0.5">Basketball Shoes</p>
-            <p class="text-zinc-500 text-[11px] mb-2">1 Color</p>
-            <div class="flex items-center gap-2">
-              <p class="font-bold text-[13px]">$125.00</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Item 4 -->
-        <div class="flex-none w-[280px] md:w-[310px] group cursor-pointer snap-start gsap-fade-up opacity-0 translate-y-10">
-          <div class="relative aspect-square bg-[#f4f4f4] overflow-hidden mb-3 rounded-2xl">
-            <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-500" />
-            <div class="absolute bottom-4 left-0 w-full px-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-10">
-              <button class="w-full bg-black text-white py-3 rounded-full font-bold text-sm hover:bg-zinc-800 transition-colors shadow-lg">Quick Add</button>
-            </div>
-          </div>
-          <div class="flex flex-col items-start pr-2 text-left">
-            <div class="flex items-center text-[10px] text-zinc-500 mb-1.5 mt-1">
-              <span class="mr-1 font-semibold text-zinc-700">5.0</span>
-              <span class="text-black tracking-tighter text-[10px]">★★★★★</span>
-              <span class="ml-1 text-zinc-500">(3)</span>
-            </div>
-            <h3 class="font-semibold text-[14px] leading-tight mb-1 text-black">MOVI KAI 2 TEAM</h3>
-            <p class="text-zinc-500 text-[11px] mb-0.5">Basketball Shoes</p>
-            <p class="text-zinc-500 text-[11px] mb-2">6 Colors</p>
-            <div class="flex items-center gap-2">
-              <p class="font-bold text-[13px]">$100.00</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Keep Moving Header -->
-    <section class="pt-20 pb-10 text-center px-4 bg-white">
-      <h2 class="text-[clamp(3.5rem,8vw,5.5rem)] font-black uppercase tracking-tighter leading-none mb-3 gsap-fade-up opacity-0 translate-y-10">
-        KEEP MOVING
-      </h2>
-      <p class="text-xs md:text-sm text-zinc-600 font-medium tracking-wide gsap-fade-up opacity-0 translate-y-10">
-        Transcending the spirit of sport into your daily life.
-      </p>
-    </section>
-
-    <!-- Full Width Running Banner (Parallax) -->
-    <section id="banner-container" class="relative h-[65dvh] min-h-[500px] w-full overflow-hidden flex items-end justify-center pb-12 md:pb-16 bg-black">
-      <div id="parallax-bg" class="absolute inset-0 z-0 scale-[1.3] -translate-y-[15%] transform-gpu">
-        <div class="absolute inset-0 bg-black/40 z-10"></div>
-        <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=2000&auto=format&fit=crop" alt="Running Banner" class="w-full h-full object-cover object-bottom" />
-      </div>
-
-      <!-- Large Background Text -->
-      <div class="absolute inset-0 z-10 flex items-center justify-center pointer-events-none overflow-hidden">
-         <h2 class="text-white/90 font-black text-[clamp(5rem,18vw,16rem)] tracking-widest uppercase whitespace-nowrap px-4 text-center leading-none scale-x-[1.2] md:scale-x-[1.4] origin-center opacity-90">
-           MOVI RUNNING
-         </h2>
-      </div>
-      
-      <div class="relative z-20 text-center px-4 w-full">
-        <h3 class="text-white text-3xl md:text-5xl font-black mb-3 tracking-tighter gsap-fade-up opacity-0 translate-y-10">
-          Run With Our Best
-        </h3>
-        <p class="text-white/90 text-[11px] md:text-[13px] mb-8 max-w-sm mx-auto leading-relaxed gsap-fade-up opacity-0 translate-y-10">
-          Explore MOVI running shoes.<br/>Designed for marathoners, pros, and runners who demand more!
-        </p>
-        <button class="bg-white text-black px-8 py-3 rounded-full font-bold uppercase text-[11px] tracking-wider hover:bg-zinc-200 transition-colors shadow-xl gsap-fade-up opacity-0 translate-y-10">
-          Explore More
-        </button>
-      </div>
-    </section>
-
-    <!-- Running Collection Tabs -->
-    <section class="pt-10 pb-24 bg-white overflow-hidden">
-      <div class="max-w-[1400px] mx-auto px-6">
-        <div class="flex gap-8 border-b border-zinc-200 mb-10 overflow-x-auto hide-scrollbar">
-          <button class="running-tab pb-3 text-xs md:text-sm font-bold uppercase whitespace-nowrap transition-colors relative text-black">
-            C202
-            <div class="active-indicator absolute bottom-0 left-0 right-0 h-[2px] bg-black"></div>
-          </button>
-          <button class="running-tab pb-3 text-xs md:text-sm font-bold uppercase whitespace-nowrap transition-colors relative text-zinc-400 hover:text-black">
-            PG7
-            <div class="active-indicator absolute bottom-0 left-0 right-0 h-[2px] bg-black hidden"></div>
-          </button>
-          <button class="running-tab pb-3 text-xs md:text-sm font-bold uppercase whitespace-nowrap transition-colors relative text-zinc-400 hover:text-black">
-            ZONE
-            <div class="active-indicator absolute bottom-0 left-0 right-0 h-[2px] bg-black hidden"></div>
-          </button>
-          <button class="running-tab pb-3 text-xs md:text-sm font-bold uppercase whitespace-nowrap transition-colors relative text-zinc-400 hover:text-black">
-            Belief
-            <div class="active-indicator absolute bottom-0 left-0 right-0 h-[2px] bg-black hidden"></div>
+      <!-- New Arrivals Carousel (Larger Cards) -->
+      <section class="pt-8 pb-24 overflow-hidden bg-white">
+        <div class="max-w-[1500px] mx-auto px-6 mb-10 flex justify-between items-end gsap-fade-up opacity-0 translate-y-10">
+          <h2 class="text-3xl md:text-5xl font-black uppercase tracking-tighter">Newest in the Game</h2>
+          <button class="hidden md:flex items-center gap-2 font-bold uppercase text-sm border-b-[2px] border-black pb-1 hover:text-zinc-600 transition-colors">
+            Shop All <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </button>
         </div>
-
-        <div class="flex overflow-x-auto gap-4 md:gap-6 pb-4 snap-x snap-mandatory hide-scrollbar">
+        
+        <div class="flex overflow-x-auto gap-4 md:gap-6 lg:gap-8 px-6 lg:px-0 max-w-[1500px] mx-auto pb-8 snap-x snap-mandatory hide-scrollbar">
           <!-- Item 1 -->
-          <div class="flex-none w-[280px] md:w-[310px] group cursor-pointer snap-start gsap-fade-up opacity-0 translate-y-10">
-            <div class="relative aspect-square bg-[#f4f4f4] overflow-hidden mb-3 rounded-2xl">
-              <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-500" />
-              <div class="absolute bottom-4 left-0 w-full px-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                <button class="w-full bg-black text-white py-3 rounded-full font-bold text-sm hover:bg-zinc-800 transition-colors shadow-lg">Quick Add</button>
+          <div class="flex-none w-[85vw] sm:w-[350px] md:w-[420px] lg:w-[440px] group cursor-pointer snap-start gsap-fade-up opacity-0 translate-y-10">
+            <div class="relative aspect-[4/5] bg-[#f8f8f8] overflow-hidden mb-4">
+              <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out" alt="Shoe" />
+              
+              <!-- Hover Arrow -->
+              <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-xl">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+              </div>
+
+              <div class="absolute bottom-6 left-0 w-full px-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out z-10">
+                <button class="w-full bg-black text-white py-4 rounded-full font-bold text-sm md:text-base tracking-wide hover:bg-zinc-800 transition-colors shadow-2xl">Quick Add</button>
               </div>
             </div>
-            <div class="flex flex-col items-start pr-2 text-left">
-              <div class="flex items-center text-[10px] text-zinc-500 mb-1.5 mt-1">
-                <span class="mr-1 font-semibold text-zinc-700">4.7</span>
-                <span class="text-black tracking-tighter text-[10px]">★★★★★</span>
-                <span class="ml-1 text-zinc-500">(29)</span>
+            <div class="flex flex-col items-start pr-4 text-left">
+              <!-- Hover Swatches -->
+              <div class="flex gap-2 items-center h-0 opacity-0 overflow-hidden group-hover:h-8 group-hover:opacity-100 transition-all duration-300 w-full mt-1">
+                <div class="w-6 h-6 rounded-full border border-black p-[2px] cursor-pointer"><div class="w-full h-full rounded-full bg-[#fca5a5]"></div></div>
+                <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-black"></div></div>
+                <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-white border border-zinc-200"></div></div>
+                <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-zinc-800"></div></div>
+                <div class="w-6 h-6 rounded-full border border-zinc-300 flex items-center justify-center cursor-pointer hover:border-black text-zinc-500"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg></div>
               </div>
-              <h3 class="font-semibold text-[14px] leading-tight mb-1 text-black">Men's MOVI C202 T</h3>
-              <p class="text-zinc-500 text-[11px] mb-0.5">Running Shoes</p>
-              <p class="text-zinc-500 text-[11px] mb-2">5 Colors</p>
-              <div class="flex items-center gap-2">
-                <p class="font-bold text-[13px]">$150.00</p>
+
+              <div class="flex items-center text-xs text-zinc-500 mb-2 mt-1">
+                <span class="mr-1.5 font-bold text-zinc-800">5.0</span>
+                <span class="text-black tracking-tighter text-xs">★★★★★</span>
+                <span class="ml-1.5 text-zinc-500">(24)</span>
+              </div>
+              <h3 class="font-black text-lg md:text-xl leading-tight mb-1.5 text-black tracking-tight">MOVI KAI 2 Mules</h3>
+              <p class="text-zinc-500 text-xs md:text-sm mb-1">Slides</p>
+              <div class="flex items-center gap-3 mt-1">
+                <p class="font-bold text-base md:text-lg">$155.00</p>
               </div>
             </div>
           </div>
 
           <!-- Item 2 -->
-          <div class="flex-none w-[280px] md:w-[310px] group cursor-pointer snap-start gsap-fade-up opacity-0 translate-y-10">
-            <div class="relative aspect-square bg-[#f4f4f4] overflow-hidden mb-3 rounded-2xl">
-              <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-500" />
-              <div class="absolute top-0 left-0 bg-[#e02b20] text-white text-[10px] font-bold py-1 px-3 z-10 tracking-wider rounded-br-xl">30%</div>
-              <div class="absolute bottom-4 left-0 w-full px-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                <button class="w-full bg-black text-white py-3 rounded-full font-bold text-sm hover:bg-zinc-800 transition-colors shadow-lg">Quick Add</button>
+          <div class="flex-none w-[85vw] sm:w-[350px] md:w-[420px] lg:w-[440px] group cursor-pointer snap-start gsap-fade-up opacity-0 translate-y-10">
+            <div class="relative aspect-[4/5] bg-[#f8f8f8] overflow-hidden mb-4">
+              <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out" alt="Shoe" />
+              <div class="absolute top-0 left-0 bg-[#e02b20] text-white text-xs font-bold py-1.5 px-4 z-10 tracking-widest">20% OFF</div>
+              
+              <!-- Hover Arrow -->
+              <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-xl">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+              </div>
+
+              <div class="absolute bottom-6 left-0 w-full px-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out z-10">
+                <button class="w-full bg-black text-white py-4 rounded-full font-bold text-sm md:text-base tracking-wide hover:bg-zinc-800 transition-colors shadow-2xl">Quick Add</button>
               </div>
             </div>
-            <div class="flex flex-col items-start pr-2 text-left">
-              <div class="flex items-center text-[10px] text-zinc-500 mb-1.5 mt-1">
-                <span class="mr-1 font-semibold text-zinc-700">4.0</span>
-                <span class="text-black tracking-tighter text-[10px]">★★★★★</span>
-                <span class="ml-1 text-zinc-500">(55)</span>
+            <div class="flex flex-col items-start pr-4 text-left">
+              <!-- Hover Swatches -->
+              <div class="flex gap-2 items-center h-0 opacity-0 overflow-hidden group-hover:h-8 group-hover:opacity-100 transition-all duration-300 w-full mt-1">
+                <div class="w-6 h-6 rounded-full border border-black p-[2px] cursor-pointer"><div class="w-full h-full rounded-full bg-[#fca5a5]"></div></div>
+                <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-black"></div></div>
+                <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-white border border-zinc-200"></div></div>
+                <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-zinc-800"></div></div>
+                <div class="w-6 h-6 rounded-full border border-zinc-300 flex items-center justify-center cursor-pointer hover:border-black text-zinc-500"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg></div>
               </div>
-              <h3 class="font-semibold text-[14px] leading-tight mb-1 text-black">Men's MOVI C202 6</h3>
-              <p class="text-zinc-500 text-[11px] mb-0.5">Running Shoes</p>
-              <p class="text-zinc-500 text-[11px] mb-2">5 Colors</p>
-              <div class="flex items-center gap-2">
-                <p class="font-bold text-[13px]">$91.00</p>
-                <p class="text-zinc-400 text-[12px] line-through">$130.00</p>
+
+              <div class="flex items-center text-xs text-zinc-500 mb-2 mt-1">
+                <span class="mr-1.5 font-bold text-zinc-800">4.8</span>
+                <span class="text-black tracking-tighter text-xs">★★★★★</span>
+                <span class="ml-1.5 text-zinc-500">(106)</span>
+              </div>
+              <h3 class="font-black text-lg md:text-xl leading-tight mb-1.5 text-black tracking-tight">MOVI KT 10 Pro</h3>
+              <p class="text-zinc-500 text-xs md:text-sm mb-1">Basketball Shoes</p>
+              <div class="flex items-center gap-3 mt-1">
+                <p class="font-bold text-base md:text-lg text-[#e02b20]">$104.00</p>
+                <p class="text-zinc-400 text-sm md:text-base line-through font-medium">$130.00</p>
               </div>
             </div>
           </div>
 
           <!-- Item 3 -->
-          <div class="flex-none w-[280px] md:w-[310px] group cursor-pointer snap-start gsap-fade-up opacity-0 translate-y-10">
-            <div class="relative aspect-square bg-[#f4f4f4] overflow-hidden mb-3 rounded-2xl">
-              <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-500" />
-              <div class="absolute bottom-4 left-0 w-full px-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                <button class="w-full bg-black text-white py-3 rounded-full font-bold text-sm hover:bg-zinc-800 transition-colors shadow-lg">Quick Add</button>
+          <div class="flex-none w-[85vw] sm:w-[350px] md:w-[420px] lg:w-[440px] group cursor-pointer snap-start gsap-fade-up opacity-0 translate-y-10">
+            <div class="relative aspect-[4/5] bg-[#f8f8f8] overflow-hidden mb-4">
+              <img src="https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out" alt="Shoe" />
+              
+              <!-- Hover Arrow -->
+              <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-xl">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+              </div>
+
+              <div class="absolute bottom-6 left-0 w-full px-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out z-10">
+                <button class="w-full bg-black text-white py-4 rounded-full font-bold text-sm md:text-base tracking-wide hover:bg-zinc-800 transition-colors shadow-2xl">Quick Add</button>
               </div>
             </div>
-            <div class="flex flex-col items-start pr-2 text-left">
-              <div class="flex items-center text-[10px] text-zinc-500 mb-1.5 mt-1">
-                <span class="mr-1 font-semibold text-zinc-700">5.0</span>
-                <span class="text-black tracking-tighter text-[10px]">★★★★★</span>
-                <span class="ml-1 text-zinc-500">(12)</span>
+            <div class="flex flex-col items-start pr-4 text-left">
+              <!-- Hover Swatches -->
+              <div class="flex gap-2 items-center h-0 opacity-0 overflow-hidden group-hover:h-8 group-hover:opacity-100 transition-all duration-300 w-full mt-1">
+                <div class="w-6 h-6 rounded-full border border-black p-[2px] cursor-pointer"><div class="w-full h-full rounded-full bg-[#fca5a5]"></div></div>
+                <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-black"></div></div>
+                <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-white border border-zinc-200"></div></div>
+                <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-zinc-800"></div></div>
+                <div class="w-6 h-6 rounded-full border border-zinc-300 flex items-center justify-center cursor-pointer hover:border-black text-zinc-500"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg></div>
               </div>
-              <h3 class="font-semibold text-[14px] leading-tight mb-1 text-black">MOVI C202 ER 2</h3>
-              <p class="text-zinc-500 text-[11px] mb-0.5">Running Shoes</p>
-              <p class="text-zinc-500 text-[11px] mb-2">1 Color</p>
-              <div class="flex items-center gap-2">
-                <p class="font-bold text-[13px]">$208.00</p>
+
+              <div class="flex items-center text-xs text-zinc-500 mb-2 mt-1">
+                <span class="mr-1.5 font-bold text-zinc-800">4.9</span>
+                <span class="text-black tracking-tighter text-xs">★★★★★</span>
+                <span class="ml-1.5 text-zinc-500">(110)</span>
+              </div>
+              <h3 class="font-black text-lg md:text-xl leading-tight mb-1.5 text-black tracking-tight">Men's MOVI KAI 1 'Yin'</h3>
+              <p class="text-zinc-500 text-xs md:text-sm mb-1">Basketball Shoes</p>
+              <div class="flex items-center gap-3 mt-1">
+                <p class="font-bold text-base md:text-lg">$125.00</p>
               </div>
             </div>
           </div>
 
           <!-- Item 4 -->
-          <div class="flex-none w-[280px] md:w-[310px] group cursor-pointer snap-start gsap-fade-up opacity-0 translate-y-10">
-            <div class="relative aspect-square bg-[#f4f4f4] overflow-hidden mb-3 rounded-2xl">
-              <img src="https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-500" />
-              <div class="absolute bottom-4 left-0 w-full px-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                <button class="w-full bg-black text-white py-3 rounded-full font-bold text-sm hover:bg-zinc-800 transition-colors shadow-lg">Quick Add</button>
+          <div class="flex-none w-[85vw] sm:w-[350px] md:w-[420px] lg:w-[440px] group cursor-pointer snap-start gsap-fade-up opacity-0 translate-y-10">
+            <div class="relative aspect-[4/5] bg-[#f8f8f8] overflow-hidden mb-4">
+              <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out" alt="Shoe" />
+              
+              <!-- Hover Arrow -->
+              <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-xl">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+              </div>
+
+              <div class="absolute bottom-6 left-0 w-full px-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out z-10">
+                <button class="w-full bg-black text-white py-4 rounded-full font-bold text-sm md:text-base tracking-wide hover:bg-zinc-800 transition-colors shadow-2xl">Quick Add</button>
               </div>
             </div>
-            <div class="flex flex-col items-start pr-2 text-left">
-              <div class="flex items-center text-[10px] text-zinc-500 mb-1.5 mt-1">
-                <span class="mr-1 font-semibold text-zinc-700">4.7</span>
-                <span class="text-black tracking-tighter text-[10px]">★★★★★</span>
-                <span class="ml-1 text-zinc-500">(29)</span>
+            <div class="flex flex-col items-start pr-4 text-left">
+              <!-- Hover Swatches -->
+              <div class="flex gap-2 items-center h-0 opacity-0 overflow-hidden group-hover:h-8 group-hover:opacity-100 transition-all duration-300 w-full mt-1">
+                <div class="w-6 h-6 rounded-full border border-black p-[2px] cursor-pointer"><div class="w-full h-full rounded-full bg-[#fca5a5]"></div></div>
+                <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-black"></div></div>
+                <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-white border border-zinc-200"></div></div>
+                <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-zinc-800"></div></div>
+                <div class="w-6 h-6 rounded-full border border-zinc-300 flex items-center justify-center cursor-pointer hover:border-black text-zinc-500"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg></div>
               </div>
-              <h3 class="font-semibold text-[14px] leading-tight mb-1 text-black">Men's MOVI C202 5 GT</h3>
-              <p class="text-zinc-500 text-[11px] mb-0.5">Running Shoes</p>
-              <p class="text-zinc-500 text-[11px] mb-2">5 Colors</p>
-              <div class="flex items-center gap-2">
-                <p class="font-bold text-[13px]">$240.00</p>
+
+              <div class="flex items-center text-xs text-zinc-500 mb-2 mt-1">
+                <span class="mr-1.5 font-bold text-zinc-800">4.7</span>
+                <span class="text-black tracking-tighter text-xs">★★★★★</span>
+                <span class="ml-1.5 text-zinc-500">(42)</span>
+              </div>
+              <h3 class="font-black text-lg md:text-xl leading-tight mb-1.5 text-black tracking-tight">MOVI KAI 2 TEAM</h3>
+              <p class="text-zinc-500 text-xs md:text-sm mb-1">Basketball Shoes</p>
+              <div class="flex items-center gap-3 mt-1">
+                <p class="font-bold text-base md:text-lg">$100.00</p>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Community Banner -->
-    <section class="bg-zinc-900 py-24 md:py-32 text-center px-4">
-      <div class="max-w-3xl mx-auto">
-        <h2 class="text-[clamp(2.5rem,6vw,4rem)] leading-none font-black text-white uppercase tracking-tighter mb-6 gsap-fade-up opacity-0 translate-y-10">
-          Become a MOVI Member
+      <!-- Keep Moving Header -->
+      <section class="pt-24 pb-16 text-center px-4 bg-white">
+        <h2 class="text-[clamp(3.5rem,8vw,6rem)] font-black uppercase tracking-tighter leading-none mb-4 gsap-fade-up opacity-0 translate-y-10">
+          KEEP MOVING
         </h2>
-        <p class="text-zinc-400 mb-10 text-base md:text-lg px-4 gsap-fade-up opacity-0 translate-y-10">
-          Join the MOVI Tribe. Get early access to drops, exclusive gear, and community events tailored for those who move different.
+        <p class="text-sm md:text-base text-zinc-500 font-semibold tracking-widest uppercase gsap-fade-up opacity-0 translate-y-10">
+          Transcending the spirit of sport into your daily life.
         </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center w-full px-4 gsap-fade-up opacity-0 translate-y-10">
-          <button class="bg-white text-black px-8 py-4 w-full sm:w-auto rounded-full font-bold uppercase tracking-wider text-sm hover:bg-zinc-200 transition-colors">
-            Join For Free
-          </button>
-          <button class="border border-zinc-700 text-white px-8 py-4 w-full sm:w-auto rounded-full font-bold uppercase tracking-wider text-sm hover:bg-zinc-800 transition-colors">
-            Sign In
+      </section>
+
+      <!-- Full Width Running Banner (Parallax) -->
+      <section id="banner-container" class="relative h-[70dvh] min-h-[600px] w-full overflow-hidden flex items-end justify-center pb-16 md:pb-20 bg-black">
+        <div id="parallax-bg" class="absolute inset-0 z-0 scale-[1.2] -translate-y-[10%] transform-gpu">
+          <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10"></div>
+          <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=2000&auto=format&fit=crop" alt="Running Banner" class="w-full h-full object-cover object-bottom" />
+        </div>
+
+        <!-- Large Background Text -->
+        <div class="absolute inset-0 z-10 flex items-center justify-center pointer-events-none overflow-hidden">
+           <h2 class="text-white/90 font-black text-[clamp(6rem,20vw,18rem)] tracking-widest uppercase whitespace-nowrap px-4 text-center leading-none scale-x-[1.2] origin-center opacity-80 mix-blend-overlay">
+             MOVI RUNNING
+           </h2>
+        </div>
+        
+        <div class="relative z-20 text-center px-6 w-full max-w-2xl">
+          <h3 class="text-white text-4xl md:text-6xl font-black mb-4 tracking-tighter gsap-fade-up opacity-0 translate-y-10">
+            Run With Our Best
+          </h3>
+          <p class="text-white/90 text-sm md:text-base mb-10 mx-auto leading-relaxed font-medium gsap-fade-up opacity-0 translate-y-10">
+            Explore MOVI running shoes.<br/>Designed for marathoners, pros, and runners who demand more.
+          </p>
+          <button class="bg-white text-black px-10 py-4 rounded-full font-bold uppercase text-sm tracking-wider hover:bg-zinc-200 transition-colors shadow-2xl gsap-fade-up opacity-0 translate-y-10">
+            Explore Collection
           </button>
         </div>
+      </section>
+
+      <!-- Running Collection Tabs -->
+      <section class="pt-16 pb-32 bg-white overflow-hidden">
+        <div class="max-w-[1500px] mx-auto px-6">
+          <div class="flex gap-10 border-b border-zinc-200 mb-12 overflow-x-auto hide-scrollbar">
+            <button class="running-tab pb-4 text-sm md:text-base font-bold uppercase tracking-widest whitespace-nowrap transition-colors relative text-black">
+              C202 Series
+              <div class="active-indicator absolute bottom-0 left-0 right-0 h-[2px] bg-black"></div>
+            </button>
+            <button class="running-tab pb-4 text-sm md:text-base font-bold uppercase tracking-widest whitespace-nowrap transition-colors relative text-zinc-400 hover:text-black">
+              PG7 Fast
+              <div class="active-indicator absolute bottom-0 left-0 right-0 h-[2px] bg-black hidden"></div>
+            </button>
+            <button class="running-tab pb-4 text-sm md:text-base font-bold uppercase tracking-widest whitespace-nowrap transition-colors relative text-zinc-400 hover:text-black">
+              ZONE Daily
+              <div class="active-indicator absolute bottom-0 left-0 right-0 h-[2px] bg-black hidden"></div>
+            </button>
+          </div>
+
+          <div class="flex overflow-x-auto gap-4 md:gap-6 lg:gap-8 pb-8 snap-x snap-mandatory hide-scrollbar">
+            <!-- Item 1 -->
+            <div class="flex-none w-[85vw] sm:w-[350px] md:w-[420px] lg:w-[440px] group cursor-pointer snap-start gsap-fade-up opacity-0 translate-y-10">
+              <div class="relative aspect-[4/5] bg-[#f8f8f8] overflow-hidden mb-4">
+                <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out" alt="Running Shoe" />
+                
+                <!-- Hover Arrow -->
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  </button>
+                </div>
+
+                <div class="absolute bottom-6 left-0 w-full px-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out z-10">
+                  <button class="w-full bg-black text-white py-4 rounded-full font-bold text-sm md:text-base tracking-wide hover:bg-zinc-800 transition-colors shadow-2xl">Quick Add</button>
+                </div>
+              </div>
+              <div class="flex flex-col items-start pr-4 text-left">
+                <!-- Hover Swatches -->
+                <div class="flex gap-2 items-center h-0 opacity-0 overflow-hidden group-hover:h-8 group-hover:opacity-100 transition-all duration-300 w-full mt-1">
+                  <div class="w-6 h-6 rounded-full border border-black p-[2px] cursor-pointer"><div class="w-full h-full rounded-full bg-[#fca5a5]"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-black"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-white border border-zinc-200"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-zinc-800"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-zinc-300 flex items-center justify-center cursor-pointer hover:border-black text-zinc-500"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg></div>
+                </div>
+
+                <div class="flex items-center text-xs text-zinc-500 mb-2 mt-1">
+                  <span class="mr-1.5 font-bold text-zinc-800">4.9</span>
+                  <span class="text-black tracking-tighter text-xs">★★★★★</span>
+                  <span class="ml-1.5 text-zinc-500">(59)</span>
+                </div>
+                <h3 class="font-black text-lg md:text-xl leading-tight mb-1.5 text-black tracking-tight">Men's MOVI C202 T</h3>
+                <p class="text-zinc-500 text-xs md:text-sm mb-1">Elite Racing Shoes</p>
+                <div class="flex items-center gap-3 mt-1">
+                  <p class="font-bold text-base md:text-lg">$150.00</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="flex-none w-[85vw] sm:w-[350px] md:w-[420px] lg:w-[440px] group cursor-pointer snap-start gsap-fade-up opacity-0 translate-y-10">
+              <div class="relative aspect-[4/5] bg-[#f8f8f8] overflow-hidden mb-4">
+                <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out" alt="Running Shoe" />
+                <div class="absolute top-0 left-0 bg-black text-white text-xs font-bold py-1.5 px-4 z-10 tracking-widest">BEST SELLER</div>
+                
+                <!-- Hover Arrow -->
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  </button>
+                </div>
+
+                <div class="absolute bottom-6 left-0 w-full px-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out z-10">
+                  <button class="w-full bg-black text-white py-4 rounded-full font-bold text-sm md:text-base tracking-wide hover:bg-zinc-800 transition-colors shadow-2xl">Quick Add</button>
+                </div>
+              </div>
+              <div class="flex flex-col items-start pr-4 text-left">
+                <!-- Hover Swatches -->
+                <div class="flex gap-2 items-center h-0 opacity-0 overflow-hidden group-hover:h-8 group-hover:opacity-100 transition-all duration-300 w-full mt-1">
+                  <div class="w-6 h-6 rounded-full border border-black p-[2px] cursor-pointer"><div class="w-full h-full rounded-full bg-[#fca5a5]"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-black"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-white border border-zinc-200"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-zinc-800"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-zinc-300 flex items-center justify-center cursor-pointer hover:border-black text-zinc-500"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg></div>
+                </div>
+
+                <div class="flex items-center text-xs text-zinc-500 mb-2 mt-1">
+                  <span class="mr-1.5 font-bold text-zinc-800">4.5</span>
+                  <span class="text-black tracking-tighter text-xs">★★★★★</span>
+                  <span class="ml-1.5 text-zinc-500">(155)</span>
+                </div>
+                <h3 class="font-black text-lg md:text-xl leading-tight mb-1.5 text-black tracking-tight">Men's MOVI C202 6</h3>
+                <p class="text-zinc-500 text-xs md:text-sm mb-1">Daily Training Shoes</p>
+                <div class="flex items-center gap-3 mt-1">
+                  <p class="font-bold text-base md:text-lg text-[#e02b20]">$91.00</p>
+                  <p class="text-zinc-400 text-sm md:text-base line-through font-medium">$130.00</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="flex-none w-[85vw] sm:w-[350px] md:w-[420px] lg:w-[440px] group cursor-pointer snap-start gsap-fade-up opacity-0 translate-y-10">
+              <div class="relative aspect-[4/5] bg-[#f8f8f8] overflow-hidden mb-4">
+                <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out" alt="Running Shoe" />
+                
+                <!-- Hover Arrow -->
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  </button>
+                </div>
+
+                <div class="absolute bottom-6 left-0 w-full px-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out z-10">
+                  <button class="w-full bg-black text-white py-4 rounded-full font-bold text-sm md:text-base tracking-wide hover:bg-zinc-800 transition-colors shadow-2xl">Quick Add</button>
+                </div>
+              </div>
+              <div class="flex flex-col items-start pr-4 text-left">
+                <!-- Hover Swatches -->
+                <div class="flex gap-2 items-center h-0 opacity-0 overflow-hidden group-hover:h-8 group-hover:opacity-100 transition-all duration-300 w-full mt-1">
+                  <div class="w-6 h-6 rounded-full border border-black p-[2px] cursor-pointer"><div class="w-full h-full rounded-full bg-[#fca5a5]"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-black"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-white border border-zinc-200"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-zinc-800"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-zinc-300 flex items-center justify-center cursor-pointer hover:border-black text-zinc-500"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg></div>
+                </div>
+
+                <div class="flex items-center text-xs text-zinc-500 mb-2 mt-1">
+                  <span class="mr-1.5 font-bold text-zinc-800">5.0</span>
+                  <span class="text-black tracking-tighter text-xs">★★★★★</span>
+                  <span class="ml-1.5 text-zinc-500">(12)</span>
+                </div>
+                <h3 class="font-black text-lg md:text-xl leading-tight mb-1.5 text-black tracking-tight">MOVI C202 ER 2.0</h3>
+                <p class="text-zinc-500 text-xs md:text-sm mb-1">Carbon Plate Racing</p>
+                <div class="flex items-center gap-3 mt-1">
+                  <p class="font-bold text-base md:text-lg">$208.00</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="flex-none w-[85vw] sm:w-[350px] md:w-[420px] lg:w-[440px] group cursor-pointer snap-start gsap-fade-up opacity-0 translate-y-10">
+              <div class="relative aspect-[4/5] bg-[#f8f8f8] overflow-hidden mb-4">
+                <img src="https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out" alt="Running Shoe" />
+                
+                <!-- Hover Arrow -->
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  </button>
+                </div>
+
+                <div class="absolute bottom-6 left-0 w-full px-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out z-10">
+                  <button class="w-full bg-black text-white py-4 rounded-full font-bold text-sm md:text-base tracking-wide hover:bg-zinc-800 transition-colors shadow-2xl">Quick Add</button>
+                </div>
+              </div>
+              <div class="flex flex-col items-start pr-4 text-left">
+                <!-- Hover Swatches -->
+                <div class="flex gap-2 items-center h-0 opacity-0 overflow-hidden group-hover:h-8 group-hover:opacity-100 transition-all duration-300 w-full mt-1">
+                  <div class="w-6 h-6 rounded-full border border-black p-[2px] cursor-pointer"><div class="w-full h-full rounded-full bg-[#fca5a5]"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-black"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-white border border-zinc-200"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-zinc-800"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-zinc-300 flex items-center justify-center cursor-pointer hover:border-black text-zinc-500"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg></div>
+                </div>
+
+                <div class="flex items-center text-xs text-zinc-500 mb-2 mt-1">
+                  <span class="mr-1.5 font-bold text-zinc-800">4.8</span>
+                  <span class="text-black tracking-tighter text-xs">★★★★★</span>
+                  <span class="ml-1.5 text-zinc-500">(84)</span>
+                </div>
+                <h3 class="font-black text-lg md:text-xl leading-tight mb-1.5 text-black tracking-tight">Men's MOVI C202 5 GT</h3>
+                <p class="text-zinc-500 text-xs md:text-sm mb-1">Premium Performance</p>
+                <div class="flex items-center gap-3 mt-1">
+                  <p class="font-bold text-base md:text-lg">$240.00</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Community Banner -->
+      <section class="bg-zinc-950 py-24 md:py-36 text-center px-4">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="text-[clamp(3rem,6vw,5rem)] leading-none font-black text-white uppercase tracking-tighter mb-8 gsap-fade-up opacity-0 translate-y-10">
+            Become a MOVI Member
+          </h2>
+          <p class="text-zinc-400 mb-12 text-base md:text-xl px-4 font-medium leading-relaxed gsap-fade-up opacity-0 translate-y-10 max-w-2xl mx-auto">
+            Join the MOVI Tribe. Get early access to drops, exclusive gear, and community events tailored for those who move different.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-5 justify-center w-full px-4 gsap-fade-up opacity-0 translate-y-10">
+            <button class="bg-white text-black px-10 py-4 w-full sm:w-auto rounded-full font-bold uppercase tracking-wider text-sm hover:bg-zinc-200 transition-colors">
+              Join For Free
+            </button>
+            <button class="border border-zinc-700 text-white px-10 py-4 w-full sm:w-auto rounded-full font-bold uppercase tracking-wider text-sm hover:bg-zinc-800 transition-colors">
+              Sign In
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Product Listing Page (Hidden by default) -->
+    <div id="view-plp" class="hidden pt-[160px] pb-32 bg-white min-h-screen">
+      <div class="max-w-[1500px] mx-auto px-6">
+        
+        <!-- Breadcrumbs & Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 border-b border-zinc-200 pb-6 gap-6">
+          <div>
+            <div class="text-[10px] md:text-xs text-zinc-500 mb-3 uppercase tracking-widest font-bold flex gap-2">
+              <a href="#" class="hover:text-black transition-colors btn-home">Home</a> / 
+              <a href="#" class="hover:text-black transition-colors">Running</a> / 
+              <span class="text-black">Men's</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black uppercase tracking-tighter">Men's Running <span class="text-xl text-zinc-400 font-medium ml-2">(1300)</span></h1>
+          </div>
+          
+          <div class="flex items-center gap-4 text-xs font-bold uppercase tracking-widest">
+            <button class="flex items-center gap-2 border border-zinc-300 px-4 py-2 hover:border-black transition-colors">
+              Filter <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="21" y2="14"/><line x1="4" x2="20" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="1" x2="7" y1="14" y2="14"/><line x1="9" x2="15" y1="8" y2="8"/><line x1="17" x2="23" y1="16" y2="16"/></svg>
+            </button>
+            <button class="flex items-center gap-2 border border-zinc-300 px-4 py-2 hover:border-black transition-colors">
+              Sort By <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex gap-12">
+          <!-- Sidebar (Desktop) -->
+          <aside class="hidden lg:block w-[240px] flex-shrink-0">
+            <div class="mb-8">
+               <h3 class="font-bold uppercase tracking-widest text-sm mb-4 border-b border-black pb-2">Category</h3>
+               <ul class="flex flex-col gap-3 text-sm text-zinc-600 font-medium">
+                 <li><a href="#" class="hover:text-black flex justify-between">Performance Running <span>(420)</span></a></li>
+                 <li><a href="#" class="hover:text-black flex justify-between">Everyday Running <span>(315)</span></a></li>
+                 <li><a href="#" class="hover:text-black flex justify-between">Trail Running <span>(185)</span></a></li>
+                 <li><a href="#" class="hover:text-black flex justify-between">Track & Field <span>(80)</span></a></li>
+                 <li><a href="#" class="hover:text-black flex justify-between">Apparel <span>(300)</span></a></li>
+               </ul>
+            </div>
+            <div class="mb-8">
+               <h3 class="font-bold uppercase tracking-widest text-sm mb-4 border-b border-black pb-2">Size</h3>
+               <div class="grid grid-cols-3 gap-2">
+                 <button class="border border-zinc-300 py-2 text-xs font-bold hover:border-black transition-colors">7</button>
+                 <button class="border border-zinc-300 py-2 text-xs font-bold hover:border-black transition-colors">7.5</button>
+                 <button class="border border-black bg-black text-white py-2 text-xs font-bold transition-colors">8</button>
+                 <button class="border border-zinc-300 py-2 text-xs font-bold hover:border-black transition-colors">8.5</button>
+                 <button class="border border-zinc-300 py-2 text-xs font-bold hover:border-black transition-colors">9</button>
+                 <button class="border border-zinc-300 py-2 text-xs font-bold hover:border-black transition-colors">9.5</button>
+                 <button class="border border-zinc-300 py-2 text-xs font-bold hover:border-black transition-colors">10</button>
+                 <button class="border border-zinc-300 py-2 text-xs font-bold hover:border-black transition-colors">10.5</button>
+                 <button class="border border-zinc-300 py-2 text-xs font-bold hover:border-black transition-colors">11</button>
+                 <button class="border border-zinc-300 py-2 text-xs font-bold hover:border-black transition-colors">11.5</button>
+                 <button class="border border-zinc-300 py-2 text-xs font-bold hover:border-black transition-colors">12</button>
+                 <button class="border border-zinc-300 py-2 text-xs font-bold hover:border-black transition-colors">13</button>
+               </div>
+            </div>
+          </aside>
+
+          <!-- Grid -->
+          <div class="flex-1 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-12">
+            
+            <!-- Grid Item 1 -->
+            <div class="w-full group cursor-pointer">
+              <div class="relative aspect-[4/5] bg-[#f8f8f8] overflow-hidden mb-4">
+                <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out" alt="Running Shoe" />
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  </button>
+                </div>
+                <div class="absolute bottom-6 left-0 w-full px-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out z-10">
+                  <button class="w-full bg-black text-white py-4 rounded-full font-bold text-sm md:text-base tracking-wide hover:bg-zinc-800 transition-colors shadow-2xl">Quick Add</button>
+                </div>
+              </div>
+              <div class="flex flex-col items-start pr-4 text-left">
+                <div class="flex gap-2 items-center h-0 opacity-0 overflow-hidden group-hover:h-8 group-hover:opacity-100 transition-all duration-300 w-full mt-1">
+                  <div class="w-6 h-6 rounded-full border border-black p-[2px] cursor-pointer"><div class="w-full h-full rounded-full bg-[#fca5a5]"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-black"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-white border border-zinc-200"></div></div>
+                </div>
+                <div class="flex items-center text-xs text-zinc-500 mb-2 mt-1">
+                  <span class="mr-1.5 font-bold text-zinc-800">4.9</span>
+                  <span class="text-black tracking-tighter text-xs">★★★★★</span>
+                  <span class="ml-1.5 text-zinc-500">(59)</span>
+                </div>
+                <h3 class="font-black text-lg leading-tight mb-1.5 text-black tracking-tight">Men's MOVI C202 T</h3>
+                <p class="text-zinc-500 text-xs md:text-sm mb-1">Elite Racing Shoes</p>
+                <div class="flex items-center gap-3 mt-1">
+                  <p class="font-bold text-base md:text-lg">$150.00</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Grid Item 2 -->
+            <div class="w-full group cursor-pointer">
+              <div class="relative aspect-[4/5] bg-[#f8f8f8] overflow-hidden mb-4">
+                <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out" alt="Running Shoe" />
+                <div class="absolute top-0 left-0 bg-black text-white text-xs font-bold py-1.5 px-4 z-10 tracking-widest">BEST SELLER</div>
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  </button>
+                </div>
+                <div class="absolute bottom-6 left-0 w-full px-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out z-10">
+                  <button class="w-full bg-black text-white py-4 rounded-full font-bold text-sm md:text-base tracking-wide hover:bg-zinc-800 transition-colors shadow-2xl">Quick Add</button>
+                </div>
+              </div>
+              <div class="flex flex-col items-start pr-4 text-left">
+                <div class="flex gap-2 items-center h-0 opacity-0 overflow-hidden group-hover:h-8 group-hover:opacity-100 transition-all duration-300 w-full mt-1">
+                  <div class="w-6 h-6 rounded-full border border-black p-[2px] cursor-pointer"><div class="w-full h-full rounded-full bg-[#fca5a5]"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-black"></div></div>
+                </div>
+                <div class="flex items-center text-xs text-zinc-500 mb-2 mt-1">
+                  <span class="mr-1.5 font-bold text-zinc-800">4.5</span>
+                  <span class="text-black tracking-tighter text-xs">★★★★★</span>
+                  <span class="ml-1.5 text-zinc-500">(155)</span>
+                </div>
+                <h3 class="font-black text-lg leading-tight mb-1.5 text-black tracking-tight">Men's MOVI C202 6</h3>
+                <p class="text-zinc-500 text-xs md:text-sm mb-1">Daily Training Shoes</p>
+                <div class="flex items-center gap-3 mt-1">
+                  <p class="font-bold text-base md:text-lg text-[#e02b20]">$91.00</p>
+                  <p class="text-zinc-400 text-sm line-through font-medium">$130.00</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Grid Item 3 -->
+            <div class="w-full group cursor-pointer">
+              <div class="relative aspect-[4/5] bg-[#f8f8f8] overflow-hidden mb-4">
+                <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out" alt="Running Shoe" />
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  </button>
+                </div>
+                <div class="absolute bottom-6 left-0 w-full px-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out z-10">
+                  <button class="w-full bg-black text-white py-4 rounded-full font-bold text-sm md:text-base tracking-wide hover:bg-zinc-800 transition-colors shadow-2xl">Quick Add</button>
+                </div>
+              </div>
+              <div class="flex flex-col items-start pr-4 text-left">
+                <div class="flex gap-2 items-center h-0 opacity-0 overflow-hidden group-hover:h-8 group-hover:opacity-100 transition-all duration-300 w-full mt-1">
+                  <div class="w-6 h-6 rounded-full border border-black p-[2px] cursor-pointer"><div class="w-full h-full rounded-full bg-zinc-800"></div></div>
+                </div>
+                <div class="flex items-center text-xs text-zinc-500 mb-2 mt-1">
+                  <span class="mr-1.5 font-bold text-zinc-800">5.0</span>
+                  <span class="text-black tracking-tighter text-xs">★★★★★</span>
+                  <span class="ml-1.5 text-zinc-500">(12)</span>
+                </div>
+                <h3 class="font-black text-lg leading-tight mb-1.5 text-black tracking-tight">MOVI C202 ER 2.0</h3>
+                <p class="text-zinc-500 text-xs md:text-sm mb-1">Carbon Plate Racing</p>
+                <div class="flex items-center gap-3 mt-1">
+                  <p class="font-bold text-base md:text-lg">$208.00</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Grid Item 4 -->
+            <div class="w-full group cursor-pointer">
+              <div class="relative aspect-[4/5] bg-[#f8f8f8] overflow-hidden mb-4">
+                <img src="https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out" alt="Running Shoe" />
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  </button>
+                </div>
+                <div class="absolute bottom-6 left-0 w-full px-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out z-10">
+                  <button class="w-full bg-black text-white py-4 rounded-full font-bold text-sm md:text-base tracking-wide hover:bg-zinc-800 transition-colors shadow-2xl">Quick Add</button>
+                </div>
+              </div>
+              <div class="flex flex-col items-start pr-4 text-left">
+                <div class="flex gap-2 items-center h-0 opacity-0 overflow-hidden group-hover:h-8 group-hover:opacity-100 transition-all duration-300 w-full mt-1">
+                  <div class="w-6 h-6 rounded-full border border-black p-[2px] cursor-pointer"><div class="w-full h-full rounded-full bg-zinc-800"></div></div>
+                  <div class="w-6 h-6 rounded-full border border-transparent p-[2px] hover:border-black cursor-pointer"><div class="w-full h-full rounded-full bg-[#fca5a5]"></div></div>
+                </div>
+                <div class="flex items-center text-xs text-zinc-500 mb-2 mt-1">
+                  <span class="mr-1.5 font-bold text-zinc-800">4.8</span>
+                  <span class="text-black tracking-tighter text-xs">★★★★★</span>
+                  <span class="ml-1.5 text-zinc-500">(84)</span>
+                </div>
+                <h3 class="font-black text-lg leading-tight mb-1.5 text-black tracking-tight">Men's MOVI C202 5 GT</h3>
+                <p class="text-zinc-500 text-xs md:text-sm mb-1">Premium Performance</p>
+                <div class="flex items-center gap-3 mt-1">
+                  <p class="font-bold text-base md:text-lg">$240.00</p>
+                </div>
+              </div>
+            </div>
+
+             <!-- Grid Item 5 (Duplicate for Grid Fill) -->
+             <div class="w-full group cursor-pointer">
+              <div class="relative aspect-[4/5] bg-[#f8f8f8] overflow-hidden mb-4">
+                <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out" alt="Running Shoe" />
+                <div class="absolute top-0 left-0 bg-[#e02b20] text-white text-xs font-bold py-1.5 px-4 z-10 tracking-widest">NEW</div>
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  </button>
+                </div>
+                <div class="absolute bottom-6 left-0 w-full px-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out z-10">
+                  <button class="w-full bg-black text-white py-4 rounded-full font-bold text-sm md:text-base tracking-wide hover:bg-zinc-800 transition-colors shadow-2xl">Quick Add</button>
+                </div>
+              </div>
+              <div class="flex flex-col items-start pr-4 text-left">
+                <div class="flex items-center text-xs text-zinc-500 mb-2 mt-1">
+                  <span class="mr-1.5 font-bold text-zinc-800">4.9</span>
+                  <span class="text-black tracking-tighter text-xs">★★★★★</span>
+                  <span class="ml-1.5 text-zinc-500">(15)</span>
+                </div>
+                <h3 class="font-black text-lg leading-tight mb-1.5 text-black tracking-tight">Men's MOVI ZONE 2</h3>
+                <p class="text-zinc-500 text-xs md:text-sm mb-1">Elite Racing Shoes</p>
+                <div class="flex items-center gap-3 mt-1">
+                  <p class="font-bold text-base md:text-lg">$160.00</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Grid Item 6 -->
+            <div class="w-full group cursor-pointer">
+              <div class="relative aspect-[4/5] bg-[#f8f8f8] overflow-hidden mb-4">
+                <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out" alt="Running Shoe" />
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  </button>
+                </div>
+                <div class="absolute bottom-6 left-0 w-full px-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out z-10">
+                  <button class="w-full bg-black text-white py-4 rounded-full font-bold text-sm md:text-base tracking-wide hover:bg-zinc-800 transition-colors shadow-2xl">Quick Add</button>
+                </div>
+              </div>
+              <div class="flex flex-col items-start pr-4 text-left">
+                <div class="flex items-center text-xs text-zinc-500 mb-2 mt-1">
+                  <span class="mr-1.5 font-bold text-zinc-800">4.5</span>
+                  <span class="text-black tracking-tighter text-xs">★★★★★</span>
+                  <span class="ml-1.5 text-zinc-500">(155)</span>
+                </div>
+                <h3 class="font-black text-lg leading-tight mb-1.5 text-black tracking-tight">Men's MOVI C202 7</h3>
+                <p class="text-zinc-500 text-xs md:text-sm mb-1">Daily Training Shoes</p>
+                <div class="flex items-center gap-3 mt-1">
+                  <p class="font-bold text-base md:text-lg">$130.00</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Grid Item 7 -->
+            <div class="w-full group cursor-pointer">
+              <div class="relative aspect-[4/5] bg-[#f8f8f8] overflow-hidden mb-4">
+                <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out" alt="Running Shoe" />
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  </button>
+                </div>
+                <div class="absolute bottom-6 left-0 w-full px-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out z-10">
+                  <button class="w-full bg-black text-white py-4 rounded-full font-bold text-sm md:text-base tracking-wide hover:bg-zinc-800 transition-colors shadow-2xl">Quick Add</button>
+                </div>
+              </div>
+              <div class="flex flex-col items-start pr-4 text-left">
+                <div class="flex gap-2 items-center h-0 opacity-0 overflow-hidden group-hover:h-8 group-hover:opacity-100 transition-all duration-300 w-full mt-1">
+                  <div class="w-6 h-6 rounded-full border border-black p-[2px] cursor-pointer"><div class="w-full h-full rounded-full bg-zinc-800"></div></div>
+                </div>
+                <div class="flex items-center text-xs text-zinc-500 mb-2 mt-1">
+                  <span class="mr-1.5 font-bold text-zinc-800">5.0</span>
+                  <span class="text-black tracking-tighter text-xs">★★★★★</span>
+                  <span class="ml-1.5 text-zinc-500">(12)</span>
+                </div>
+                <h3 class="font-black text-lg leading-tight mb-1.5 text-black tracking-tight">MOVI C202 Pro</h3>
+                <p class="text-zinc-500 text-xs md:text-sm mb-1">Carbon Plate Racing</p>
+                <div class="flex items-center gap-3 mt-1">
+                  <p class="font-bold text-base md:text-lg">$220.00</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Grid Item 8 -->
+            <div class="w-full group cursor-pointer">
+              <div class="relative aspect-[4/5] bg-[#f8f8f8] overflow-hidden mb-4">
+                <img src="https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out" alt="Running Shoe" />
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  </button>
+                </div>
+                <div class="absolute bottom-6 left-0 w-full px-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out z-10">
+                  <button class="w-full bg-black text-white py-4 rounded-full font-bold text-sm md:text-base tracking-wide hover:bg-zinc-800 transition-colors shadow-2xl">Quick Add</button>
+                </div>
+              </div>
+              <div class="flex flex-col items-start pr-4 text-left">
+                <div class="flex items-center text-xs text-zinc-500 mb-2 mt-1">
+                  <span class="mr-1.5 font-bold text-zinc-800">4.8</span>
+                  <span class="text-black tracking-tighter text-xs">★★★★★</span>
+                  <span class="ml-1.5 text-zinc-500">(84)</span>
+                </div>
+                <h3 class="font-black text-lg leading-tight mb-1.5 text-black tracking-tight">Men's MOVI C202 G9 2</h3>
+                <p class="text-zinc-500 text-xs md:text-sm mb-1">Premium Performance</p>
+                <div class="flex items-center gap-3 mt-1">
+                  <p class="font-bold text-base md:text-lg">$240.00</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
   </main>
 
   <!-- Footer -->
   <footer class="bg-black text-white pt-24 pb-10 px-6 border-t border-zinc-900">
-    <div class="max-w-[1400px] mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-10 mb-20">
+    <div class="max-w-[1500px] mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12 mb-20">
       <div class="col-span-2 lg:col-span-2">
-        <h3 class="text-3xl font-black uppercase tracking-tighter mb-6">MOVI</h3>
-        <p class="text-zinc-400 text-sm mb-6 max-w-sm">
+        <h3 class="text-4xl font-black uppercase tracking-[0.15em] mb-6">MOVI</h3>
+        <p class="text-zinc-400 text-sm mb-8 max-w-sm leading-relaxed">
           Stay in the loop. Sign up for our newsletter to get updates on new drops, exclusive collections, and community stories.
         </p>
         <div class="flex">
-          <input type="email" placeholder="ENTER EMAIL" class="bg-zinc-900 text-white px-4 py-3 w-full max-w-[250px] outline-none border border-zinc-800 focus:border-white transition-colors rounded-l-xl" />
-          <button class="bg-white text-black px-6 font-bold uppercase text-xs tracking-wider hover:bg-zinc-200 transition-colors rounded-r-xl">Subscribe</button>
+          <input type="email" placeholder="ENTER EMAIL" class="bg-zinc-900 text-white px-5 py-4 w-full max-w-[280px] outline-none border border-zinc-800 focus:border-white transition-colors rounded-l-xl text-sm placeholder:tracking-widest" />
+          <button class="bg-white text-black px-8 font-bold uppercase text-xs tracking-wider hover:bg-zinc-200 transition-colors rounded-r-xl">Subscribe</button>
         </div>
       </div>
       
       <div>
-        <h4 class="font-bold uppercase tracking-wider mb-6 text-xs text-zinc-200">Products</h4>
-        <ul class="flex flex-col gap-3 text-zinc-400 text-sm">
+        <h4 class="font-bold uppercase tracking-widest mb-6 text-xs text-zinc-200">Products</h4>
+        <ul class="flex flex-col gap-4 text-zinc-400 text-sm font-medium">
           <li><a href="#" class="hover:text-white transition-colors">Shoes</a></li>
           <li><a href="#" class="hover:text-white transition-colors">Clothing</a></li>
           <li><a href="#" class="hover:text-white transition-colors">Accessories</a></li>
@@ -452,8 +1022,8 @@
       </div>
       
       <div>
-        <h4 class="font-bold uppercase tracking-wider mb-6 text-xs text-zinc-200">Athletes</h4>
-        <ul class="flex flex-col gap-3 text-zinc-400 text-sm">
+        <h4 class="font-bold uppercase tracking-widest mb-6 text-xs text-zinc-200">Athletes</h4>
+        <ul class="flex flex-col gap-4 text-zinc-400 text-sm font-medium">
           <li><a href="#" class="hover:text-white transition-colors">Team MOVI</a></li>
           <li><a href="#" class="hover:text-white transition-colors">Mastery</a></li>
           <li><a href="#" class="hover:text-white transition-colors">Partnerships</a></li>
@@ -461,8 +1031,8 @@
       </div>
       
       <div>
-        <h4 class="font-bold uppercase tracking-wider mb-6 text-xs text-zinc-200">Support</h4>
-        <ul class="flex flex-col gap-3 text-zinc-400 text-sm">
+        <h4 class="font-bold uppercase tracking-widest mb-6 text-xs text-zinc-200">Support</h4>
+        <ul class="flex flex-col gap-4 text-zinc-400 text-sm font-medium">
           <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
           <li><a href="#" class="hover:text-white transition-colors">Shipping</a></li>
           <li><a href="#" class="hover:text-white transition-colors">Returns</a></li>
@@ -471,8 +1041,8 @@
       </div>
 
       <div>
-        <h4 class="font-bold uppercase tracking-wider mb-6 text-xs text-zinc-200">Company</h4>
-        <ul class="flex flex-col gap-3 text-zinc-400 text-sm">
+        <h4 class="font-bold uppercase tracking-widest mb-6 text-xs text-zinc-200">Company</h4>
+        <ul class="flex flex-col gap-4 text-zinc-400 text-sm font-medium">
           <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
           <li><a href="#" class="hover:text-white transition-colors">Careers</a></li>
           <li><a href="#" class="hover:text-white transition-colors">Store Locator</a></li>
@@ -480,9 +1050,9 @@
       </div>
     </div>
     
-    <div class="max-w-[1400px] mx-auto pt-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-zinc-600 uppercase tracking-widest font-semibold">
+    <div class="max-w-[1500px] mx-auto pt-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] text-zinc-600 uppercase tracking-widest font-bold">
       <p>&copy; 2024 MOVI Corporation. All Rights Reserved.</p>
-      <div class="flex gap-6">
+      <div class="flex gap-8">
         <a href="#" class="hover:text-zinc-400 transition-colors">Privacy</a>
         <a href="#" class="hover:text-zinc-400 transition-colors">Terms</a>
       </div>
@@ -491,32 +1061,66 @@
 
   <!-- Vanilla Javascript & GSAP Integrations -->
   <script>
-    // 1. Navbar Sticky Logic
+    // 1. Professional Navbar Sticky & Mega Menu Hover Logic
     const navbar = document.getElementById('navbar');
+    const navInner = document.getElementById('nav-inner');
     const logo = document.getElementById('logo');
-    const navLinks = document.getElementById('nav-links');
-    const navIcons = document.getElementById('nav-icons');
+    const navLinksContainer = document.getElementById('nav-links');
+    const navIconsContainer = document.getElementById('nav-icons');
     const openMenuBtn = document.getElementById('open-menu');
+    const navGroups = document.querySelectorAll('#nav-links .group');
 
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 50) {
-        navbar.classList.replace('bg-transparent', 'bg-white/95');
-        navbar.classList.replace('py-6', 'py-4');
-        navbar.classList.add('backdrop-blur-md', 'shadow-sm');
-        logo.classList.replace('text-white', 'text-black');
-        navLinks.classList.replace('text-white', 'text-black');
-        navIcons.classList.replace('text-white', 'text-black');
-        openMenuBtn.classList.replace('text-white', 'text-black');
-      } else {
-        navbar.classList.replace('bg-white/95', 'bg-transparent');
-        navbar.classList.replace('py-4', 'py-6');
-        navbar.classList.remove('backdrop-blur-md', 'shadow-sm');
-        logo.classList.replace('text-black', 'text-white');
-        navLinks.classList.replace('text-black', 'text-white');
-        navIcons.classList.replace('text-black', 'text-white');
-        openMenuBtn.classList.replace('text-black', 'text-white');
+    let isMenuHovered = false;
+
+    // Detect hover on nav items that contain a mega menu
+    navGroups.forEach(group => {
+      if(group.querySelector('.absolute')) {
+        group.addEventListener('mouseenter', () => {
+          isMenuHovered = true;
+          updateNavState();
+        });
+        group.addEventListener('mouseleave', () => {
+          isMenuHovered = false;
+          updateNavState();
+        });
       }
     });
+
+    function updateNavState() {
+      const isScrolled = window.scrollY > 10;
+
+      // Positioning and Height (Driven strictly by scroll)
+      if (isScrolled) {
+        navbar.classList.replace('top-[40px]', 'top-0');
+        navInner.classList.replace('h-[88px]', 'h-[64px]');
+      } else {
+        navbar.classList.replace('top-0', 'top-[40px]');
+        navInner.classList.replace('h-[64px]', 'h-[88px]');
+      }
+
+      // Appearance (Driven by scroll OR mega-menu hover)
+      if (isScrolled || isMenuHovered) {
+        navbar.classList.replace('bg-transparent', 'bg-white');
+        navbar.classList.add('shadow-sm');
+        navbar.classList.replace('border-white/10', 'border-zinc-200');
+
+        logo.classList.replace('text-white', 'text-black');
+        navLinksContainer.classList.replace('text-white', 'text-black');
+        navIconsContainer.classList.replace('text-white', 'text-black');
+        openMenuBtn.classList.replace('text-white', 'text-black');
+      } else {
+        navbar.classList.replace('bg-white', 'bg-transparent');
+        navbar.classList.remove('shadow-sm');
+        navbar.classList.replace('border-zinc-200', 'border-white/10');
+
+        logo.classList.replace('text-black', 'text-white');
+        navLinksContainer.classList.replace('text-black', 'text-white');
+        navIconsContainer.classList.replace('text-black', 'text-white');
+        openMenuBtn.classList.replace('text-black', 'text-white');
+      }
+    }
+
+    window.addEventListener('scroll', updateNavState);
 
     // 2. Mobile Menu Logic
     const mobileMenu = document.getElementById('mobile-menu');
@@ -592,6 +1196,41 @@
       },
       y: "15%",
       ease: "none"
+    });
+
+    // 5. SPA Navigation Logic
+    const viewHome = document.getElementById('view-home');
+    const viewPlp = document.getElementById('view-plp');
+    const linkMensRunning = document.getElementById('link-mens-running');
+    const btnsHome = document.querySelectorAll('.btn-home');
+
+    if (linkMensRunning) {
+      linkMensRunning.addEventListener('click', (e) => {
+        e.preventDefault();
+        viewHome.classList.add('hidden');
+        viewPlp.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        
+        // Hide mega menu abruptly to clean up UI
+        isMenuHovered = false;
+        linkMensRunning.blur(); // Drops focus
+        updateNavState();
+        
+        // Refresh ScrollTrigger to account for new page height
+        ScrollTrigger.refresh();
+      });
+    }
+
+    btnsHome.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        viewPlp.classList.add('hidden');
+        viewHome.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        updateNavState();
+        
+        ScrollTrigger.refresh();
+      });
     });
   </script>
 </body>
