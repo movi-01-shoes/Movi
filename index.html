@@ -2811,37 +2811,19 @@
         }
 
         // ==========================================
+        // ==========================================
         // PDF RECEIPT GENERATION ENGINE
         // ==========================================
         function generateAndDownloadPDF(receiptId, customer, items, total, pmName) {
             const formattedDate = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
             
-            // Encode the current URL to generate a dynamic QR Code image via reliable API
             const qrData = encodeURIComponent(window.location.href.split('#')[0]);
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
 
-            // Create an isolated container with strict positioning to avoid html2canvas viewport layout bugs
-            const container = document.createElement('div');
-            container.style.position = 'absolute';
-            container.style.left = '-9999px'; // Safely positioned offscreen via Left, NOT top
-            container.style.top = '0';
-            container.style.width = '800px'; 
-            container.style.backgroundColor = '#ffffff';
-            container.style.color = '#000000';
-            container.style.fontFamily = "'Inter', Helvetica, Arial, sans-serif";
-
-            // SVG Watermark background (Repeats seamlessly every ~1000px height, acting like A4 pages)
-            const watermarkSvg = `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='1050'><text x='400' y='525' font-family='Arial' font-size='180' font-weight='900' font-style='italic' fill='%23e8001d' fill-opacity='0.03' text-anchor='middle' dominant-baseline='middle' transform='rotate(-45 400 525)'>MOVI</text></svg>`;
-            const watermarkDataUrl = "data:image/svg+xml;charset=utf-8," + watermarkSvg.replace(/#/g, '%23');
-            container.style.backgroundImage = `url("${watermarkDataUrl}")`;
-            container.style.backgroundRepeat = 'repeat-y';
-            container.style.backgroundPosition = 'top center';
-
-            // MUST be added to DOM explicitly to guarantee accurate layout calculation
-            document.body.appendChild(container);
-
-            container.innerHTML = `
-                <div style="padding: 40px; width: 800px; box-sizing: border-box; position: relative; z-index: 10;">
+            // ALTERNATIVE WAY: Pass raw HTML string directly to html2pdf
+            // This prevents all off-screen rendering bugs and blank pages
+            const htmlContent = `
+                <div style="padding: 40px; width: 800px; background-color: #ffffff; color: #000000; font-family: 'Inter', Helvetica, Arial, sans-serif;">
                     
                     <!-- Header -->
                     <table width="100%" style="border-bottom: 2px solid #000; margin-bottom: 30px; padding-bottom: 20px; border-collapse: collapse;">
@@ -2889,7 +2871,7 @@
                         </thead>
                         <tbody>
                             ${items.map(item => `
-                                <tr class="item-row" style="border-bottom: 1px solid #eee;">
+                                <tr style="border-bottom: 1px solid #eee; page-break-inside: avoid;">
                                     <td style="padding: 16px 8px; vertical-align: top; max-width: 350px;">
                                         <div style="font-weight: bold; text-transform: uppercase; color: #000; font-size: 14px; word-wrap: break-word;">${item.name}</div>
                                         <div style="color: #666; font-size: 11px; margin-top: 4px;">Color: ${item.color} &bull; Size: ${item.size}</div>
@@ -2904,7 +2886,7 @@
                     </table>
 
                     <!-- Summary Section -->
-                    <table width="100%" class="no-break" style="margin-bottom: 50px; border-collapse: collapse;">
+                    <table width="100%" style="margin-bottom: 50px; border-collapse: collapse; page-break-inside: avoid;">
                         <tr>
                             <td style="width: 50%;"></td>
                             <td style="width: 50%;">
@@ -2930,7 +2912,7 @@
                     </table>
 
                     <!-- Marketing Banner -->
-                    <div class="no-break" style="background-color: #f9f9f9; padding: 25px; border-left: 5px solid #e8001d; margin-bottom: 40px;">
+                    <div style="background-color: #f9f9f9; padding: 25px; border-left: 5px solid #e8001d; margin-bottom: 40px; page-break-inside: avoid;">
                         <table width="100%" style="border-collapse: collapse;">
                             <tr>
                                 <td style="vertical-align: top;">
@@ -2951,7 +2933,7 @@
                     </div>
 
                     <!-- Footer -->
-                    <div class="no-break" style="text-align: center; font-size: 11px; color: #666; border-top: 1px solid #ddd; padding-top: 20px; line-height: 1.8;">
+                    <div style="text-align: center; font-size: 11px; color: #666; border-top: 1px solid #ddd; padding-top: 20px; line-height: 1.8; page-break-inside: avoid;">
                         <div style="font-weight: bold; color: #000; font-size: 14px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">Thank you for shopping with MOVI.</div>
                         <div>Official Support:<br> WhatsApp: +880 1234 567890 | Email: support@movi.com | Web: www.movi.com</div>
                     </div>
@@ -2967,26 +2949,15 @@
                 html2canvas:  { 
                     scale: 2, 
                     useCORS: true,
-                    windowWidth: 800, 
-                    width: 800,       
-                    // Removed x, y, scrollX, scrollY per bug fix instructions
                     backgroundColor: '#ffffff'
                 },
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
             };
 
-            const breakStyle = document.createElement('style');
-            breakStyle.innerHTML = `
-                .item-row { page-break-inside: avoid; }
-                .no-break { page-break-inside: avoid; }
-            `;
-            container.appendChild(breakStyle);
-
-            html2pdf().set(opt).from(container).save().then(() => {
-                document.body.removeChild(container);
-            }).catch(err => {
+            // Using the raw HTML string completely bypasses the DOM off-screen bugs
+            html2pdf().set(opt).from(htmlContent).save().catch(err => {
                 console.error("PDF generation error: ", err);
-                document.body.removeChild(container);
+                alert("Could not generate PDF. Please take a screenshot of your order confirmation.");
             });
         }
 
